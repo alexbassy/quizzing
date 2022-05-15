@@ -40,7 +40,7 @@ const imageURL = computed(() => `/slide-images/${props.image.url}`)
   </Presence>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .imageContainer {
   width: 100%;
   height: 100%;
@@ -53,7 +53,7 @@ const imageURL = computed(() => `/slide-images/${props.image.url}`)
   }
 }
 
-.image {
+.slideImage {
   width: 100%;
   height: 100%;
   transition: all 1s ease;

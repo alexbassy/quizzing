@@ -2,13 +2,9 @@
 
 <script lang="ts" setup>
 import { onMounted } from 'vue'
-
-onMounted(() => {
-  console.log('create')
-})
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .create {
 }
 </style>
