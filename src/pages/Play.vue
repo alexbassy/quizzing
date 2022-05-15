@@ -22,7 +22,7 @@ watch(
 )
 const activeQuestion = computed(() => (id.value ? questions[id.value] : null))
 
-if (!import.meta.LIVE)
+if (!import.meta.env.PROD)
   console.log({ route, params: route.params, questionIndex: id.value, activeQuestion })
 
 const handleSetScore = (newScores: RoundState) => {
@@ -74,6 +74,7 @@ safeSubscribe(fromEvent<KeyboardEvent>(document, 'keyup'), (event) => {
   <PlayLayout>
     <div class="container">
       <Slide
+        v-if="activeQuestion"
         :is-answer-shown="isAnswerShown"
         :is-photo-shown="isPhotoShown"
         :question="activeQuestion"

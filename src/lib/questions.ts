@@ -2,24 +2,24 @@ import { nanoid } from 'nanoid'
 import allQuestions from './questions.json'
 import allPlayers from './players.json'
 
-const questions: IQuestion[] = allQuestions.questions
+const questions = allQuestions.questions as IQuestion[]
 const players: IPlayer[] = allPlayers.people
 
 export interface IQuestionOption {
-  id: string
+  id?: string
   text: string
-  correct: boolean
+  correct?: boolean
 }
 
 export interface IQuestionImage {
   url: string
-  flip: boolean
-  obscured: boolean
+  flip?: boolean
+  obscured?: boolean
 }
 
 export interface IQuestion {
-  id: string
-  count: number
+  id?: string
+  count?: number
   title: string
   options: IQuestionOption[]
   image: IQuestionImage
