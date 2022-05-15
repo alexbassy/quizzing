@@ -93,7 +93,8 @@ const slideHidden = SLIDE.hidden
 }
 
 .count {
-  font-size: 1.5vw;
+  font-size: 1.25vw;
+  padding-left: 2rem;
   font-weight: 600;
   color: #ffffff80;
   margin: auto 0 0;
@@ -101,7 +102,7 @@ const slideHidden = SLIDE.hidden
 
 .options {
   list-style: none;
-  padding: 0;
+  padding: 0 0 0 2rem;
   counter-reset: option-counter;
   margin-bottom: auto;
 }

@@ -5,8 +5,14 @@ export const FADE = {
 }
 
 export const SLIDE = {
-  initial: { opacity: 0, y: '4vh' },
-  shown: { opacity: 1, y: 0 },
+  initial: { opacity: 0, y: '5vh', scale: 0.975 },
+  shown: { opacity: 1, y: 0, scale: 1 },
+  hidden: { opacity: 0, y: '-2vh' },
+}
+
+export const OPTION = {
+  initial: { opacity: 0, y: '4vh', scale: 0.8 },
+  shown: { opacity: 1, y: 0, scale: 1 },
   hidden: { opacity: 0, y: '-2vh' },
 }
 

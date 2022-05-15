@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { computed, defineProps, inject } from 'vue'
 import { Motion } from 'motion/vue'
-import { SLIDE } from '@/lib/motion-variants'
+import { OPTION, SLIDE } from '@/lib/motion-variants'
 import { IQuestionOption } from '@/lib/questions'
 
 const props = defineProps<{
@@ -12,9 +12,9 @@ const props = defineProps<{
 
 const isAnimated = inject<boolean>('isAnimated')
 
-const slideInitial = computed(() => (isAnimated ? SLIDE.initial : false))
-const slideShown = computed(() => SLIDE.shown)
-const slideHidden = SLIDE.hidden
+const slideInitial = computed(() => (isAnimated ? OPTION.initial : false))
+const slideShown = computed(() => OPTION.shown)
+const slideHidden = OPTION.hidden
 </script>
 
 <template>
@@ -24,7 +24,7 @@ const slideHidden = SLIDE.hidden
     :initial="slideInitial"
     :animate="slideShown"
     :exit="slideHidden"
-    :transition="{ type: 'spring', duration: isAnimated ? 1 : 0, delay: 1 + index * 0.2 }"
+    :transition="{ type: 'spring', duration: isAnimated ? 1 : 0, delay: 1 + index * 0.15 }"
   >
     <span class="option" :class="{ '-answerShown': isAnswerShown, '-correct': option.correct }">
       {{ option.text }}
