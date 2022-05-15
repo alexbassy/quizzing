@@ -8,6 +8,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "motion": "^10.8.1",
+    "rxjs": "^7.5.5",
     "vue": "^3.2.25",
     "vue-router": "4"
   },

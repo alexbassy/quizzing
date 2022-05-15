@@ -1,0 +1,39 @@
+{
+  "people": [
+    {
+      "name": "Grandma",
+      "image": "grandma.jpeg",
+      "score": 0
+    },
+    {
+      "name": "Simon",
+      "image": "simon.jpeg",
+      "score": 0
+    },
+    {
+      "name": "Mum",
+      "image": "mum.jpeg",
+      "score": 0
+    },
+    {
+      "name": "Andrew",
+      "image": "andrew.jpeg",
+      "score": 0
+    },
+    {
+      "name": "Alastair",
+      "image": "alastair.jpeg",
+      "score": 0
+    },
+    {
+      "name": "Emma",
+      "image": "emma.jpeg",
+      "score": 0
+    },
+    {
+      "name": "Laura",
+      "image": "laura.jpeg",
+      "score": 0
+    }
+  ]
+}
