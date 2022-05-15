@@ -2,7 +2,9 @@
 import '@/styles/reset.css'
 </script>
 
-<template></template>
+<template>
+  <router-view />
+</template>
 
 <style>
 #app {
