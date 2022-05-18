@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import PlayLayout from '@/components/PlayLayout.vue'
+import PlayLayout from '@/layouts/PlayLayout.vue'
 import Slide from '@/components/slide'
 import { questions } from '@/lib/questions'
 import { getScoresFromCache, RoundState, saveScoresToCache, ScoresState } from '@/lib/scores'

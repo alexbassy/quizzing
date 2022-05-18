@@ -1,0 +1,101 @@
+<script lang="ts" setup>
+import { IQuestion } from '@/lib/questions'
+import { defineProps, ref } from 'vue'
+
+const props = defineProps<{ questions: IQuestion[] }>()
+
+const emit = defineEmits(['active-change'])
+
+const activeSlideId = ref(props.questions[0].id)
+
+function setActiveSlide(questionId: string) {
+  activeSlideId.value = questionId
+  emit('active-change', questionId)
+}
+</script>
+
+<template>
+  <div class="list-container">
+    <ol class="list">
+      <li
+        class="item"
+        v-for="question in questions"
+        :key="question.id"
+        tabindex="0"
+        role="button"
+        @click="setActiveSlide(question.id!)"
+        @keyup.enter="setActiveSlide(question.id!)"
+        @keyup.space.prevent="setActiveSlide(question.id!)"
+        :class="{ '-active': activeSlideId === question.id }"
+      >
+        <img
+          v-if="question.image.url"
+          class="slide-image"
+          :src="`/slide-images/${question.image.url}`"
+          :alt="question.title"
+          loading="lazy"
+        />
+      </li>
+    </ol>
+  </div>
+</template>
+
+<style lang="scss" scoped>
+.list-container {
+  height: 100%;
+  position: relative;
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 2rem;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  &::before {
+    top: 0;
+    background: linear-gradient(to bottom, #000000, #00000000);
+  }
+
+  &::after {
+    background: linear-gradient(to top, #000000aa, #00000000);
+    bottom: 3.63rem; // I don't understand this
+  }
+}
+.list {
+  height: 100%;
+  overflow-y: auto;
+  max-width: 100%;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+.item {
+  width: 100%;
+  position: relative;
+  aspect-ratio: 4 / 3;
+  background: rgb(120 120 120);
+  margin-bottom: 1.5rem;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: 0.25s ease;
+  transition-property: box-shadow;
+
+  &:focus-visible {
+    box-shadow: 0 0 0 0.25rem blue;
+  }
+
+  &.-active {
+    box-shadow: 0 0 0 0.25rem #ffffff20;
+  }
+}
+
+.slide-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+</style>

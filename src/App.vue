@@ -18,7 +18,8 @@ html {
 }
 
 body {
-  background: #000;
+  background-color: #000;
+  color: #fff;
   overflow: hidden;
 }
 
