@@ -12,7 +12,6 @@ const imageURL = computed(() => `/slide-images/${props.image.url}`)
   <Presence exit-before-enter>
     <Motion
       class="imageContainer"
-      :class="{ '-flipped': image.flip }"
       :key="imageURL"
       :initial="
         isAnimated
@@ -34,7 +33,7 @@ const imageURL = computed(() => `/slide-images/${props.image.url}`)
         :src="imageURL"
         alt=""
         class="slideImage"
-        :class="{ '-obscured': !isAnswerShown && image.obscured }"
+        :class="{ '-obscured': !isAnswerShown && image.obscured, '-flipped': image.flip }"
       />
     </Motion>
   </Presence>
@@ -47,10 +46,6 @@ const imageURL = computed(() => `/slide-images/${props.image.url}`)
   position: absolute;
   top: 0;
   left: 0;
-
-  &.-flipped {
-    transform: rotateY(180deg);
-  }
 }
 
 .slideImage {
@@ -59,6 +54,10 @@ const imageURL = computed(() => `/slide-images/${props.image.url}`)
   transition: all 1s ease;
   object-fit: cover;
   will-change: opacity, transform, filter;
+
+  &.-flipped {
+    transform: rotateY(180deg);
+  }
 
   &.-obscured {
     opacity: 0.8;

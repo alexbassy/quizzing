@@ -21,7 +21,7 @@ const fadeShown = computed(() => (props.isPhotoShown ? FADE.initial : FADE.shown
 const fadeHidden = FADE.hidden
 
 const slideInitial = computed(() => (props.isAnimated ? SLIDE.initial : false))
-const slideShown = computed(() => (props.isPhotoShown ? SLIDE.initial : SLIDE.shown))
+const slideShown = computed(() => SLIDE.shown)
 const slideHidden = SLIDE.hidden
 </script>
 

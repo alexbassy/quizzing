@@ -28,7 +28,7 @@
         { "text": "Gladiolus" },
         { "text": "Verum tree" }
       ],
-      "image": { "url": "crocus.jpg", "flipped": true }
+      "image": { "url": "crocus.jpg", "flip": true }
     },
     {
       "title": "Which of these should someone with celiac’s disease not enjoy?",
