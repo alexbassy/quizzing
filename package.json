@@ -11,6 +11,7 @@
     "worker:dev": "miniflare --watch dist-worker/handler.js"
   },
   "dependencies": {
+    "@clerk/clerk-js": "^3.12.0",
     "@supabase/supabase-js": "^1.35.3",
     "motion": "^10.8.1",
     "rxjs": "^7.5.5",
