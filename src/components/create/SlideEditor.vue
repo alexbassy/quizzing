@@ -2,8 +2,9 @@
 import { IQuestion } from '@/lib/questions'
 import { defineProps } from 'vue'
 import Slide from '../slide'
+import { QuestionEntry } from "@/lib/store/db"
 
-const props = defineProps<{ question: IQuestion }>()
+const props = defineProps<{ question: QuestionEntry }>()
 </script>
 
 <template>

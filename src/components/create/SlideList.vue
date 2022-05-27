@@ -2,8 +2,9 @@
 import { IQuestion } from '@/lib/questions'
 import { defineProps, inject, ref } from 'vue'
 import * as client from '@/lib/store/client'
+import { QuestionEntry } from "@/lib/store/db";
 
-const props = defineProps<{ questions: IQuestion[]; activeQuestionId?: string }>()
+const props = defineProps<{ questions: QuestionEntry[]; activeQuestionId?: string }>()
 const quizId = inject<string>('quizId')
 
 const emit = defineEmits(['active-change'])
