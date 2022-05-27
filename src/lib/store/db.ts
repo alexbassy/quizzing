@@ -15,6 +15,7 @@ export interface QuestionEntry {
   createdAt?: number
   updatedAt?: number
   quizId?: string
+  title?: string
   options?: string[]
   correctOption?: string // 0-3
   image?: string // blob?
@@ -30,20 +31,26 @@ class QuizStore extends Dexie {
     super('QuizStore')
     this.version(1).stores({
       quiz: '$$id,name',
-      question: '$$id',
+      question: '$$id,quizId',
     })
   }
 }
 
 export const db = new QuizStore()
 
+// Add hooks for createdAt/updatedAt
 // https://dexie.org/docs/Table/Table.hook('creating')
-db.quiz.hook('creating', (_primaryKey, obj) => {
+// https://dexie.org/docs/Table/Table.hook('updating')
+const createHookAddCreationTime = (_primaryKey: string, obj: QuizEntry | QuestionEntry) => {
   obj.createdAt = Date.now()
   obj.updatedAt = Date.now()
-})
+}
 
-// https://dexie.org/docs/Table/Table.hook('updating')
-db.quiz.hook('updating', () => {
+db.quiz.hook('creating', createHookAddCreationTime)
+db.question.hook('creating', createHookAddCreationTime)
+
+const updatingHookAddUpdatedTime = () => {
   return { updatedAt: Date.now() }
-})
+}
+db.quiz.hook('updating', updatingHookAddUpdatedTime)
+db.question.hook('updating', updatingHookAddUpdatedTime)

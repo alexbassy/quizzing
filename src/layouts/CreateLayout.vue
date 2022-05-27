@@ -1,6 +1,7 @@
 <template>
   <div class="container">
     <header class="header">
+      <RouterLink to="/create" v-if="canGoBack">{{ '<' }}</RouterLink>
       <h1 class="title">{{ title || 'Create' }}</h1>
       <button @click="createQuiz">Create quiz ✨</button>
       <button @click="updateQuiz">Update</button>
@@ -15,11 +16,12 @@
 <script lang="ts" setup>
 import { addQuiz } from '@/lib/store/client'
 import { db } from '@/lib/store/db'
+import { RouterLink } from 'vue-router'
 
-const props = defineProps<{ title: string }>()
+const props = defineProps<{ title: string; canGoBack?: boolean }>()
 
-function createQuiz() {
-  addQuiz().subscribe()
+async function createQuiz() {
+  await addQuiz()
 }
 
 async function updateQuiz() {

@@ -1,33 +1,45 @@
 <template>
-  <CreateLayout title="Create">
+  <CreateLayout :title="quiz?.name || 'Create'" can-go-back>
     <template #sidebar>
-      <SlideList :questions="questions" @active-change="onSlideChange" />
+      <SlideList
+        :questions="questions"
+        :active-question="activeQuestion?.id"
+        @active-change="onSlideChange"
+      />
     </template>
-    <SlideEditor :question="activeQuestion" />
+    <SlideEditor v-if="activeQuestion" :question="activeQuestion" />
   </CreateLayout>
 </template>
 
 <script lang="ts" setup>
 import CreateLayout from '@/layouts/CreateLayout.vue'
 import SlideList from '@/components/create/SlideList.vue'
-import { IQuestion, questions } from '@/lib/questions'
-import { ref, watch, watchEffect } from 'vue'
+import { provide, ref, watchEffect } from 'vue'
 import SlideEditor from '@/components/create/SlideEditor.vue'
-
-import { liveQuery } from 'dexie'
-import { db, QuizEntry } from '@/lib/store/db'
+import { QuizEntry, QuestionEntry } from '@/lib/store/db'
 import { useObservable } from '@vueuse/rxjs'
-import { quizzes$ } from '@/lib/store/client'
+import { getQuestions$, getQuiz$ } from '@/lib/store/client'
+import { useRoute } from 'vue-router'
 
-const activeQuestion = ref<IQuestion>(questions[0])
+const route = useRoute()
 
-function onSlideChange(id: IQuestion['id']) {
-  activeQuestion.value = questions.find((q) => q.id === id)!
+const quizId = route.params.id as string
+
+provide('quizId', quizId)
+
+const quiz$ = getQuiz$(quizId)
+
+const quiz = useObservable<QuizEntry>(quiz$)
+
+const questions = useObservable(getQuestions$(quizId), { initialValue: [] as QuestionEntry[] })
+
+watchEffect(() => console.log(questions.value))
+
+const activeQuestion = ref(questions.value?.[0] || 0)
+
+function onSlideChange(id: QuestionEntry['id']) {
+  activeQuestion.value = questions.value.find((q) => q.id === id)!
 }
-
-const dbQuestions = useObservable<QuizEntry[]>(quizzes$())
-
-watchEffect(() => console.log(dbQuestions.value))
 </script>
 
 <style lang="scss" scoped>

@@ -1,16 +1,19 @@
 <script lang="ts" setup>
 import { IQuestion } from '@/lib/questions'
-import { defineProps, ref } from 'vue'
+import { defineProps, inject, ref } from 'vue'
+import * as client from '@/lib/store/client'
 
-const props = defineProps<{ questions: IQuestion[] }>()
+const props = defineProps<{ questions: IQuestion[]; activeQuestionId?: string }>()
+const quizId = inject<string>('quizId')
 
 const emit = defineEmits(['active-change'])
 
-const activeSlideId = ref(props.questions[0].id)
-
 function setActiveSlide(questionId: string) {
-  activeSlideId.value = questionId
   emit('active-change', questionId)
+}
+
+async function addQuestion() {
+  await client.addQuestion(quizId!)
 }
 </script>
 
@@ -26,16 +29,17 @@ function setActiveSlide(questionId: string) {
         @click="setActiveSlide(question.id!)"
         @keyup.enter="setActiveSlide(question.id!)"
         @keyup.space.prevent="setActiveSlide(question.id!)"
-        :class="{ '-active': activeSlideId === question.id }"
+        :class="{ '-active': activeQuestionId === question.id }"
       >
         <img
-          v-if="question.image.url"
+          v-if="question.image?.url"
           class="slide-image"
           :src="`/slide-images/${question.image.url}`"
           :alt="question.title"
           loading="lazy"
         />
       </li>
+      <li class="item" tabindex="0" role="button" @click="addQuestion">Add</li>
     </ol>
   </div>
 </template>
