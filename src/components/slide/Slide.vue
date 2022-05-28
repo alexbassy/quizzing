@@ -75,7 +75,7 @@ const slideHidden = SLIDE.hidden
   justify-content: center;
   color: #fff;
   z-index: 2;
-  width: 70vw;
+  width: var(--slide-content-width);
   height: 100vh;
   background: linear-gradient(
     90deg,
@@ -83,17 +83,17 @@ const slideHidden = SLIDE.hidden
     rgb(0 0 0 / 0.6) 70%,
     rgb(0 0 0 / 0) 100%
   );
-  padding: 0 10vw 0 5vw;
+  padding: 0 var(--slide-content-padding-right) 0 var(--slide-content-padding-left);
 }
 
 .title {
-  font-size: 4vw;
+  font-size: var(--slide-title-font-size);
   margin: 0.5em 0;
   font-weight: 800;
 }
 
 .count {
-  font-size: 1.25vw;
+  font-size: var(--slide-title-font-size);
   padding-left: 2rem;
   font-weight: 600;
   color: #ffffff80;

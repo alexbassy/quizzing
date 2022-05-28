@@ -34,7 +34,7 @@ const slideHidden = OPTION.hidden
 
 <style lang="scss" scoped>
 .container {
-  font-size: 1.75vw;
+  font-size: var(--slide-option-font-size);
   margin: 1.4rem 0;
   transform-origin: left;
   counter-increment: option-counter;
@@ -54,9 +54,9 @@ const slideHidden = OPTION.hidden
     align-self: flex-start;
     display: flex;
     flex-shrink: 0;
-    font-size: 2vw;
-    width: 1.5em;
-    height: 1.5em;
+    font-size: var(--slide-option-counter-font-size);
+    width: var(--slide-option-size);
+    height: var(--slide-option-size);
     text-align: center;
     place-content: center;
     place-items: center;

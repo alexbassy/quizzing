@@ -1,0 +1,12 @@
+:root {
+  --slide-content-width: 70vw;
+  --slide-content-padding-right: 10vw;
+  --slide-content-padding-left: 5vw;
+
+  --slide-title-font-size: 4vw;
+  --slide-count-font-size: 1.25vw;
+
+  --slide-option-font-size: 1.75vw;
+  --slide-option-counter-font-size: 2vw;
+  --slide-option-counter-size: 1.5em;
+}

@@ -1,15 +1,18 @@
 <script lang="ts" setup>
-import { IQuestion } from '@/lib/questions'
-import { defineProps } from 'vue'
-import Slide from '../slide'
-import { QuestionEntry } from "@/lib/store/db"
+import { QuestionEntry } from '@/lib/store/db'
+import { computed, defineProps, ref } from 'vue'
 
 const props = defineProps<{ question: QuestionEntry }>()
+
+const hasImage = ref(false)
+const imageSrc = computed(() => props.question.image)
 </script>
 
 <template>
   <div class="container">
-    <Slide :question="question" is-answer-shown />
+    <div class="slide">
+      <img v-if="hasImage" class="slide-image" :src="imageSrc" />
+    </div>
   </div>
 </template>
 
