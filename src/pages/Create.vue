@@ -3,7 +3,7 @@
     <template #sidebar>
       <SlideList
         :questions="questions"
-        :active-question="activeQuestion?.id"
+        :active-question-id="activeQuestion?.id"
         @active-change="onSlideChange"
       />
     </template>
@@ -29,7 +29,7 @@ provide('quizId', quizId)
 
 const quiz$ = getQuiz$(quizId)
 
-const quiz = useObservable<QuizEntry>(quiz$)
+const quiz = useObservable<QuizEntry | undefined>(quiz$)
 
 const questions = useObservable(getQuestions$(quizId), { initialValue: [] as QuestionEntry[] })
 

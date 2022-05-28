@@ -2,7 +2,7 @@
 import { IQuestion } from '@/lib/questions'
 import { defineProps, inject, ref } from 'vue'
 import * as client from '@/lib/store/client'
-import { QuestionEntry } from "@/lib/store/db";
+import { QuestionEntry } from '@/lib/store/db'
 
 const props = defineProps<{ questions: QuestionEntry[]; activeQuestionId?: string }>()
 const quizId = inject<string>('quizId')
@@ -33,9 +33,9 @@ async function addQuestion() {
         :class="{ '-active': activeQuestionId === question.id }"
       >
         <img
-          v-if="question.image?.url"
+          v-if="question.image"
           class="slide-image"
-          :src="`/slide-images/${question.image.url}`"
+          :src="`/slide-images/${question.image}`"
           :alt="question.title"
           loading="lazy"
         />
@@ -48,6 +48,7 @@ async function addQuestion() {
 <style lang="scss" scoped>
 .list-container {
   height: 100%;
+  padding-bottom: 2.5rem;
   position: relative;
 
   &::before,
@@ -55,7 +56,7 @@ async function addQuestion() {
     content: '';
     position: absolute;
     width: 100%;
-    height: 2rem;
+    height: 1.5rem;
     pointer-events: none;
     z-index: 2;
   }
@@ -94,7 +95,7 @@ async function addQuestion() {
   }
 
   &.-active {
-    box-shadow: 0 0 0 0.25rem #ffffff20;
+    box-shadow: 0 0 0 0.5rem #ffffff20;
   }
 }
 
