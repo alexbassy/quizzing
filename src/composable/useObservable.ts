@@ -15,3 +15,12 @@ export function safeSubscribe<T>(obs$: Observable<T>, callback: (value: T) => un
     subscription.unsubscribe()
   })
 }
+
+export function onMounted$(): Observable<void> {
+  return new Observable((subscriber) => {
+    onMounted(() => {
+      subscriber.next()
+      subscriber.complete()
+    })
+  })
+}

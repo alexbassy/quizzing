@@ -1,9 +1,10 @@
 <script lang="ts" setup>
+import { onMounted$ } from '@/composable/useObservable'
 import { QuestionEntry } from '@/lib/store/db'
 import { useSubscription } from '@vueuse/rxjs'
 import { animationFrameScheduler, debounceTime, fromEvent, startWith } from 'rxjs'
 import * as Stretchy from 'stretchy'
-import { computed, defineProps, onMounted, ref } from 'vue'
+import { computed, ref } from 'vue'
 
 const props = defineProps<{ question: QuestionEntry }>()
 
@@ -22,16 +23,13 @@ function resizeTitleInput() {
   Stretchy.resize(slideTitle.value)
 }
 
-onMounted(() => {
-  useSubscription(
-    fromEvent(window, 'resize')
-      .pipe(debounceTime(10, animationFrameScheduler), startWith(null))
-      .subscribe(() => {
-        console.log('resize')
-        resizeTitleInput()
-      })
-  )
-})
+useSubscription(
+  fromEvent(window, 'resize')
+    .pipe(startWith(onMounted$()), debounceTime(10, animationFrameScheduler))
+    .subscribe(() => {
+      resizeTitleInput()
+    })
+)
 </script>
 
 <template>
