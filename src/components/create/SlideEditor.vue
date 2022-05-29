@@ -1,11 +1,12 @@
 <script lang="ts" setup>
 import { onMounted$ } from '@/composable/useObservable'
+import { watch$ } from '@/lib/observables'
 import { updateQuestionOption, updateQuestionTitle } from '@/lib/store/client'
 import { QuestionEntry } from '@/lib/store/db'
 import { useSubscription } from '@vueuse/rxjs'
-import { animationFrameScheduler, debounceTime, fromEvent, startWith } from 'rxjs'
+import { combineLatest, fromEvent, startWith } from 'rxjs'
 import * as Stretchy from 'stretchy'
-import { computed, ref } from 'vue'
+import { computed, nextTick, ref } from 'vue'
 
 const props = defineProps<{ question: QuestionEntry }>()
 
@@ -13,6 +14,7 @@ const hasImage = ref(false)
 const imageSrc = computed(() => props.question.image)
 
 const title = computed(() => props.question.title || '')
+const id$ = watch$(() => props.question.id)
 
 const options = computed(() =>
   Array.from({ length: 4 }).map((_, i) => props.question.options?.[i] || '')
@@ -34,11 +36,9 @@ function resizeTitleInput() {
   Stretchy.resize(slideTitle.value)
 }
 useSubscription(
-  fromEvent(window, 'resize')
-    .pipe(startWith(onMounted$()), debounceTime(10, animationFrameScheduler))
-    .subscribe(() => {
-      resizeTitleInput()
-    })
+  combineLatest([id$, onMounted$(), fromEvent(window, 'resize').pipe(startWith(null))]).subscribe(
+    () => nextTick(() => resizeTitleInput())
+  )
 )
 </script>
 
@@ -76,9 +76,7 @@ useSubscription(
 
 <style lang="scss" scoped>
 .container {
-  --placeholder-color: rgb(255 255 255 / 40%);
   position: relative;
-
   height: 100%;
   align-self: center;
   margin: auto;

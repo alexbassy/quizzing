@@ -27,13 +27,22 @@ export async function deleteQuiz(id: string) {
 }
 
 export function getQuestions$(quizId: string) {
-  return from(liveQuery(() => db.question.where({ quizId }).toArray()))
+  return from(
+    liveQuery(async () => {
+      const [quiz, questions] = await Promise.all([
+        db.quiz.get(quizId),
+        db.question.where({ quizId }).toArray(),
+      ])
+      const questionsById = Object.fromEntries(questions.map((question) => [question.id, question]))
+      return (quiz?.questions || []).map((id) => questionsById[id!])
+    })
+  )
 }
 
 export async function addQuestion({ quizId, ...rest }: Partial<QuestionEntry> = {}) {
   if (!quizId) throw new Error('`quizId` is required')
   const nQ = await db.question.add({ quizId, ...rest })
-  db.transaction('rw', db.quiz, async () => {
+  return db.transaction('rw', db.quiz, async () => {
     const quiz = await db.quiz.get(quizId)
     const newQuestions = [...(quiz?.questions || []), nQ]
     await db.quiz.update(quizId, { questions: newQuestions })

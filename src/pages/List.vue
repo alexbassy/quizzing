@@ -16,7 +16,7 @@
             <span>{{ quiz.questions?.length ?? 0 }}</span>
             <span>{{ formatRelativeTime(quiz.createdAt!) }}</span>
             <span>{{ formatRelativeTime(quiz.updatedAt!) }}</span>
-            <span><button @click="remove(quiz.id!)">Delete</button></span>
+            <span><button @click.prevent="remove(quiz.id!)">Delete</button></span>
           </RouterLink>
         </Motion>
       </ol>
@@ -50,19 +50,19 @@ async function remove(id: string) {
 
 .titles {
   display: grid;
-  grid-template-columns: var(--columns);
   margin: 0 3.5rem;
-  font-weight: bold;
   color: rgb(255 255 255 / 0.35);
+  font-weight: bold;
+  grid-template-columns: var(--columns);
 }
 .table {
   padding: 0 1.5rem;
 }
 .list {
+  padding: 0.5rem;
+  margin: 1rem 2rem 0;
   background-color: rgb(255 255 255 / 0.75%);
   border-radius: 10px;
-  margin: 1rem 2rem 0;
-  padding: 0.5rem;
 }
 
 .item {
@@ -79,12 +79,12 @@ async function remove(id: string) {
 }
 
 .link {
-  width: 100%;
   display: grid;
-  grid-template-columns: var(--columns);
+  width: 100%;
   padding: 1rem;
-  transition: background-color 0.15s ease;
   border-radius: 8px;
+  grid-template-columns: var(--columns);
+  transition: background-color 0.15s ease;
 
   &:hover {
     background-color: rgb(255 255 255 / 0.75%);

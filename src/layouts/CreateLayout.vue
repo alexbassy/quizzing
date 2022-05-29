@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <header class="header">
-      <RouterLink to="/create" v-if="canGoBack">{{ '<' }}</RouterLink>
+      <RouterLink to="/create" v-if="canGoBack" class="back-button">{{ '⃪' }}</RouterLink>
       <h1 class="title">{{ title || 'Create' }}</h1>
       <button @click="createQuiz">Create quiz ✨</button>
       <button @click="updateQuiz">Update</button>
@@ -36,32 +36,38 @@ async function updateQuiz() {
 
 <style lang="scss" scoped>
 .container {
-  height: 100vh;
   display: flex;
+  height: 100vh;
   flex-direction: column;
   color: #fff;
 }
 .contentWrap {
   display: flex;
-  flex: 1;
   height: 100%;
+  flex: 1;
 }
 .header {
   display: flex;
   height: 4rem;
-  padding: 1.2rem 1.5rem;
   align-items: center;
+  padding: 1.2rem 1.5rem;
 }
+
+.back-button {
+  margin-right: 1rem;
+  text-indent: 1ch;
+}
+
 .title {
-  font-weight: normal;
-  font-size: 1.6rem;
   margin: 0 auto 0 0;
+  font-size: 1.6rem;
+  font-weight: normal;
 }
 .content {
   flex: 4;
 }
 .sidebar {
-  flex: 1;
   overflow: auto;
+  flex: 1;
 }
 </style>

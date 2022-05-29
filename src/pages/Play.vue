@@ -1,12 +1,12 @@
 <script lang="ts" setup>
-import PlayLayout from '@/layouts/PlayLayout.vue'
 import Slide from '@/components/slide'
+import { safeSubscribe } from '@/composable/useObservable'
+import PlayLayout from '@/layouts/PlayLayout.vue'
 import { questions } from '@/lib/questions'
 import { getScoresFromCache, RoundState, saveScoresToCache, ScoresState } from '@/lib/scores'
 import { fromEvent } from 'rxjs'
 import { computed, ref, unref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { safeSubscribe } from '@/composable/useObservable'
 
 const isAnswerShown = ref(false)
 const isPhotoShown = ref(false)
@@ -21,9 +21,6 @@ watch(
   { immediate: true }
 )
 const activeQuestion = computed(() => (id.value ? questions[id.value] : null))
-
-if (!import.meta.env.PROD)
-  console.log({ route, params: route.params, questionIndex: id.value, activeQuestion })
 
 const handleSetScore = (newScores: RoundState) => {
   if (typeof id.value === 'undefined') {
@@ -91,7 +88,7 @@ safeSubscribe(fromEvent<KeyboardEvent>(document, 'keyup'), (event) => {
   width: 100vw;
   height: 100vh;
   flex-direction: column;
-  justify-content: center;
   align-items: start;
+  justify-content: center;
 }
 </style>

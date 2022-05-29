@@ -1,11 +1,23 @@
 <script lang="ts" setup>
+import { onMounted$ } from '@/composable/useObservable'
 import * as client from '@/lib/store/client'
+import { getQuestions$ } from '@/lib/store/client'
 import { QuestionEntry } from '@/lib/store/db'
+import { useObservable } from '@vueuse/rxjs'
 import randomColor from 'randomcolor'
-import { defineProps, inject } from 'vue'
+import { map, switchMap } from 'rxjs/operators'
+import { defineProps, inject, ref } from 'vue'
 
 const props = defineProps<{ questions: QuestionEntry[]; activeQuestionId?: string }>()
 const quizId = inject<string>('quizId')
+const listElem = ref<HTMLOListElement>()
+
+const questionsToTitles$ = getQuestions$(quizId!).pipe(
+  map((questions) => Object.fromEntries<string>(questions.map(({ id, title }) => [id!, title!])))
+)
+const titles = useObservable(onMounted$().pipe(switchMap(() => questionsToTitles$)), {
+  initialValue: {} as Record<string, string>,
+})
 
 const emit = defineEmits(['active-change'])
 
@@ -16,12 +28,17 @@ function setActiveSlide(questionId: string) {
 async function addQuestion() {
   const backgroundColor = randomColor({ luminosity: 'dark' })
   await client.addQuestion({ quizId: quizId!, backgroundColor })
+  setTimeout(() => {
+    if (listElem.value) {
+      listElem.value.scrollTo({ top: listElem.value.scrollHeight * 2, behavior: 'smooth' })
+    }
+  }, 300)
 }
 </script>
 
 <template>
   <div class="list-container">
-    <ol class="list">
+    <ol class="list" ref="listElem">
       <li
         class="item"
         :style="`--background-color: ${question.backgroundColor || 'gray'};`"
@@ -41,8 +58,17 @@ async function addQuestion() {
           :alt="question.title"
           loading="lazy"
         />
+        <div class="slide-title">{{ titles[question.id!] }}</div>
       </li>
-      <li class="item" tabindex="0" role="button" @click="addQuestion">Add</li>
+      <li
+        class="item -addQuestion"
+        tabindex="0"
+        role="button"
+        aria-label="Add question"
+        @click="addQuestion"
+      >
+        +
+      </li>
     </ol>
   </div>
 </template>
@@ -82,23 +108,46 @@ async function addQuestion() {
 }
 .item {
   position: relative;
+  display: flex;
   overflow: hidden;
   width: 100%;
+  align-items: center;
   margin-bottom: 1.5rem;
   aspect-ratio: 4 / 3;
   background: var(--background-color);
   border-radius: 8px;
   cursor: pointer;
   transition: 0.25s ease;
-  transition-property: box-shadow;
+  transition-property: transform, background-color, box-shadow;
 
   &:focus-visible {
     box-shadow: 0 0 0 0.25rem blue;
   }
 
+  &:active {
+    transform: scale(0.975);
+  }
+
   &.-active {
     box-shadow: 0 0 0 0.5rem #ffffff20;
   }
+
+  &.-addQuestion {
+    justify-content: center;
+    padding-bottom: 0.35rem;
+    background-color: rgb(30 30 30);
+    font-size: 3vw;
+
+    &:active {
+      background-color: rgb(25 25 25);
+    }
+  }
+}
+
+.slide-title {
+  margin: 1vw;
+  font-size: 1.1vw;
+  font-weight: bold;
 }
 
 .slide-image {
