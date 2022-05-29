@@ -1,9 +1,9 @@
 <script lang="ts" setup>
-import { computed, defineProps, provide } from 'vue'
-import { Motion, Presence } from 'motion/vue'
-import { IQuestion } from '@/lib/questions'
-import SlideImage from './SlideImage.vue'
 import { FADE, SLIDE } from '@/lib/motion-variants'
+import { IQuestion } from '@/lib/questions'
+import { Motion, Presence } from 'motion/vue'
+import { computed, defineProps, provide } from 'vue'
+import SlideImage from './SlideImage.vue'
 import SlideOption from './SlideOption.vue'
 
 const props = defineProps<{
@@ -77,12 +77,7 @@ const slideHidden = SLIDE.hidden
   z-index: 2;
   width: var(--slide-content-width);
   height: 100vh;
-  background: linear-gradient(
-    90deg,
-    rgb(0 0 0 / 0.8) 30%,
-    rgb(0 0 0 / 0.6) 70%,
-    rgb(0 0 0 / 0) 100%
-  );
+  background: var(--slide-content-gradient);
   padding: 0 var(--slide-content-padding-right) 0 var(--slide-content-padding-left);
 }
 
@@ -90,10 +85,11 @@ const slideHidden = SLIDE.hidden
   font-size: var(--slide-title-font-size);
   margin: 0.5em 0;
   font-weight: 800;
+  word-break: break-word;
 }
 
 .count {
-  font-size: var(--slide-title-font-size);
+  font-size: var(--slide-count-font-size);
   padding-left: 2rem;
   font-weight: 600;
   color: #ffffff80;

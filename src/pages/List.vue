@@ -27,11 +27,11 @@
 
 <script lang="ts" setup>
 import CreateLayout from '@/layouts/CreateLayout.vue'
+import { formatRelativeTime } from '@/lib/relative-time'
+import { deleteQuiz, getQuizzes$ } from '@/lib/store/client'
 import { QuizEntry } from '@/lib/store/db'
 import { useObservable } from '@vueuse/rxjs'
-import { deleteQuiz, getQuizzes$ } from '@/lib/store/client'
 import { Motion } from 'motion/vue'
-import { formatRelativeTime } from '@/lib/relative-time'
 import { RouterLink } from 'vue-router'
 
 const quizzes = useObservable<QuizEntry[]>(getQuizzes$())
@@ -59,7 +59,7 @@ async function remove(id: string) {
   padding: 0 1.5rem;
 }
 .list {
-  background-color: rgb(255 255 255 / 0.075);
+  background-color: rgb(255 255 255 / 0.75%);
   border-radius: 10px;
   margin: 1rem 2rem 0;
   padding: 0.5rem;
@@ -87,7 +87,7 @@ async function remove(id: string) {
   border-radius: 8px;
 
   &:hover {
-    background-color: rgb(255 255 255 / 0.075);
+    background-color: rgb(255 255 255 / 0.75%);
   }
 
   &:focus-visible {

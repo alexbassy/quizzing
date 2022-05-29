@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { computed, defineProps, inject } from 'vue'
 import { Motion } from 'motion/vue'
-import { OPTION, SLIDE } from '@/lib/motion-variants'
+import { OPTION } from '@/lib/motion-variants'
 import { IQuestionOption } from '@/lib/questions'
 
 const props = defineProps<{
@@ -55,8 +55,8 @@ const slideHidden = OPTION.hidden
     display: flex;
     flex-shrink: 0;
     font-size: var(--slide-option-counter-font-size);
-    width: var(--slide-option-size);
-    height: var(--slide-option-size);
+    width: var(--slide-option-counter-size);
+    height: var(--slide-option-counter-size);
     text-align: center;
     place-content: center;
     place-items: center;

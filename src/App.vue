@@ -1,8 +1,3 @@
-<script setup lang="ts">
-import '@/styles/reset.css'
-import '@/styles/variables.css'
-</script>
-
 <template>
   <router-view />
 </template>

@@ -1,8 +1,8 @@
 <script lang="ts" setup>
-import { IQuestion } from '@/lib/questions'
-import { defineProps, inject, ref } from 'vue'
 import * as client from '@/lib/store/client'
 import { QuestionEntry } from '@/lib/store/db'
+import randomColor from 'randomcolor'
+import { defineProps, inject } from 'vue'
 
 const props = defineProps<{ questions: QuestionEntry[]; activeQuestionId?: string }>()
 const quizId = inject<string>('quizId')
@@ -14,7 +14,8 @@ function setActiveSlide(questionId: string) {
 }
 
 async function addQuestion() {
-  await client.addQuestion(quizId!)
+  const backgroundColor = randomColor({ luminosity: 'dark' })
+  await client.addQuestion({ title: 'Title', quizId: quizId!, backgroundColor })
 }
 </script>
 
@@ -23,6 +24,7 @@ async function addQuestion() {
     <ol class="list">
       <li
         class="item"
+        :style="`--background-color: ${question.backgroundColor || 'gray'};`"
         v-for="question in questions"
         :key="question.id"
         tabindex="0"
@@ -82,7 +84,7 @@ async function addQuestion() {
   width: 100%;
   position: relative;
   aspect-ratio: 4 / 3;
-  background: rgb(120 120 120);
+  background: var(--background-color);
   margin-bottom: 1.5rem;
   border-radius: 8px;
   overflow: hidden;

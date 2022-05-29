@@ -12,13 +12,13 @@
 </template>
 
 <script lang="ts" setup>
-import CreateLayout from '@/layouts/CreateLayout.vue'
-import SlideList from '@/components/create/SlideList.vue'
-import { provide, ref, watchEffect } from 'vue'
 import SlideEditor from '@/components/create/SlideEditor.vue'
-import { QuizEntry, QuestionEntry } from '@/lib/store/db'
-import { useObservable } from '@vueuse/rxjs'
+import SlideList from '@/components/create/SlideList.vue'
+import CreateLayout from '@/layouts/CreateLayout.vue'
 import { getQuestions$, getQuiz$ } from '@/lib/store/client'
+import { QuestionEntry, QuizEntry } from '@/lib/store/db'
+import { useObservable } from '@vueuse/rxjs'
+import { provide, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 
 const route = useRoute()
@@ -33,9 +33,13 @@ const quiz = useObservable<QuizEntry | undefined>(quiz$)
 
 const questions = useObservable(getQuestions$(quizId), { initialValue: [] as QuestionEntry[] })
 
-watchEffect(() => console.log(questions.value))
+const activeQuestion = ref<QuestionEntry | undefined>(questions.value?.[0] ?? undefined)
 
-const activeQuestion = ref(questions.value?.[0] || 0)
+watch(questions, (value, oldValue) => {
+  if (oldValue.length === 0 && value.length > 0) {
+    activeQuestion.value = value[0]
+  }
+})
 
 function onSlideChange(id: QuestionEntry['id']) {
   activeQuestion.value = questions.value.find((q) => q.id === id)!

@@ -1,0 +1,10 @@
+@mixin textarea-outline {
+  border: dashed 2px rgb(255 255 255 / 10%);
+  border-radius: 6px;
+  transition: border-color 0.25s ease;
+
+  &:hover,
+  &:focus {
+    border-color: rgb(255 255 255 / 20%);
+  }
+}
