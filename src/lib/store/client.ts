@@ -40,3 +40,18 @@ export async function addQuestion({ quizId, ...rest }: Partial<QuestionEntry> = 
     return nQ
   })
 }
+
+export function updateQuestionTitle(questionId: string, title: string) {
+  return db.question.update(questionId, { title })
+}
+
+export async function updateQuestionOption(questionId: string, index: number, value: string) {
+  return db.transaction('rw', db.question, async () => {
+    const question = await db.question.get(questionId)
+    if (!question) return
+    const options = question.options || []
+    const newOptions = Array.from({ length: 4 }).map((_, i) => options[i])
+    newOptions[index] = value
+    await db.question.update(question, { options: newOptions })
+  })
+}

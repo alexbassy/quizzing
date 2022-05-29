@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { onMounted$ } from '@/composable/useObservable'
+import { updateQuestionOption, updateQuestionTitle } from '@/lib/store/client'
 import { QuestionEntry } from '@/lib/store/db'
 import { useSubscription } from '@vueuse/rxjs'
 import { animationFrameScheduler, debounceTime, fromEvent, startWith } from 'rxjs'
@@ -11,18 +12,27 @@ const props = defineProps<{ question: QuestionEntry }>()
 const hasImage = ref(false)
 const imageSrc = computed(() => props.question.image)
 
-const title = computed(() => props.question.title || 'No title')
+const title = computed(() => props.question.title || '')
 
 const options = computed(() =>
   Array.from({ length: 4 }).map((_, i) => props.question.options?.[i] || '')
 )
 
-const slideTitle = ref<HTMLTextAreaElement>()
+async function handleTitleInput(ev: Event) {
+  resizeTitleInput()
+  await updateQuestionTitle(props.question.id!, (ev.target as HTMLTextAreaElement).value)
+}
 
+async function handleOptionInput(ev: Event, index: number) {
+  Stretchy.resize(ev.target as HTMLTextAreaElement)
+  await updateQuestionOption(props.question.id!, index, (ev.target as HTMLTextAreaElement).value)
+}
+
+// Resize question textarea on input and window resize
+const slideTitle = ref<HTMLTextAreaElement>()
 function resizeTitleInput() {
   Stretchy.resize(slideTitle.value)
 }
-
 useSubscription(
   fromEvent(window, 'resize')
     .pipe(startWith(onMounted$()), debounceTime(10, animationFrameScheduler))
@@ -42,15 +52,21 @@ useSubscription(
           <textarea
             type="text"
             :value="title"
-            placeholder="Title..."
+            placeholder="Question title"
             ref="slideTitle"
             class="title-textarea"
-            @input="resizeTitleInput"
+            @input="handleTitleInput"
           />
         </div>
         <ol class="options" ref="slideOptions">
-          <li v-for="(option, i) in options" class="options-item">
-            <input type="text" :value="option" :placeholder="`Option ${i}`" class="option-input" />
+          <li v-for="(option, index) in options" class="options-item">
+            <input
+              type="text"
+              :value="option"
+              :placeholder="`Option ${index}`"
+              class="option-input"
+              @input="handleOptionInput($event, index)"
+            />
           </li>
         </ol>
       </div>
@@ -60,17 +76,19 @@ useSubscription(
 
 <style lang="scss" scoped>
 .container {
-  height: 100%;
+  --placeholder-color: rgb(255 255 255 / 40%);
   position: relative;
-  margin: auto;
+
+  height: 100%;
   align-self: center;
+  margin: auto;
   justify-self: center;
 }
 
 .slide {
-  background-color: var(--background-color);
   width: 100%;
   height: 100%;
+  background-color: var(--background-color);
 }
 
 .image {
@@ -84,106 +102,97 @@ useSubscription(
 
 .content {
   position: relative;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  color: #fff;
   z-index: 2;
+  display: flex;
   width: var(--slide-content-width);
   height: 100vh;
-  background: var(--slide-content-gradient);
+  flex-direction: column;
+  justify-content: center;
   padding: 0 var(--slide-content-padding-right) 0 var(--slide-content-padding-left);
+  background: var(--slide-content-gradient);
+  color: #fff;
 }
 
 .count {
-  font-size: var(--slide-count-font-size);
   padding-left: 2rem;
-  font-weight: 600;
-  color: #ffffff80;
   margin: auto 0 0;
+  color: #ffffff80;
+  font-size: var(--slide-count-font-size);
+  font-weight: 600;
 }
 
 .title {
   display: flex;
-  font-size: var(--slide-title-font-size);
   margin: 0.5em 0;
+  font-size: var(--slide-title-font-size);
   font-weight: 800;
 }
 
 .title-textarea {
   @include textarea-outline;
-  word-break: break-word;
+  height: 1.7em;
   padding: 0.4rem 1rem 0.1rem;
   margin-left: -1rem;
+  word-break: break-word;
+
+  &::placeholder {
+    color: var(--placeholder-color);
+  }
 }
 
 .options {
-  list-style: none;
-  padding: 0 0 0 2rem;
-  counter-reset: option-counter;
+  padding: 0 0 3rem 2rem;
   margin-bottom: auto;
+  counter-reset: option-counter;
+  list-style: none;
 }
 
 .options-item {
   display: flex;
   align-items: center;
-  font-size: var(--slide-option-font-size);
   margin: 1.4rem 0;
-  transform-origin: left;
   counter-increment: option-counter;
+  font-size: var(--slide-option-font-size);
+  transform-origin: left;
   transition: 0.25s ease;
   transition-property: opacity, transform, text-shadow;
-  transform-origin: left;
-
-  ::placeholder {
-    color: rgb(255 255 255 / 40%);
-  }
 
   &::before {
-    content: counter(option-counter, upper-alpha);
-    margin-right: 1rem;
-    background: #ffffff21;
-    align-self: flex-start;
     display: flex;
-    flex-shrink: 0;
-    font-size: var(--slide-option-counter-font-size);
     width: var(--slide-option-counter-size);
     height: var(--slide-option-counter-size);
-    text-align: center;
+    flex-shrink: 0;
+    align-self: flex-start;
+    margin-right: 1rem;
+    background: #ffffff21;
+    border-radius: 5px;
+    content: counter(option-counter, upper-alpha);
+    font-size: var(--slide-option-counter-font-size);
     place-content: center;
     place-items: center;
-    border-radius: 5px;
+    text-align: center;
     transition: 0.25s ease;
     transition-property: color, background-color, box-shadow;
     will-change: color, background-color;
   }
 
-  &.-answerShown.-correct {
+  &.-correct {
     &::before {
-      color: #ffffff;
       background-color: #28bb2e;
       box-shadow: 0 0 20px #28bb2e85, 0 0 60px #28bb2e50;
-    }
-  }
-
-  &.-answerShown {
-    opacity: 0.2;
-    text-shadow: 0 0 30px rgb(0 0 0 / 100%);
-
-    &.-correct {
-      opacity: 1;
+      color: #ffffff;
     }
   }
 }
 
 .option-input {
   @include textarea-outline;
-  font-size: var(--slide-option-font-size);
   padding: 0.18rem 0.5rem;
   margin-left: -0.5rem;
+  font-size: var(--slide-option-font-size);
 
-  ::placeholder {
-    color: rgb(255 255 255 / 40%);
+  &::placeholder {
+    color: var(--placeholder-color);
   }
 }
 </style>

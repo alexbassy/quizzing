@@ -15,7 +15,7 @@ function setActiveSlide(questionId: string) {
 
 async function addQuestion() {
   const backgroundColor = randomColor({ luminosity: 'dark' })
-  await client.addQuestion({ title: 'Title', quizId: quizId!, backgroundColor })
+  await client.addQuestion({ quizId: quizId!, backgroundColor })
 }
 </script>
 
@@ -49,18 +49,18 @@ async function addQuestion() {
 
 <style lang="scss" scoped>
 .list-container {
+  position: relative;
   height: 100%;
   padding-bottom: 2.5rem;
-  position: relative;
 
   &::before,
   &::after {
-    content: '';
     position: absolute;
+    z-index: 2;
     width: 100%;
     height: 1.5rem;
+    content: '';
     pointer-events: none;
-    z-index: 2;
   }
 
   &::before {
@@ -69,25 +69,25 @@ async function addQuestion() {
   }
 
   &::after {
-    background: linear-gradient(to top, #000000aa, #00000000);
     bottom: 3.63rem; // I don't understand this
+    background: linear-gradient(to top, #000000aa, #00000000);
   }
 }
 .list {
-  height: 100%;
-  overflow-y: auto;
   max-width: 100%;
+  height: 100%;
   padding: 1.5rem;
   margin-bottom: 1.5rem;
+  overflow-y: auto;
 }
 .item {
-  width: 100%;
   position: relative;
+  overflow: hidden;
+  width: 100%;
+  margin-bottom: 1.5rem;
   aspect-ratio: 4 / 3;
   background: var(--background-color);
-  margin-bottom: 1.5rem;
   border-radius: 8px;
-  overflow: hidden;
   cursor: pointer;
   transition: 0.25s ease;
   transition-property: box-shadow;
