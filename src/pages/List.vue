@@ -7,6 +7,7 @@
           <span>Questions</span>
           <span>Created</span>
           <span>Last updated</span>
+          <span></span>
         </div>
       </header>
       <ol class="list" v-if="quizzes?.length">
@@ -16,7 +17,14 @@
             <span>{{ quiz.questions?.length ?? 0 }}</span>
             <span>{{ formatRelativeTime(quiz.createdAt!) }}</span>
             <span>{{ formatRelativeTime(quiz.updatedAt!) }}</span>
-            <span><button @click.prevent="remove(quiz.id!)">Delete</button></span>
+            <span
+              ><button
+                class="delete-button"
+                @click.prevent="remove(quiz.id!)"
+                :aria-label="`Delete ${quiz.name}`"
+              >
+                <RubbishIcon /></button
+            ></span>
           </RouterLink>
         </Motion>
       </ol>
@@ -26,6 +34,7 @@
 </template>
 
 <script lang="ts" setup>
+import RubbishIcon from '@/components/icons/RubbishIcon.vue'
 import CreateLayout from '@/layouts/CreateLayout.vue'
 import { formatRelativeTime } from '@/lib/relative-time'
 import { deleteQuiz, getQuizzes$ } from '@/lib/store/client'
@@ -44,7 +53,7 @@ async function remove(id: string) {
 <style lang="scss" scoped>
 .table {
   --columns: repeat(4, 2fr) 1fr;
-
+  padding: 0 1.5rem;
   margin-top: 3rem;
 }
 
@@ -54,14 +63,20 @@ async function remove(id: string) {
   color: rgb(255 255 255 / 0.35);
   font-weight: bold;
   grid-template-columns: var(--columns);
+
+  > span:not(:first-of-type) {
+    text-align: center;
+  }
+  > span:last-of-type {
+    display: flex;
+    justify-content: flex-end;
+  }
 }
-.table {
-  padding: 0 1.5rem;
-}
+
 .list {
   padding: 0.5rem;
   margin: 1rem 2rem 0;
-  background-color: rgb(255 255 255 / 0.75%);
+  background-color: rgb(255 255 255 / 5%);
   border-radius: 10px;
 }
 
@@ -81,17 +96,58 @@ async function remove(id: string) {
 .link {
   display: grid;
   width: 100%;
-  padding: 1rem;
+  align-items: center;
+  padding: 0.85rem 1rem;
   border-radius: 8px;
   grid-template-columns: var(--columns);
   transition: background-color 0.15s ease;
 
   &:hover {
-    background-color: rgb(255 255 255 / 0.75%);
+    background-color: rgb(255 255 255 / 7.5%);
   }
 
   &:focus-visible {
     box-shadow: inset 0 0 0 2px rgba(255 255 255 / 0.1);
+  }
+
+  > span:not(:first-of-type) {
+    text-align: center;
+  }
+  > span:last-of-type {
+    display: flex;
+    justify-content: flex-end;
+  }
+}
+
+.delete-button {
+  --background-alpha: 0%;
+  --foreground-alpha: 20%;
+  display: flex;
+  width: 2rem;
+  height: 2rem;
+  align-items: center;
+  justify-content: center;
+  background: rgb(255 255 255 / var(--background-alpha));
+  border-radius: 50%;
+  color: rgb(255 255 255 / var(--foreground-alpha));
+  cursor: pointer;
+  transition: 0.25s ease;
+  transition-property: color, background-color, transform;
+
+  .item:hover & {
+    --background-alpha: 10%;
+    --foreground-alpha: 30%;
+
+    &:hover {
+      --background-alpha: 20%;
+      --foreground-alpha: 50%;
+    }
+
+    &:active {
+      --background-alpha: 10%;
+      --foreground-alpha: 30%;
+      transform: scale(0.95);
+    }
   }
 }
 </style>

@@ -7,6 +7,7 @@ import { useObservable } from '@vueuse/rxjs'
 import randomColor from 'randomcolor'
 import { map, switchMap } from 'rxjs/operators'
 import { defineProps, inject, ref } from 'vue'
+import RubbishIcon from '../icons/RubbishIcon.vue'
 
 const props = defineProps<{ questions: QuestionEntry[]; activeQuestionId?: string }>()
 const quizId = inject<string>('quizId')
@@ -34,6 +35,20 @@ async function addQuestion() {
     }
   }, 300)
 }
+
+async function deleteQuestion(questionId: string) {
+  if (!quizId || !questionId) {
+    console.warn('Attempting to delete quiz; quiz ID or question ID is undefined')
+    return
+  }
+  if (props.activeQuestionId === questionId) {
+    const questionIndex = props.questions.findIndex((question) => question.id === questionId)
+    const nextIndex =
+      props.questions[questionIndex + 1]?.id || props.questions[questionIndex - 1]?.id || null
+    emit('active-change', nextIndex)
+  }
+  await client.deleteQuestion(quizId, questionId)
+}
 </script>
 
 <template>
@@ -42,7 +57,7 @@ async function addQuestion() {
       <li
         class="item"
         :style="`--background-color: ${question.backgroundColor || 'gray'};`"
-        v-for="question in questions"
+        v-for="(question, index) in questions"
         :key="question.id"
         tabindex="0"
         role="button"
@@ -51,6 +66,13 @@ async function addQuestion() {
         @keyup.space.prevent="setActiveSlide(question.id!)"
         :class="{ '-active': activeQuestionId === question.id }"
       >
+        <button
+          class="delete-button"
+          :aria-label="`Delete question ${index}`"
+          @click.stop="deleteQuestion(question.id!)"
+        >
+          <RubbishIcon />
+        </button>
         <img
           v-if="question.image"
           class="slide-image"
@@ -106,6 +128,7 @@ async function addQuestion() {
   margin-bottom: 1.5rem;
   overflow-y: auto;
 }
+
 .item {
   position: relative;
   display: flex;
@@ -124,10 +147,6 @@ async function addQuestion() {
     box-shadow: 0 0 0 0.25rem blue;
   }
 
-  &:active {
-    transform: scale(0.975);
-  }
-
   &.-active {
     box-shadow: 0 0 0 0.5rem #ffffff20;
   }
@@ -140,6 +159,43 @@ async function addQuestion() {
 
     &:active {
       background-color: rgb(25 25 25);
+      transform: scale(0.975);
+    }
+  }
+}
+
+.delete-button {
+  --background-alpha: 0%;
+  --foreground-alpha: 0%;
+
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  display: flex;
+  width: 1.85rem;
+  height: 1.85rem;
+  align-items: center;
+  justify-content: center;
+  background-color: rgb(0 0 0 / var(--background-alpha));
+  border-radius: 5px;
+  color: rgb(255 255 255 / var(--foreground-alpha));
+  cursor: pointer;
+  transition: 0.25s ease;
+  transition-property: color, background-color, transform;
+
+  .item:hover & {
+    --background-alpha: 10%;
+    --foreground-alpha: 30%;
+
+    &:hover {
+      --background-alpha: 20%;
+      --foreground-alpha: 70%;
+    }
+
+    &:active {
+      --background-alpha: 10%;
+      --foreground-alpha: 30%;
+      transform: scale(0.95);
     }
   }
 }

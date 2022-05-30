@@ -50,6 +50,19 @@ export async function addQuestion({ quizId, ...rest }: Partial<QuestionEntry> = 
   })
 }
 
+export async function deleteQuestion(quizId: string, questionId: string) {
+  return db.transaction('rw', db.quiz, db.question, async () => {
+    const removeQuestionFromQuiz = db.quiz.get(quizId).then((quiz) =>
+      quiz
+        ? db.quiz.update(quiz, {
+            questions: quiz?.questions?.filter((id) => id !== questionId) ?? [],
+          })
+        : null
+    )
+    return Promise.all([removeQuestionFromQuiz, db.question.delete(questionId)])
+  })
+}
+
 export function updateQuestionTitle(questionId: string, title: string) {
   return db.question.update(questionId, { title })
 }
