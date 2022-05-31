@@ -9,6 +9,8 @@
     rgb(0 0 0 / 0%) 100%
   );
 
+  --create-header-font-size: 1.6rem;
+
   --slide-title-font-size: 4vw;
   --slide-count-font-size: 1.25vw;
 
@@ -16,5 +18,5 @@
   --slide-option-counter-font-size: 2vw;
   --slide-option-counter-size: 1.5em;
 
-  --placeholder-color: rgb(255 255 255 / 75%);
+  --placeholder-color: rgb(255 255 255 / 50%);
 }

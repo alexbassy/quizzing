@@ -1,6 +1,6 @@
 import { liveQuery } from 'dexie'
 import { from, map } from 'rxjs'
-import { db, QuestionEntry } from './db'
+import { db, QuestionEntry, QuizEntry } from './db'
 
 export function getQuizzes$() {
   return from(liveQuery(() => db.quiz.toArray())).pipe(
@@ -16,8 +16,12 @@ export function addQuiz() {
   return db.quiz.add({ name: 'Untitled' })
 }
 
-export async function deleteQuiz(id: string) {
-  db.transaction('rw', db.quiz, db.question, async () => {
+export function updateQuizTitle(quizId: string, newName: string) {
+  return db.quiz.update(quizId, { name: newName })
+}
+
+export function deleteQuiz(id: string) {
+  return db.transaction('rw', db.quiz, db.question, async () => {
     await db.question.where({ quizId: id }).modify((_value, ref) => {
       // @ts-ignore
       delete ref.value

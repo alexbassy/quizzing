@@ -1,5 +1,11 @@
 <template>
   <CreateLayout title="Quizzes">
+    <template #title>
+      <h1 class="title">Create</h1>
+    </template>
+    <template #action>
+      <button @click="createQuiz" class="add-button"><AddIcon /> Create quiz</button>
+    </template>
     <section class="table">
       <header>
         <div class="titles">
@@ -34,16 +40,21 @@
 </template>
 
 <script lang="ts" setup>
+import AddIcon from '@/components/icons/AddIcon.vue'
 import RubbishIcon from '@/components/icons/RubbishIcon.vue'
 import CreateLayout from '@/layouts/CreateLayout.vue'
 import { formatRelativeTime } from '@/lib/relative-time'
-import { deleteQuiz, getQuizzes$ } from '@/lib/store/client'
+import { addQuiz, deleteQuiz, getQuizzes$ } from '@/lib/store/client'
 import { QuizEntry } from '@/lib/store/db'
 import { useObservable } from '@vueuse/rxjs'
 import { Motion } from 'motion/vue'
 import { RouterLink } from 'vue-router'
 
 const quizzes = useObservable<QuizEntry[]>(getQuizzes$())
+
+async function createQuiz() {
+  await addQuiz()
+}
 
 async function remove(id: string) {
   await deleteQuiz(id)
@@ -55,6 +66,39 @@ async function remove(id: string) {
   --columns: repeat(4, 2fr) 1fr;
   padding: 0 1.5rem;
   margin-top: 3rem;
+}
+
+.title {
+  display: inline-block;
+  margin: 0 auto 0 0;
+  font-size: var(--create-header-font-size);
+  font-weight: normal;
+}
+
+.add-button {
+  --background-alpha: 5%;
+  --foreground-alpha: 60%;
+  display: flex;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1rem;
+  background-color: #ef476f;
+  border-radius: 6px;
+  color: #fff;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.25s ease;
+  transition-property: color, background-color, transform;
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  svg {
+    margin-right: 0.5rem;
+    color: rgb(255 255 255 / var(--foreground-alpha));
+  }
 }
 
 .titles {
