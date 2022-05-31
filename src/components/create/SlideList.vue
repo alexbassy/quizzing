@@ -53,7 +53,7 @@ async function deleteQuestion(questionId: string) {
 
 <template>
   <div class="list-container">
-    <ol class="list" ref="listElem">
+    <ol class="list" ref="listElem" v-auto-animate>
       <li
         class="item"
         :style="`--background-color: ${question.backgroundColor || 'gray'};`"
@@ -65,6 +65,7 @@ async function deleteQuestion(questionId: string) {
         @keyup.enter="setActiveSlide(question.id!)"
         @keyup.space.prevent="setActiveSlide(question.id!)"
         :class="{ '-active': activeQuestionId === question.id }"
+        draggable="true"
       >
         <button
           class="delete-button"

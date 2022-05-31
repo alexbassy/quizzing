@@ -74,6 +74,11 @@
     escape-string-regexp "^4.0.0"
     rollup-plugin-node-polyfills "^0.2.1"
 
+"@formkit/auto-animate@^1.0.0-beta.1":
+  version "1.0.0-beta.1"
+  resolved "https://registry.yarnpkg.com/@formkit/auto-animate/-/auto-animate-1.0.0-beta.1.tgz#aec5fd2ea5e499ceb7eb117c7fd1217a7f100748"
+  integrity sha512-I3OWOBaPZKSJL4bsooXI8kC3q7bcgibD2oML0P/Lir6MnbvUe/0/7EH8br024juvM/Ulm9C9xGx9CJUQYrOWSA==
+
 "@iarna/toml@^2.2.5":
   version "2.2.5"
   resolved "https://registry.yarnpkg.com/@iarna/toml/-/toml-2.2.5.tgz#b32366c89b43c6f8cefbdefac778b9c828e3ba8c"
@@ -2676,6 +2681,11 @@ vue-router@4:
   integrity sha512-xa+pIN9ZqORdIW1MkN2+d9Ui2pCM1b/UMgwYUCZOiFYHAvz/slKKBDha8DLrh5aCG/RibtrpyhKjKOZ85tYyWg==
   dependencies:
     "@vue/devtools-api" "^6.0.0"
+
+vue-slicksort@^2.0.0-alpha.5:
+  version "2.0.0-alpha.5"
+  resolved "https://registry.yarnpkg.com/vue-slicksort/-/vue-slicksort-2.0.0-alpha.5.tgz#b1c09ed1882105001b1ea5f7fea0e81efadf3c70"
+  integrity sha512-OETVkNwC/w7nfW/5xKl5wnvuKYG7Ml+lFOxbcqo0ETpcgNv30e/+rkwaXakb6PVkpr+v+1jbKP8nbkYObtyooQ==
 
 vue-tsc@^0.34.7:
   version "0.34.13"
