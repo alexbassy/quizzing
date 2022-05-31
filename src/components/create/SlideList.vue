@@ -53,7 +53,7 @@ async function deleteQuestion(questionId: string) {
 
 <template>
   <div class="list-container">
-    <ol class="list" ref="listElem">
+    <ol class="list" ref="listElem" v-auto-animate>
       <li
         class="item"
         :style="`--background-color: ${question.backgroundColor || 'gray'};`"
