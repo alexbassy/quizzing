@@ -23,6 +23,7 @@
     "rxjs": "^7.5.5",
     "stretchy": "^2.0.1",
     "vue": "^3.2.25",
+    "vue-draggable-next": "^2.1.1",
     "vue-router": "4",
     "vue-slicksort": "^2.0.0-alpha.5",
     "worktop": "^0.7.3"

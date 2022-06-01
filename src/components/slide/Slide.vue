@@ -2,7 +2,7 @@
 import { FADE, SLIDE } from '@/lib/motion-variants'
 import { IQuestion } from '@/lib/questions'
 import { Motion, Presence } from 'motion/vue'
-import { computed, defineProps, provide } from 'vue'
+import { computed, provide } from 'vue'
 import SlideImage from './SlideImage.vue'
 import SlideOption from './SlideOption.vue'
 
@@ -70,36 +70,36 @@ const slideHidden = SLIDE.hidden
 <style lang="scss" scoped>
 .text-content {
   position: relative;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  color: #fff;
   z-index: 2;
+  display: flex;
   width: var(--slide-content-width);
   height: 100vh;
-  background: var(--slide-content-gradient);
+  flex-direction: column;
+  justify-content: center;
   padding: 0 var(--slide-content-padding-right) 0 var(--slide-content-padding-left);
+  background: var(--slide-content-gradient);
+  color: #fff;
 }
 
 .title {
-  font-size: var(--slide-title-font-size);
   margin: 0.5em 0;
+  font-size: var(--slide-title-font-size);
   font-weight: 800;
   word-break: break-word;
 }
 
 .count {
-  font-size: var(--slide-count-font-size);
   padding-left: 2rem;
-  font-weight: 600;
-  color: #ffffff80;
   margin: auto 0 0;
+  color: #ffffff80;
+  font-size: var(--slide-count-font-size);
+  font-weight: 600;
 }
 
 .options {
-  list-style: none;
   padding: 0 0 0 2rem;
-  counter-reset: option-counter;
   margin-bottom: auto;
+  counter-reset: option-counter;
+  list-style: none;
 }
 </style>

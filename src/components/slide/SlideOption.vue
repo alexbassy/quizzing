@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, defineProps, inject } from 'vue'
+import { computed, inject } from 'vue'
 import { Motion } from 'motion/vue'
 import { OPTION } from '@/lib/motion-variants'
 import { IQuestionOption } from '@/lib/questions'
@@ -34,33 +34,33 @@ const slideHidden = OPTION.hidden
 
 <style lang="scss" scoped>
 .container {
-  font-size: var(--slide-option-font-size);
   margin: 1.4rem 0;
-  transform-origin: left;
   counter-increment: option-counter;
+  font-size: var(--slide-option-font-size);
+  transform-origin: left;
 }
 
 .option {
   display: flex;
   align-items: center;
+  transform-origin: left;
   transition: 0.25s ease;
   transition-property: opacity, transform, text-shadow;
-  transform-origin: left;
 
   &::before {
-    content: counter(option-counter, upper-alpha);
-    margin-right: 1rem;
-    background: #ffffff21;
-    align-self: flex-start;
     display: flex;
-    flex-shrink: 0;
-    font-size: var(--slide-option-counter-font-size);
     width: var(--slide-option-counter-size);
     height: var(--slide-option-counter-size);
-    text-align: center;
+    flex-shrink: 0;
+    align-self: flex-start;
+    margin-right: 1rem;
+    background: #ffffff21;
+    border-radius: 5px;
+    content: counter(option-counter, upper-alpha);
+    font-size: var(--slide-option-counter-font-size);
     place-content: center;
     place-items: center;
-    border-radius: 5px;
+    text-align: center;
     transition: 0.25s ease;
     transition-property: color, background-color, box-shadow;
     will-change: color, background-color;
@@ -68,9 +68,9 @@ const slideHidden = OPTION.hidden
 
   &.-answerShown.-correct {
     &::before {
-      color: #ffffff;
       background-color: #28bb2e;
       box-shadow: 0 0 20px #28bb2e85, 0 0 60px #28bb2e50;
+      color: #ffffff;
     }
   }
 

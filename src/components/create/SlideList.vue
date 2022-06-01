@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { VueDraggableNext } from 'vue-draggable-next'
 import { onMounted$ } from '@/composable/useObservable'
 import * as client from '@/lib/store/client'
 import { getQuestions$ } from '@/lib/store/client'
@@ -6,7 +7,7 @@ import { QuestionEntry } from '@/lib/store/db'
 import { useObservable } from '@vueuse/rxjs'
 import randomColor from 'randomcolor'
 import { map, switchMap } from 'rxjs/operators'
-import { defineProps, inject, ref } from 'vue'
+import { inject, ref } from 'vue'
 import RubbishIcon from '../icons/RubbishIcon.vue'
 
 const props = defineProps<{ questions: QuestionEntry[]; activeQuestionId?: string }>()
@@ -49,50 +50,70 @@ async function deleteQuestion(questionId: string) {
   }
   await client.deleteQuestion(quizId, questionId)
 }
+
+const drag = ref(false)
+const dragOptions = {
+  animation: 200,
+  group: 'description',
+  disabled: false,
+  ghostClass: 'ghost',
+}
 </script>
 
 <template>
   <div class="list-container">
-    <ol class="list" ref="listElem" v-auto-animate>
-      <li
-        class="item"
-        :style="`--background-color: ${question.backgroundColor || 'gray'};`"
-        v-for="(question, index) in questions"
-        :key="question.id"
-        tabindex="0"
-        role="button"
-        @click="setActiveSlide(question.id!)"
-        @keyup.enter="setActiveSlide(question.id!)"
-        @keyup.space.prevent="setActiveSlide(question.id!)"
-        :class="{ '-active': activeQuestionId === question.id }"
-        draggable="true"
-      >
-        <button
-          class="delete-button"
-          :aria-label="`Delete question ${index}`"
-          @click.stop="deleteQuestion(question.id!)"
+    <!-- <ol class="list" ref="listElem" v-auto-animate> -->
+    <vue-draggable-next
+      tag="ol"
+      class="list"
+      :component-data="{
+        attrs: {
+          class: 'list',
+        },
+      }"
+      v-model="questions"
+    >
+      <transition-group>
+        <li
+          class="item"
+          :style="`--background-color: ${question.backgroundColor || 'gray'};`"
+          tabindex="0"
+          role="button"
+          v-for="(question, index) in questions"
+          :key="question.id"
+          @click="setActiveSlide(question.id!)"
+          @keyup.enter="setActiveSlide(question.id!)"
+          @keyup.space.prevent="setActiveSlide(question.id!)"
+          :class="{ '-active': activeQuestionId === question.id }"
         >
-          <RubbishIcon />
-        </button>
-        <img
-          v-if="question.image"
-          class="slide-image"
-          :src="`/slide-images/${question.image}`"
-          :alt="question.title"
-          loading="lazy"
-        />
-        <div class="slide-title">{{ titles[question.id!] }}</div>
-      </li>
-      <li
-        class="item -addQuestion"
-        tabindex="0"
-        role="button"
-        aria-label="Add question"
-        @click="addQuestion"
-      >
-        +
-      </li>
-    </ol>
+          <button
+            class="delete-button"
+            :aria-label="`Delete question ${question.name}`"
+            @click.stop="deleteQuestion(question.id!)"
+          >
+            <RubbishIcon />
+          </button>
+          <img
+            v-if="question.image"
+            class="slide-image"
+            :src="`/slide-images/${question.image}`"
+            :alt="question.title"
+            loading="lazy"
+          />
+          <div class="slide-title">{{ titles[question.id!] }}</div>
+        </li>
+      </transition-group>
+    </vue-draggable-next>
+    <li
+      class="item -addQuestion"
+      tabindex="0"
+      role="button"
+      aria-label="Add question"
+      @click="addQuestion"
+    >
+      +
+    </li>
+    <!-- </ol> -->
   </div>
 </template>
 
@@ -124,7 +145,7 @@ async function deleteQuestion(questionId: string) {
 }
 .list {
   max-width: 100%;
-  height: 100%;
+  /* height: 100%; */
   padding: 1.5rem;
   margin-bottom: 1.5rem;
   overflow-y: auto;
@@ -211,5 +232,13 @@ async function deleteQuestion(questionId: string) {
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+.flip-list-move {
+  transition: transform 0.5s;
+}
+.ghost {
+  background: #c8ebfb;
+  opacity: 0.5;
 }
 </style>
