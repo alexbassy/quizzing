@@ -36,13 +36,13 @@ async function updateQuiz() {
 
 .contentWrap {
   display: flex;
-  height: 100%;
+  height: calc(100% - var(--create-header-height));
   flex: 1;
 }
 
 .header {
   display: flex;
-  height: 4rem;
+  height: var(--create-header-height);
   align-items: center;
   padding: 1.2rem 1.5rem;
 }

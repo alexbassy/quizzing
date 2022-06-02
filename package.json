@@ -8,7 +8,9 @@
     "build": "vue-tsc --noEmit && vite build",
     "preview": "vite preview",
     "worker:build": "node build-worker.js",
-    "worker:dev": "miniflare --watch dist-worker/handler.js"
+    "worker:dev": "miniflare --watch dist-worker/handler.js",
+    "worker:publish": "wrangler publish dist-worker/handler.js",
+    "worker:all": "yarn worker:build && yarn worker:publish"
   },
   "dependencies": {
     "@clerk/clerk-js": "^3.12.0",
@@ -18,10 +20,12 @@
     "dayjs": "^1.11.2",
     "dexie": "^3.2.2",
     "dexie-observable": "^3.0.0-beta.11",
+    "dotenv": "^16.0.1",
     "motion": "^10.8.1",
     "randomcolor": "^0.6.2",
     "rxjs": "^7.5.5",
     "stretchy": "^2.0.1",
+    "unsplash-js": "^7.0.15",
     "vue": "^3.2.25",
     "vue-router": "4",
     "vue-slicksort": "^2.0.0-alpha.5",
@@ -33,7 +37,7 @@
     "@types/randomcolor": "^0.5.6",
     "@vitejs/plugin-vue": "^2.3.3",
     "esbuild": "^0.14.39",
-    "miniflare": "^2.4.0",
+    "miniflare": "2.2.0",
     "postcss": "8",
     "postcss-html": "^1.4.1",
     "sass": "^1.51.0",

@@ -7,10 +7,13 @@ import { useSubscription } from '@vueuse/rxjs'
 import { combineLatest, fromEvent, startWith } from 'rxjs'
 import * as Stretchy from 'stretchy'
 import { computed, nextTick, ref } from 'vue'
+import PictureIcon from '../icons/PictureIcon.vue'
+import ImagePicker from './ImagePicker.vue'
 
 const props = defineProps<{ question: QuestionEntry }>()
 
 const hasImage = ref(false)
+const imagePickerOpen = ref(false)
 const imageSrc = computed(() => props.question.image)
 
 const title = computed(() => props.question.title || '')
@@ -46,6 +49,10 @@ useSubscription(
   <div class="container">
     <div class="slide" :style="`--background-color: ${question.backgroundColor};`">
       <img v-if="hasImage" class="image" :src="imageSrc" />
+      <button class="change-background" @click="imagePickerOpen = !imagePickerOpen">
+        <PictureIcon /> Change background
+      </button>
+      <image-picker :is-open="imagePickerOpen" />
       <div class="content">
         <span class="count">&times;</span>
         <div class="title">
@@ -84,9 +91,38 @@ useSubscription(
 }
 
 .slide {
+  position: relative;
   width: 100%;
   height: 100%;
   background-color: var(--background-color);
+}
+
+.change-background {
+  --background-alpha: 20%;
+
+  position: absolute;
+  right: 1rem;
+  bottom: 1rem;
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  background-color: rgb(0 0 0 / var(--background-alpha));
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  gap: 0.5rem;
+  transition: 0.25s ease;
+  transition-property: background-color, transform;
+
+  &:hover {
+    --background-alpha: 30%;
+  }
+
+  &:active {
+    --background-alpha: 40%;
+    transform: scale(0.975);
+  }
 }
 
 .image {
@@ -103,7 +139,7 @@ useSubscription(
   z-index: 2;
   display: flex;
   width: var(--slide-content-width);
-  height: 100vh;
+  height: calc(100vh - var(--create-header-height));
   flex-direction: column;
   justify-content: center;
   padding: 0 var(--slide-content-padding-right) 0 var(--slide-content-padding-left);
@@ -139,7 +175,7 @@ useSubscription(
 }
 
 .options {
-  padding: 0 0 3rem 2rem;
+  padding: 0 0 0 2rem;
   margin-bottom: auto;
   counter-reset: option-counter;
   list-style: none;

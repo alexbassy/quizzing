@@ -1,6 +1,8 @@
 name = "quizzing"
-type = "javascript"
 compatibility_date = "2022-05-22"
+
+[miniflare]
+env_path = ".env.local"
 
 [build]
 command = "yarn worker:build"
