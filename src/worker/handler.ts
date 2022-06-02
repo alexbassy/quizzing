@@ -2,7 +2,8 @@ import { Router } from 'worktop'
 import * as CORS from 'worktop/cors'
 import { listen } from 'worktop/cache'
 import { createApi } from 'unsplash-js'
-import { Photos } from 'unsplash-js/dist/methods/search/types/response'
+import { type Photos } from 'unsplash-js/dist/methods/search/types/response'
+import { IUnsplashSearchResult } from './types'
 
 declare var UNSPLASH_ACCESS_KEY: string
 
@@ -33,7 +34,7 @@ API.add('GET', '/backgrounds/search', async (req, res) => {
     orientation: 'landscape',
     perPage: 20,
   })
-  const slimResults = (results.response as Photos).results.map((item) => {
+  const slimResults: IUnsplashSearchResult[] = (results.response as Photos).results.map((item) => {
     return {
       id: item.id,
       blurHash: item.blur_hash,

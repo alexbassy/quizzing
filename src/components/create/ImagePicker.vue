@@ -1,16 +1,17 @@
 <script lang="ts" setup>
+import { IUnsplashSearchResult } from '@/worker/types'
 import { ref } from 'vue'
 
 const props = defineProps<{ isOpen: boolean }>()
 
 const query = ref<string>('')
-const results = ref<any[]>([])
+const results = ref<IUnsplashSearchResult[]>([])
 
 async function searchPictures() {
   // todo: sanitise this
   const response = await fetch(
     `https://quizzing.abass.workers.dev/backgrounds/search?query=${query.value}`
-  ).then((res) => res.json())
+  ).then((res) => res.json() as Promise<IUnsplashSearchResult[]>)
   console.log(response)
   results.value = response
 }
@@ -27,16 +28,18 @@ async function searchPictures() {
         autofocus
       />
     </form>
-    <ul v-if="results.length" class="results" v-auto-animate>
-      <li v-for="result in results" class="result" :key="result.id">
-        <img
-          :src="result.urls.thumb"
-          width="100"
-          :style="`background-color: ${result.color}`"
-          :alt="result.alt_description"
-        />
-      </li>
-    </ul>
+    <div class="results">
+      <ul v-if="results.length" class="results-list">
+        <li v-for="result in results" class="result" :key="result.id">
+          <img
+            :src="result.urls.thumb"
+            :style="`background-color: ${result.color}`"
+            :alt="result.description ?? ''"
+            class="result-image"
+          />
+        </li>
+      </ul>
+    </div>
   </div>
 </template>
 
@@ -90,15 +93,25 @@ async function searchPictures() {
 .results {
   flex: 1;
   margin-top: 1rem;
-  column-count: 4;
-  column-gap: 0.5rem;
   overflow-y: auto;
+}
+
+.results-list {
+  column-count: 3;
+  column-gap: 0.5rem;
 }
 
 .result {
   display: flex;
+  display: inline-block;
   overflow: hidden;
   margin-bottom: 0.5rem;
   border-radius: 3px;
+  font-size: 0;
+}
+
+.result-image {
+  width: 100%;
+  height: auto;
 }
 </style>
