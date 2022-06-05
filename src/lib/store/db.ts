@@ -19,7 +19,8 @@ export interface QuestionEntry {
   options?: string[]
   correctOption?: string // 0-3
   backgroundColor?: string
-  image?: string // blob?
+  image?: Blob
+  thumbnailImage?: Blob
   imageFlipped?: boolean
   imageObscurred?: boolean
 }

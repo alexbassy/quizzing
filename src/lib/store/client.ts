@@ -1,6 +1,6 @@
 import { liveQuery } from 'dexie'
-import { from, map } from 'rxjs'
-import { db, QuestionEntry, QuizEntry } from './db'
+import { from, map, Observable } from 'rxjs'
+import { db, QuestionEntry } from './db'
 
 export function getQuizzes$() {
   return from(liveQuery(() => db.quiz.toArray())).pipe(
@@ -28,6 +28,10 @@ export function deleteQuiz(id: string) {
     })
     return db.quiz.delete(id)
   })
+}
+
+export function getQuestion$(questionId: string): Observable<QuestionEntry | undefined> {
+  return from(liveQuery(() => db.question.get(questionId)))
 }
 
 export function getQuestions$(quizId: string) {
@@ -80,4 +84,8 @@ export async function updateQuestionOption(questionId: string, index: number, va
     newOptions[index] = value
     await db.question.update(question, { options: newOptions })
   })
+}
+
+export async function updateQuestionImage(questionId: string, image?: Blob, thumbnail?: Blob) {
+  return db.question.update(questionId, { image, thumbnail })
 }

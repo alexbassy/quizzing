@@ -4,6 +4,8 @@ import { ref } from 'vue'
 
 const props = defineProps<{ isOpen: boolean }>()
 
+defineEmits<{ (e: 'select', image: IUnsplashSearchResult): void }>()
+
 const query = ref<string>('')
 const results = ref<IUnsplashSearchResult[]>([])
 
@@ -12,7 +14,6 @@ async function searchPictures() {
   const response = await fetch(
     `https://quizzing.abass.workers.dev/backgrounds/search?query=${query.value}`
   ).then((res) => res.json() as Promise<IUnsplashSearchResult[]>)
-  console.log(response)
   results.value = response
 }
 </script>
@@ -36,6 +37,8 @@ async function searchPictures() {
             :style="`background-color: ${result.color}`"
             :alt="result.description ?? ''"
             class="result-image"
+            tabindex="0"
+            @click="$emit('select', result)"
           />
         </li>
       </ul>

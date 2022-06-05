@@ -1,36 +1,46 @@
 <script lang="ts" setup>
 import { onMounted$ } from '@/composable/useObservable'
 import { watch$ } from '@/lib/observables'
-import { updateQuestionOption, updateQuestionTitle } from '@/lib/store/client'
-import { QuestionEntry } from '@/lib/store/db'
-import { useSubscription } from '@vueuse/rxjs'
-import { combineLatest, fromEvent, startWith } from 'rxjs'
+import {
+  getQuestion$,
+  updateQuestionImage,
+  updateQuestionOption,
+  updateQuestionTitle,
+} from '@/lib/store/client'
+import { IUnsplashSearchResult } from '@/worker/types'
+import { useObservable, useSubscription } from '@vueuse/rxjs'
+import { combineLatest, fromEvent, startWith, switchMap } from 'rxjs'
 import * as Stretchy from 'stretchy'
 import { computed, nextTick, ref } from 'vue'
 import PictureIcon from '../icons/PictureIcon.vue'
 import ImagePicker from './ImagePicker.vue'
 
-const props = defineProps<{ question: QuestionEntry }>()
+const props = defineProps<{ questionId: string }>()
 
-const hasImage = ref(false)
 const imagePickerOpen = ref(false)
-const imageSrc = computed(() => props.question.image)
 
-const title = computed(() => props.question.title || '')
-const id$ = watch$(() => props.question.id)
+const id$ = watch$(() => props.questionId)
+const question = useObservable(id$.pipe(switchMap((id) => getQuestion$(id))))
+
+const hasImage = computed(() => Boolean(question.value?.image))
+const imageSrc = computed(() =>
+  question.value?.image ? URL.createObjectURL(question.value?.image) : undefined
+)
+
+const title = computed(() => question.value?.title || '')
 
 const options = computed(() =>
-  Array.from({ length: 4 }).map((_, i) => props.question.options?.[i] || '')
+  Array.from({ length: 4 }).map((_, i) => question.value?.options?.[i] || '')
 )
 
 async function handleTitleInput(ev: Event) {
   resizeTitleInput()
-  await updateQuestionTitle(props.question.id!, (ev.target as HTMLTextAreaElement).value)
+  await updateQuestionTitle(question.value?.id!, (ev.target as HTMLTextAreaElement).value)
 }
 
 async function handleOptionInput(ev: Event, index: number) {
   Stretchy.resize(ev.target as HTMLTextAreaElement)
-  await updateQuestionOption(props.question.id!, index, (ev.target as HTMLTextAreaElement).value)
+  await updateQuestionOption(question.value?.id!, index, (ev.target as HTMLTextAreaElement).value)
 }
 
 // Resize question textarea on input and window resize
@@ -39,20 +49,31 @@ function resizeTitleInput() {
   Stretchy.resize(slideTitle.value)
 }
 useSubscription(
-  combineLatest([id$, onMounted$(), fromEvent(window, 'resize').pipe(startWith(null))]).subscribe(
-    () => nextTick(() => resizeTitleInput())
-  )
+  combineLatest([
+    watch$(title),
+    onMounted$(),
+    fromEvent(window, 'resize').pipe(startWith(null)),
+  ]).subscribe(() => nextTick(() => resizeTitleInput()))
 )
+
+// Handle image selection
+async function onImageSelect(image: IUnsplashSearchResult) {
+  const [fullImage, thumbnail] = await Promise.all([
+    fetch(image.urls.regular).then((res) => res.blob()),
+    fetch(image.urls.small).then((res) => res.blob()),
+  ])
+  await updateQuestionImage(question.value?.id!, fullImage, thumbnail)
+}
 </script>
 
 <template>
   <div class="container">
-    <div class="slide" :style="`--background-color: ${question.backgroundColor};`">
+    <div class="slide" :style="`--background-color: ${question?.backgroundColor};`">
       <img v-if="hasImage" class="image" :src="imageSrc" />
       <button class="change-background" @click="imagePickerOpen = !imagePickerOpen">
         <PictureIcon /> Change background
       </button>
-      <image-picker :is-open="imagePickerOpen" />
+      <image-picker :is-open="imagePickerOpen" @select="onImageSelect" />
       <div class="content">
         <span class="count">&times;</span>
         <div class="title">

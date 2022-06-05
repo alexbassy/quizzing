@@ -22,7 +22,7 @@
         @active-change="onSlideChange"
       />
     </template>
-    <SlideEditor v-if="activeQuestion" :question="activeQuestion" />
+    <SlideEditor v-if="activeQuestion" :question-id="activeQuestion.id!" />
   </CreateLayout>
 </template>
 

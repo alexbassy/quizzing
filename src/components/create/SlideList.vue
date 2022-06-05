@@ -49,6 +49,11 @@ async function deleteQuestion(questionId: string) {
   }
   await client.deleteQuestion(quizId, questionId)
 }
+
+function getImageObjectURL(question: QuestionEntry) {
+  const blob = question.thumbnailImage || question.image
+  return blob ? URL.createObjectURL(blob) : ''
+}
 </script>
 
 <template>
@@ -76,7 +81,7 @@ async function deleteQuestion(questionId: string) {
         <img
           v-if="question.image"
           class="slide-image"
-          :src="`/slide-images/${question.image}`"
+          :src="getImageObjectURL(question)"
           :alt="question.title"
           loading="lazy"
         />
@@ -99,7 +104,6 @@ async function deleteQuestion(questionId: string) {
 .list-container {
   position: relative;
   height: 100%;
-  padding-bottom: 2.5rem;
 
   &::before,
   &::after {
@@ -117,7 +121,7 @@ async function deleteQuestion(questionId: string) {
   }
 
   &::after {
-    bottom: 3.63rem; // I don't understand this
+    bottom: 0; // I don't understand this
     background: linear-gradient(to top, #000000aa, #00000000);
   }
 }
@@ -201,14 +205,17 @@ async function deleteQuestion(questionId: string) {
 }
 
 .slide-title {
+  position: relative;
   margin: 1vw;
   font-size: 1.1vw;
   font-weight: bold;
 }
 
 .slide-image {
+  position: absolute;
   width: 100%;
   height: 100%;
+  filter: brightness(0.5);
   object-fit: cover;
 }
 </style>
