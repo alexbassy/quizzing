@@ -12,7 +12,7 @@ const results = ref<IUnsplashSearchResult[]>([])
 async function searchPictures() {
   // todo: sanitise this
   const response = await fetch(
-    `https://quizzing.abass.workers.dev/backgrounds/search?query=${query.value}`
+    `https://api.quizzing.ninja/backgrounds/search?query=${query.value}`
   ).then((res) => res.json() as Promise<IUnsplashSearchResult[]>)
   results.value = response
 }
