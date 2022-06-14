@@ -1,12 +1,15 @@
 <script lang="ts" setup>
+import { forkJoin, fromEvent, map, mergeMap, of, switchMap, tap } from 'rxjs'
+import { ref, unref, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import Slide from '@/components/slide'
 import { safeSubscribe } from '@/composable/useObservable'
 import PlayLayout from '@/layouts/PlayLayout.vue'
+import { watch$ } from '@/lib/observables'
 import { questions } from '@/lib/questions'
 import { getScoresFromCache, RoundState, saveScoresToCache, ScoresState } from '@/lib/scores'
-import { fromEvent } from 'rxjs'
-import { computed, ref, unref, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { getQuestion$, getQuiz$ } from '@/lib/store/client'
+import { useObservable } from '@vueuse/rxjs'
 
 const isAnswerShown = ref(false)
 const isPhotoShown = ref(false)
@@ -20,7 +23,24 @@ watch(
   (value) => (id.value = Number(value)),
   { immediate: true }
 )
-const activeQuestion = computed(() => (id.value ? questions[id.value] : null))
+const quizId$ = watch$(() => String(route.params.id))
+const questionId$ = watch$(() => String(route.params.questionId))
+const quiz = useObservable(quizId$.pipe(switchMap((id) => getQuiz$(id))))
+const prevNextQuestions = useObservable(
+  questionId$.pipe(
+    map((questionId) => {
+      const questions = quiz.value?.questions
+      if (!questions) return [null, null]
+      const index = questions.indexOf(questionId)
+      return [questions[index - 1], questions[index + 1]]
+    }),
+    mergeMap(([prevId, nextId]) =>
+      forkJoin([prevId ? getQuestion$(prevId) : of(null), nextId ? getQuestion$(nextId) : of(null)])
+    )
+  ),
+  { initialValue: [null, null] }
+)
+const activeQuestion = useObservable(questionId$.pipe(switchMap((id) => getQuestion$(id))))
 
 const handleSetScore = (newScores: RoundState) => {
   if (typeof id.value === 'undefined') {
@@ -37,8 +57,8 @@ const onPrevious = () => {
   if (isAnswerShown.value) {
     isAnswerShown.value = false
   } else {
-    const previousQuestion = id.value - 1
-    if (!questions[previousQuestion]) {
+    const previousQuestion = prevNextQuestions.value[0]
+    if (!previousQuestion) {
       return null
     }
     isPhotoShown.value = false
@@ -51,8 +71,8 @@ const onNext = () => {
     isAnswerShown.value = true
     return
   }
-  const nextQuestion = id.value + 1
-  if (!questions[nextQuestion]) {
+  const nextQuestion = prevNextQuestions.value[1]
+  if (!nextQuestion) {
     return null
   }
   router.push({ params: { questionIndex: id.value + 1 } })
