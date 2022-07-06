@@ -14,6 +14,7 @@ import * as Stretchy from 'stretchy'
 import { computed, nextTick, ref } from 'vue'
 import PictureIcon from '../icons/PictureIcon.vue'
 import ImagePicker from './ImagePicker.vue'
+import Dropzone from './Dropzone.vue'
 
 const props = defineProps<{ questionId: string }>()
 
@@ -64,41 +65,49 @@ async function onImageSelect(image: IUnsplashSearchResult) {
   ])
   await updateQuestionImage(question.value?.id!, fullImage, thumbnail)
 }
+
+async function onDropzoneDrop(file: Blob) {
+  await updateQuestionImage(question.value?.id!, file, file)
+}
+
+const backgroundColor = computed(() => question.value?.backgroundColor || '')
 </script>
 
 <template>
   <div class="container">
-    <div class="slide" :style="`--background-color: ${question?.backgroundColor};`">
-      <img v-if="hasImage" class="image" :src="imageSrc" />
-      <button class="change-background" @click="imagePickerOpen = !imagePickerOpen">
-        <PictureIcon /> Change background
-      </button>
-      <image-picker :is-open="imagePickerOpen" @select="onImageSelect" />
-      <div class="content">
-        <span class="count">&times;</span>
-        <div class="title">
-          <textarea
-            type="text"
-            :value="title"
-            placeholder="Question title"
-            ref="slideTitle"
-            class="title-textarea"
-            @input="handleTitleInput"
-          />
-        </div>
-        <ol class="options" ref="slideOptions">
-          <li v-for="(option, index) in options" class="options-item">
-            <input
+    <Dropzone @dropped="onDropzoneDrop">
+      <div class="slide">
+        <img v-if="hasImage" class="image" :src="imageSrc" />
+        <button class="change-background-button" @click="imagePickerOpen = !imagePickerOpen">
+          <PictureIcon /> Change background
+        </button>
+        <image-picker :is-open="imagePickerOpen" @select="onImageSelect" />
+        <div class="content">
+          <span class="count">&times;</span>
+          <div class="title">
+            <textarea
               type="text"
-              :value="option"
-              :placeholder="`Option ${index}`"
-              class="option-input"
-              @input="handleOptionInput($event, index)"
+              :value="title"
+              placeholder="Question title"
+              ref="slideTitle"
+              class="title-textarea"
+              @input="handleTitleInput"
             />
-          </li>
-        </ol>
+          </div>
+          <ol class="options" ref="slideOptions">
+            <li v-for="(option, index) in options" class="options-item">
+              <input
+                type="text"
+                :value="option"
+                :placeholder="`Option ${index}`"
+                class="option-input"
+                @input="handleOptionInput($event, index)"
+              />
+            </li>
+          </ol>
+        </div>
       </div>
-    </div>
+    </Dropzone>
   </div>
 </template>
 
@@ -115,10 +124,10 @@ async function onImageSelect(image: IUnsplashSearchResult) {
   position: relative;
   width: 100%;
   height: 100%;
-  background-color: var(--background-color);
+  background-color: v-bind(backgroundColor);
 }
 
-.change-background {
+.change-background-button {
   --background-alpha: 20%;
 
   position: absolute;

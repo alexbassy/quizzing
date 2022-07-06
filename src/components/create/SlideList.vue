@@ -6,7 +6,7 @@ import { QuestionEntry } from '@/lib/store/db'
 import { useObservable } from '@vueuse/rxjs'
 import randomColor from 'randomcolor'
 import { map, switchMap } from 'rxjs/operators'
-import { defineProps, inject, ref } from 'vue'
+import { inject, ref } from 'vue'
 import RubbishIcon from '../icons/RubbishIcon.vue'
 
 const props = defineProps<{ questions: QuestionEntry[]; activeQuestionId?: string }>()
