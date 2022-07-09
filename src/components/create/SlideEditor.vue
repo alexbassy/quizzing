@@ -3,6 +3,7 @@ import { onMounted$ } from '@/composable/useObservable'
 import { watch$ } from '@/lib/observables'
 import {
   getQuestion$,
+  updateQuestionCorrectOption,
   updateQuestionImage,
   updateQuestionOption,
   updateQuestionTitle,
@@ -30,18 +31,28 @@ const imageSrc = computed(() =>
 
 const title = computed(() => question.value?.title || '')
 
+const questionId = computed(() => question.value?.id || '')
+
+const correctOption = computed(() => question.value?.correctOption)
+
+const letterIndex = ['A', 'B', 'C', 'D']
+
 const options = computed(() =>
   Array.from({ length: 4 }).map((_, i) => question.value?.options?.[i] || '')
 )
 
 async function handleTitleInput(ev: Event) {
   resizeTitleInput()
-  await updateQuestionTitle(question.value?.id!, (ev.target as HTMLTextAreaElement).value)
+  await updateQuestionTitle(questionId.value, (ev.target as HTMLTextAreaElement).value)
 }
 
 async function handleOptionInput(ev: Event, index: number) {
   Stretchy.resize(ev.target as HTMLTextAreaElement)
-  await updateQuestionOption(question.value?.id!, index, (ev.target as HTMLTextAreaElement).value)
+  await updateQuestionOption(questionId.value, index, (ev.target as HTMLTextAreaElement).value)
+}
+
+async function setCorrectOption(index: number) {
+  await updateQuestionCorrectOption(questionId.value, index)
 }
 
 // Resize question textarea on input and window resize
@@ -95,7 +106,24 @@ const backgroundColor = computed(() => question.value?.backgroundColor || '')
             />
           </div>
           <ol class="options" ref="slideOptions">
-            <li v-for="(option, index) in options" class="options-item">
+            <li
+              v-for="(option, index) in options"
+              :key="`${questionId}-option-${index}`"
+              class="options-item"
+            >
+              <div class="answer-key">
+                <input
+                  :id="`${questionId}-radio-${index}`"
+                  type="radio"
+                  name="answer"
+                  :value="index"
+                  :checked="correctOption === index"
+                  @change="setCorrectOption(index)"
+                />
+                <label :for="`${questionId}-radio-${index}`" class="answer-key-label">{{
+                  letterIndex[index]
+                }}</label>
+              </div>
               <input
                 type="text"
                 :value="option"
@@ -207,7 +235,6 @@ const backgroundColor = computed(() => question.value?.backgroundColor || '')
 .options {
   padding: 0 0 0 2rem;
   margin-bottom: auto;
-  counter-reset: option-counter;
   list-style: none;
 }
 
@@ -215,37 +242,35 @@ const backgroundColor = computed(() => question.value?.backgroundColor || '')
   display: flex;
   align-items: center;
   margin: 1.4rem 0;
-  counter-increment: option-counter;
   font-size: var(--slide-option-font-size);
   transform-origin: left;
   transition: 0.25s ease;
   transition-property: opacity, transform, text-shadow;
+}
 
-  &::before {
-    display: flex;
-    width: var(--slide-option-counter-size);
-    height: var(--slide-option-counter-size);
-    flex-shrink: 0;
-    align-self: flex-start;
-    margin-right: 1rem;
-    background: #ffffff21;
-    border-radius: 5px;
-    content: counter(option-counter, upper-alpha);
-    font-size: var(--slide-option-counter-font-size);
-    place-content: center;
-    place-items: center;
-    text-align: center;
-    transition: 0.25s ease;
-    transition-property: color, background-color, box-shadow;
-    will-change: color, background-color;
-  }
+.answer-key {
+  display: flex;
+  margin-right: 1rem;
+}
 
-  &.-correct {
-    &::before {
-      background-color: #28bb2e;
-      box-shadow: 0 0 20px #28bb2e85, 0 0 60px #28bb2e50;
-      color: #ffffff;
-    }
+.answer-key-label {
+  display: flex;
+  width: var(--slide-option-counter-size);
+  height: var(--slide-option-counter-size);
+  background: #ffffff21;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: var(--slide-option-counter-font-size);
+  place-content: center;
+  place-items: center;
+  transition: 0.25s ease;
+  transition-property: color, background-color, box-shadow;
+  will-change: color, background-color;
+
+  input:checked + & {
+    background-color: #28bb2e;
+    box-shadow: 0 0 20px #28bb2e85, 0 0 60px #28bb2e50;
+    color: #ffffff;
   }
 }
 

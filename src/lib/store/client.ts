@@ -86,6 +86,10 @@ export async function updateQuestionOption(questionId: string, index: number, va
   })
 }
 
+export async function updateQuestionCorrectOption(questionId: string, optionIndex: number) {
+  return db.question.update(questionId, { correctOption: optionIndex })
+}
+
 export async function updateQuestionImage(questionId: string, image?: Blob, thumbnail?: Blob) {
   return db.question.update(questionId, { image, thumbnail })
 }

@@ -17,7 +17,7 @@ export interface QuestionEntry {
   quizId?: string
   title?: string
   options?: string[]
-  correctOption?: string // 0-3
+  correctOption?: number // 0-3
   backgroundColor?: string
   image?: Blob
   thumbnailImage?: Blob

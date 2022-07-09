@@ -173,6 +173,7 @@ function getImageObjectURL(question: QuestionEntry) {
   --foreground-alpha: 0%;
 
   position: absolute;
+  z-index: 2;
   top: 0.5rem;
   right: 0.5rem;
   display: flex;
