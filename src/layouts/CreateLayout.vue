@@ -11,21 +11,6 @@
   </div>
 </template>
 
-<script lang="ts" setup>
-import CaretLeftIcon from '@/components/icons/CaretLeftIcon.vue'
-import { db } from '@/lib/store/db'
-import { RouterLink } from 'vue-router'
-
-async function updateQuiz() {
-  const record = await db.quiz.where({ name: 'Untitled' }).first()
-  if (!record) {
-    console.info('No matching record')
-    return
-  }
-  await db.quiz.update(record.id!, { name: 'Untitled ' + Math.round(Math.random() * 3) })
-}
-</script>
-
 <style lang="scss" scoped>
 .container {
   display: flex;
