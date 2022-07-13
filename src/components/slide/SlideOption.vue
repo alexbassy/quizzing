@@ -2,12 +2,12 @@
 import { computed, inject } from 'vue'
 import { Motion } from 'motion/vue'
 import { OPTION } from '@/lib/motion-variants'
-import { IQuestionOption } from '@/lib/questions'
 
 const props = defineProps<{
-  isAnswerShown: boolean
-  option: IQuestionOption
+  option: string
   index: number
+  isAnswerShown: boolean
+  isCorrect: boolean
 }>()
 
 const isAnimated = inject<boolean>('isAnimated')
@@ -26,8 +26,8 @@ const slideHidden = OPTION.hidden
     :exit="slideHidden"
     :transition="{ type: 'spring', duration: isAnimated ? 1 : 0, delay: 1 + index * 0.15 }"
   >
-    <span class="option" :class="{ '-answerShown': isAnswerShown, '-correct': option.correct }">
-      {{ option.text }}
+    <span class="option" :class="{ '-answerShown': isAnswerShown, '-correct': isCorrect }">
+      {{ option }}
     </span>
   </Motion>
 </template>

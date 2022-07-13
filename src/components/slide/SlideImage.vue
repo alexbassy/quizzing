@@ -1,24 +1,31 @@
 <script lang="ts" setup>
 import { computed, inject } from 'vue'
-import { IQuestionImage } from '@/lib/questions'
 import { Motion, Presence } from 'motion/vue'
+import { QuestionEntry } from '@/lib/store/db'
 
-const props = defineProps<{ isAnswerShown: boolean; image: IQuestionImage }>()
+const props = defineProps<{
+  id: string
+  isAnswerShown: boolean
+  image: QuestionEntry['image']
+  flipped: QuestionEntry['imageFlipped']
+  obscurred: QuestionEntry['imageObscurred']
+}>()
+
 const isAnimated = inject<boolean>('isAnimated')
-const imageURL = computed(() => `/slide-images/${props.image.url}`)
+const imageSrc = computed(() => (props.image ? URL.createObjectURL(props.image) : undefined))
 </script>
 
 <template>
   <Presence exit-before-enter>
     <Motion
       class="imageContainer"
-      :key="imageURL"
+      :key="id"
       :initial="
         isAnimated
           ? {
               opacity: 0,
               scale: 1.1,
-              rotateY: image.flip ? 180 : 0,
+              rotateY: flipped ? 180 : 0,
             }
           : false
       "
@@ -30,10 +37,10 @@ const imageURL = computed(() => `/slide-images/${props.image.url}`)
       :transition="{ delay: 0.25, duration: 1 }"
     >
       <img
-        :src="imageURL"
+        :src="imageSrc"
         alt=""
         class="slideImage"
-        :class="{ '-obscured': !isAnswerShown && image.obscured, '-flipped': image.flip }"
+        :class="{ '-obscured': !isAnswerShown && obscurred, '-flipped': flipped }"
       />
     </Motion>
   </Presence>
@@ -41,18 +48,18 @@ const imageURL = computed(() => `/slide-images/${props.image.url}`)
 
 <style lang="scss" scoped>
 .imageContainer {
-  width: 100%;
-  height: 100%;
   position: absolute;
   top: 0;
   left: 0;
+  width: 100%;
+  height: 100%;
 }
 
 .slideImage {
   width: 100%;
   height: 100%;
-  transition: all 1s ease;
   object-fit: cover;
+  transition: all 1s ease;
   will-change: opacity, transform, filter;
 
   &.-flipped {
@@ -60,9 +67,9 @@ const imageURL = computed(() => `/slide-images/${props.image.url}`)
   }
 
   &.-obscured {
+    filter: blur(30px) hue-rotate(-40deg);
     opacity: 0.8;
     transform: scale(1.2);
-    filter: blur(30px) hue-rotate(-40deg);
   }
 }
 </style>

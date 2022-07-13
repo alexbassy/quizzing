@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { FADE, SLIDE } from '@/lib/motion-variants'
-import { IQuestion } from '@/lib/questions'
+import { QuestionEntry } from '@/lib/store/db'
 import { Motion, Presence } from 'motion/vue'
 import { computed, provide } from 'vue'
 import SlideImage from './SlideImage.vue'
@@ -11,7 +11,8 @@ const props = defineProps<{
   isPhotoShown?: boolean
   isEditing?: boolean
   isAnimated?: boolean
-  question: IQuestion
+  question: QuestionEntry
+  questionIndex?: number
 }>()
 
 provide('isAnimated', props.isAnimated)
@@ -26,19 +27,25 @@ const slideHidden = SLIDE.hidden
 </script>
 
 <template>
-  <SlideImage :image="question.image" :is-answer-shown="false" />
+  <SlideImage
+    :id="question.id!"
+    :image="question.image"
+    :flipped="question.imageFlipped"
+    :obscurred="question.imageObscurred"
+    :is-answer-shown="false"
+  />
   <!-- Gradient background -->
   <Motion class="text-content" :initial="fadeInitial" :animate="fadeShown" :exit="fadeHidden">
     <!-- Count -->
     <Motion
       tag="span"
       class="count"
-      :key="'count ' + question.count"
+      :key="'count ' + questionIndex"
       :initial="slideInitial"
       :animate="slideShown"
       :exit="slideHidden"
       :transition="{ duration: isAnimated ? 1 : 0 }"
-      >{{ question.count }}</Motion
+      >{{ questionIndex }}</Motion
     >
 
     <!-- Title -->
@@ -57,9 +64,10 @@ const slideHidden = SLIDE.hidden
     <Motion tag="ol" class="options" :key="'options ' + question.id">
       <Presence v-for="(option, i) in question.options">
         <SlideOption
-          :key="option.id"
+          :key="option"
           :option="option"
           :is-answer-shown="isAnswerShown"
+          :is-correct="question.correctOption === i"
           :index="i"
         />
       </Presence>

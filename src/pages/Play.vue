@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { forkJoin, fromEvent, map, mergeMap, of, switchMap, tap } from 'rxjs'
-import { ref, unref, watch } from 'vue'
+import { computed, ref, unref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import Slide from '@/components/slide'
 import { safeSubscribe } from '@/composable/useObservable'
@@ -41,6 +41,8 @@ const prevNextQuestions = useObservable(
   { initialValue: [null, null] }
 )
 const activeQuestion = useObservable(questionId$.pipe(switchMap((id) => getQuestion$(id))))
+
+const questionIndex = computed(() => quiz.value?.questions?.indexOf(activeQuestion.value?.id))
 
 const handleSetScore = (newScores: RoundState) => {
   if (typeof id.value === 'undefined') {
@@ -95,6 +97,7 @@ safeSubscribe(fromEvent<KeyboardEvent>(document, 'keyup'), (event) => {
         :is-answer-shown="isAnswerShown"
         :is-photo-shown="isPhotoShown"
         :question="activeQuestion"
+        :question-index="questionIndex"
         is-animated
       />
     </div>
