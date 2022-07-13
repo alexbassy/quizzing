@@ -3,8 +3,11 @@ import { defineProps, useSlots, VNode } from 'vue'
 import { type Component } from '@vue/runtime-core'
 import { LinkTableColumn } from '.'
 
+type Data = unknown & { id?: string }
+
 const props = defineProps<{
-  data: (unknown & { id?: string })[] | undefined
+  data?: Data[]
+  rowLink: (entity: Data) => string
 }>()
 
 const slots = useSlots()
@@ -23,7 +26,7 @@ const columns = children.filter((child) => (child.type as Component)?.name === L
     </div>
     <ol class="list" v-if="data?.length" role="rowgroup" v-auto-animate>
       <li class="item" v-for="entity in data" :key="entity.id" role="row">
-        <RouterLink class="link" :to="`/create/${entity.id}`">
+        <RouterLink class="link" :to="rowLink(entity)">
           <span v-for="column in columns" role="cell">
             <component :is="(column.children as any).default" v-bind="entity" />
           </span>
@@ -40,14 +43,13 @@ const columns = children.filter((child) => (child.type as Component)?.name === L
 .table {
   --count: v-bind('columns.length');
   --column-spans: repeat(var(--count), 1fr);
-  padding: 0 1.5rem;
-  margin-top: 3rem;
 }
 
 .titles {
   display: grid;
   margin: 0 3.5rem;
   color: rgb(255 255 255 / 0.35);
+  font-size: 0.875rem;
   font-weight: bold;
   grid-template-columns: var(--column-spans);
 
@@ -63,7 +65,7 @@ const columns = children.filter((child) => (child.type as Component)?.name === L
 .list {
   height: 100%;
   padding: 0.5rem;
-  margin: 1rem 2rem 0;
+  margin-top: 1rem;
   background-color: rgb(255 255 255 / 5%);
   border-radius: 10px;
 

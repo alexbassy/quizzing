@@ -25,15 +25,32 @@ export interface QuestionEntry {
   imageObscurred?: boolean
 }
 
+export interface PlayerEntry {
+  id?: string
+  name?: string
+  photo?: Blob
+  backgroundColor?: string
+}
+
+export interface ScoresEntry {
+  id?: string
+  quizId?: string
+  players?: PlayerEntry['id'][]
+}
+
 class QuizStore extends Dexie {
-  public quiz!: Table<QuizEntry, string> // id is number in this case
-  public question!: Table<QuestionEntry, string> // id is number in this case
+  public quiz!: Table<QuizEntry, string>
+  public question!: Table<QuestionEntry, string>
+  public player!: Table<PlayerEntry, string>
+  public scores!: Table<ScoresEntry, string>
 
   public constructor() {
     super('QuizStore')
     this.version(1).stores({
       quiz: '$$id,name',
       question: '$$id,quizId',
+      player: '$$id,name',
+      scores: '$$id,quizId',
     })
   }
 }
@@ -54,5 +71,6 @@ db.question.hook('creating', createHookAddCreationTime)
 const updatingHookAddUpdatedTime = () => {
   return { updatedAt: Date.now() }
 }
+
 db.quiz.hook('updating', updatingHookAddUpdatedTime)
 db.question.hook('updating', updatingHookAddUpdatedTime)

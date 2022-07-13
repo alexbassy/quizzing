@@ -6,11 +6,11 @@
 
 <style lang="scss" scoped>
 .container {
-  height: 100vh;
   display: flex;
+  height: 100vh;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
   color: #fff;
 }
 </style>
