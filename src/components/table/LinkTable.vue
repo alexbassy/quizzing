@@ -47,7 +47,7 @@ const columns = children.filter((child) => (child.type as Component)?.name === L
 
 .titles {
   display: grid;
-  margin: 0 3.5rem;
+  margin: 0 1.5rem;
   color: rgb(255 255 255 / 0.35);
   font-size: 0.875rem;
   font-weight: bold;
@@ -66,7 +66,7 @@ const columns = children.filter((child) => (child.type as Component)?.name === L
   height: 100%;
   padding: 0.5rem;
   margin-top: 1rem;
-  background-color: rgb(255 255 255 / 5%);
+  background-color: var(--background1);
   border-radius: 10px;
 
   &.-empty {

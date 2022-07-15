@@ -45,17 +45,17 @@ async function remove(id: string) {
           play button.
         </p>
         <LinkTable :data="quizzes" class="table" :row-link="({ id }) => `/create/${id}`">
-          <LinkTableColumn title="Name" v-slot="{ name }: QuizEntry">{{ name }}</LinkTableColumn>
-          <LinkTableColumn title="Questions" v-slot="{ questions }: QuizEntry">
+          <LinkTableColumn title="Name" #default="{ name }: QuizEntry">{{ name }}</LinkTableColumn>
+          <LinkTableColumn title="Questions" #default="{ questions }: QuizEntry">
             {{ questions?.length ?? 0 }}
           </LinkTableColumn>
-          <LinkTableColumn title="Created" v-slot="{ createdAt }: QuizEntry">
+          <LinkTableColumn title="Created" #default="{ createdAt }: QuizEntry">
             {{ formatRelativeTime(createdAt!) }}
           </LinkTableColumn>
-          <LinkTableColumn title="Updated" v-slot="{ updatedAt }: QuizEntry">
+          <LinkTableColumn title="Updated" #default="{ updatedAt }: QuizEntry">
             {{ formatRelativeTime(updatedAt!) }}
           </LinkTableColumn>
-          <LinkTableColumn title="" v-slot="{ id, name }: QuizEntry">
+          <LinkTableColumn title="" #default="{ id, name }: QuizEntry">
             <button
               class="delete-button"
               @click.prevent="remove(id!)"
@@ -102,7 +102,7 @@ async function remove(id: string) {
 }
 
 .section-title {
-  margin: 0 2rem;
+  margin: 0 1.5rem;
   font-size: 1.25rem;
   font-weight: bold;
 }
@@ -121,7 +121,7 @@ async function remove(id: string) {
 
 .players {
   padding: 0.5rem;
-  background-color: rgb(255 255 255 / 5%);
+  background-color: var(--background1);
   border-radius: 10px;
 }
 
@@ -133,7 +133,7 @@ async function remove(id: string) {
 }
 
 .help {
-  margin: 1rem 2rem;
+  margin: 1rem 1.5rem;
   color: rgba(255 255 255 / 70%);
   font-size: 0.875rem;
   font-weight: normal;
