@@ -29,7 +29,7 @@ async function remove(id: string) {
 </script>
 
 <template>
-  <CreateLayout title="Quizzes">
+  <CreateLayout>
     <template #title>
       <h1 class="title">Quizzing 🥷</h1>
     </template>

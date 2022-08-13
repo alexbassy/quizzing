@@ -1,0 +1,36 @@
+Table quizzes {
+  id text
+  createdAt int
+  updatedAt int
+  owner text
+  name text
+  questions text [ref: > questions.id]
+}
+
+Table questions {
+  id text
+  createdAt int
+  updatedAt int
+  quizId text
+  title text
+  options text[]
+  correctOption int // 0-3
+  backgroundColor text
+  image blob
+  thumbnailImage Blob
+  imageFlipped boolean
+  imageObscurred boolean
+}
+
+Table players {
+  id text
+  name text
+  photo blob
+  backgroundColor text
+}
+
+Table scores {
+  id text
+  quizId text
+  players text[] [ref: > players.id]
+}
