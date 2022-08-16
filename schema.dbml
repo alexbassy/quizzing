@@ -29,8 +29,17 @@ Table players {
   backgroundColor text
 }
 
-Table scores {
+Table round {
   id text
   quizId text
   players text[] [ref: > players.id]
+  createdAt int
+  completed boolean
+}
+
+Table points {
+  id text
+  roundId text [ref: > round.id]
+  playerId text [ref: > players.id]
+  questionId text [ref: > questions.id]
 }
