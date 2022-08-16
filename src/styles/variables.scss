@@ -1,3 +1,5 @@
+$backdrop-background: rgb(0 0 0 / 60%);
+
 :root {
   --slide-content-width: 70vw;
   --slide-content-padding-right: 10vw;
@@ -22,4 +24,6 @@
   --placeholder-color: rgb(255 255 255 / 50%);
 
   --background1: rgb(255 255 255 / 10%);
+
+  --backdrop-background: $backdrop-background;
 }

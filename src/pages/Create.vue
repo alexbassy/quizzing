@@ -1,31 +1,3 @@
-<template>
-  <CreateLayout>
-    <template #title>
-      <RouterLink to="/create" class="back-button"><CaretLeftIcon /></RouterLink>
-      <input
-        type="text"
-        class="title-input"
-        ref="titleInput"
-        :value="quiz?.name"
-        @input="handleTitleChange"
-        placeholder="Untitled"
-        maxlength="40"
-      />
-    </template>
-    <template #action>
-      <button @click="void 0" class="play-button">Play</button>
-    </template>
-    <template #sidebar>
-      <SlideList
-        :questions="questions"
-        :active-question-id="activeQuestion?.id"
-        @active-change="onSlideChange"
-      />
-    </template>
-    <SlideEditor v-if="activeQuestion" :question-id="activeQuestion.id!" />
-  </CreateLayout>
-</template>
-
 <script lang="ts" setup>
 import SlideEditor from '@/components/create/SlideEditor.vue'
 import SlideList from '@/components/create/SlideList.vue'
@@ -34,23 +6,20 @@ import CreateLayout from '@/layouts/CreateLayout.vue'
 import { getQuestions$, getQuiz$, updateQuizTitle } from '@/lib/store/client'
 import { QuestionEntry, QuizEntry } from '@/lib/store/db'
 import { useObservable, useSubscription } from '@vueuse/rxjs'
-import { nextTick, onMounted, provide, ref, watch } from 'vue'
+import { nextTick, provide, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import * as Stretchy from 'stretchy'
 import { take } from 'rxjs/operators'
+import PlayDialog from '@/components/create/PlayDialog.vue'
 
 const route = useRoute()
 
 const quizId = route.params.id as string
-
 provide('quizId', quizId)
 
 const quiz$ = getQuiz$(quizId)
-
 const quiz = useObservable<QuizEntry | undefined>(quiz$)
-
 const questions = useObservable(getQuestions$(quizId), { initialValue: [] as QuestionEntry[] })
-
 const activeQuestion = ref<QuestionEntry | undefined>(questions.value?.[0] ?? undefined)
 
 watch(questions, (value, oldValue) => {
@@ -68,12 +37,55 @@ const titleInput = ref<HTMLInputElement>()
 useSubscription(
   quiz$.pipe(take(1)).subscribe((value) => nextTick(() => Stretchy.resize(titleInput.value)))
 )
+
 // Save the title input value to the database and resize on input
 async function handleTitleChange(ev: Event) {
   Stretchy.resize(ev.target as HTMLInputElement)
   await updateQuizTitle(quizId, (ev.target as HTMLInputElement).value)
 }
+
+const isPlayDialogShown = ref(false)
+function showPlayDialog() {
+  isPlayDialogShown.value = true
+}
 </script>
+
+<template>
+  <CreateLayout>
+    <template #title>
+      <RouterLink to="/create" class="back-button"><CaretLeftIcon /></RouterLink>
+      <input
+        type="text"
+        class="title-input"
+        ref="titleInput"
+        :value="quiz?.name"
+        @input="handleTitleChange"
+        placeholder="Untitled"
+        maxlength="40"
+      />
+    </template>
+
+    <template #action>
+      <button @click="showPlayDialog" class="play-button">Play</button>
+    </template>
+
+    <template #sidebar>
+      <SlideList
+        :questions="questions"
+        :active-question-id="activeQuestion?.id"
+        @active-change="onSlideChange"
+      />
+    </template>
+
+    <SlideEditor v-if="activeQuestion" :question-id="activeQuestion.id!" />
+
+    <PlayDialog
+      :visible="isPlayDialogShown"
+      @cancel="isPlayDialogShown = false"
+      @close="isPlayDialogShown = false"
+    />
+  </CreateLayout>
+</template>
 
 <style lang="scss" scoped>
 :global(body) {
@@ -95,6 +107,7 @@ async function handleTitleChange(ev: Event) {
 .back-button {
   --background-alpha: 5%;
   --foreground-alpha: 35%;
+
   display: inline-flex;
   width: 1.75rem;
   height: 100%;
