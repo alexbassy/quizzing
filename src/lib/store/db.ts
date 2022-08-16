@@ -32,17 +32,29 @@ export interface PlayerEntry {
   backgroundColor?: string
 }
 
-export interface ScoresEntry {
+export interface RoundEntry {
   id?: string
   quizId?: string
   players?: PlayerEntry['id'][]
+  createdAt?: number
+  completed?: boolean
+}
+
+// When a player scores a point on a round, an entry is created in this table.
+// When showing the question, this table is queried to find scores.
+export interface PointEntry {
+  id?: number
+  roundId?: RoundEntry['id']
+  playerId?: PlayerEntry['id']
+  questionId?: QuestionEntry['id']
 }
 
 class QuizStore extends Dexie {
   public quiz!: Table<QuizEntry, string>
   public question!: Table<QuestionEntry, string>
   public player!: Table<PlayerEntry, string>
-  public scores!: Table<ScoresEntry, string>
+  public round!: Table<RoundEntry, string>
+  public points!: Table<PointEntry, string>
 
   public constructor() {
     super('QuizStore')
@@ -50,7 +62,8 @@ class QuizStore extends Dexie {
       quiz: '$$id,name',
       question: '$$id,quizId',
       player: '$$id,name',
-      scores: '$$id,quizId',
+      round: '$$id,quizId',
+      points: '++id,roundId,questionId',
     })
   }
 }
@@ -67,6 +80,7 @@ const createHookAddCreationTime = (_primaryKey: string, obj: QuizEntry | Questio
 
 db.quiz.hook('creating', createHookAddCreationTime)
 db.question.hook('creating', createHookAddCreationTime)
+db.round.hook('creating', createHookAddCreationTime)
 
 const updatingHookAddUpdatedTime = () => {
   return { updatedAt: Date.now() }

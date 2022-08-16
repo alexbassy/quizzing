@@ -19,8 +19,8 @@ export function updatePlayer(playerId: string, player: PlayerEntry) {
 }
 
 export function deletePlayer(id: string) {
-  return db.transaction('rw', db.player, db.scores, () => {
+  return db.transaction('rw', db.player, db.round, () => {
     db.player.delete(id)
-    db.scores.where('players').anyOf(id).delete()
+    db.round.where('players').anyOf(id).delete()
   })
 }
