@@ -11,14 +11,14 @@
 
 @mixin animate-dialog-entry-exit {
   --transition: 250ms ease-out;
-  --animation-in-settings: 500ms cubic-bezier(0.25, 0, 0.3, 1) normal;
-  --animation-out-settings: 500ms cubic-bezier(0.5, -0.5, 0.1, 1.5) normal;
+  --animation-in-settings: 250ms cubic-bezier(0.25, 0, 0.3, 1) normal;
+  --animation-out-settings: 250ms cubic-bezier(0.5, -0.5, 0.1, 1.5) normal;
 
   &[open] {
     animation: slidein var(--animation-in-settings);
   }
   &.is-hidden {
-    animation: minimize var(--animation-out-settings);
+    animation: minimize var(--transition);
   }
   @media (prefers-reduced-motion: reduce) {
     &[open] {
@@ -30,28 +30,25 @@
   }
 
   &::backdrop {
-    -webkit-animation: none;
     animation: none;
   }
 
   &[open]::backdrop {
-    -webkit-animation: fadein var(--animation-in-settings);
     animation: fadein var(--animation-in-settings);
   }
 
   &.is-hidden::backdrop {
-    -webkit-animation: fadeout var(--animation-out-settings);
     animation: fadeout var(--animation-out-settings);
   }
 
   @keyframes slidein {
     from {
       opacity: 0;
-      transform: translateY(50%);
+      transform: scale(0.9);
     }
     to {
       opacity: 1;
-      transform: translateY(0);
+      transform: scale(1);
     }
   }
 
@@ -73,7 +70,33 @@
   @keyframes minimize {
     to {
       opacity: 0;
-      transform: scale(0);
+      transform: rotate(5deg) scale(0.95) translateY(15%);
     }
+  }
+}
+
+@mixin button($background-color, $inline: false) {
+  --background-alpha: 5%;
+  --foreground-alpha: 60%;
+
+  display: flex;
+  @if $inline {
+    display: inline-flex;
+  }
+
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1rem;
+  background-color: $background-color;
+  border-radius: 6px;
+  color: #fff;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.25s ease;
+  transition-property: color, background-color, transform;
+
+  &:active {
+    transform: scale(0.95);
   }
 }

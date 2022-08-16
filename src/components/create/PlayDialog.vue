@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { defineProps, reactive, ref, watch } from 'vue'
+import { computed, defineProps, reactive, ref, watch } from 'vue'
 import { tap } from 'rxjs'
 import PlayerAvatar from '@/components/player/PlayerAvatar.vue'
 import { useObservable } from '@/composable/useObservable'
@@ -21,6 +21,8 @@ const players = useObservable(getPlayers$())
 
 const selectedPlayers = reactive<Record<string, boolean>>({})
 
+const selectedPlayersCount = computed(() => Object.values(selectedPlayers).length)
+
 function closeModal() {
   dialog.value?.classList.add('is-hidden')
   const removeClasses = () => {
@@ -41,6 +43,7 @@ watch(
 )
 
 const onPlayerClick = (id: string) => {
+  console.log('click!')
   if (selectedPlayers[id]) delete selectedPlayers[id]
   else selectedPlayers[id] = true
 }
@@ -70,7 +73,15 @@ function close() {
       </p>
       <ul class="playerList">
         <li v-for="player in players" :key="player.id" class="playerListItem">
-          <label class="playerCheckbox" :class="{'-checked': selectedPlayers[player.id!] }">
+          <label
+            class="playerCheckbox"
+            :class="{'-checked': selectedPlayers[player.id!] }"
+            role="button"
+            tabindex="0"
+            @click.prevent="onPlayerClick(player.id!)"
+            @keydown.enter="onPlayerClick(player.id!)"
+            @keydown.space="onPlayerClick(player.id!)"
+          >
             <input
               type="checkbox"
               name="players"
@@ -78,17 +89,20 @@ function close() {
               id="player-{{ player.id }}"
               :value="selectedPlayers[player.id!] || false"
             />
-            <PlayerAvatar
-              :player="player"
-              class="playerAvatar"
-              @click="onPlayerClick(player.id!)"
-            />
+            <PlayerAvatar :player="player" class="playerAvatar" />
             <TickIcon class="playerSelectedIndicator" />
           </label>
         </li>
       </ul>
-      <button type="button">Start without scoring</button>
-      <button type="button" @click="closeModal">Close</button>
+      <div class="playDialogActions">
+        <button class="cancelButton" type="button" @click="closeModal">Close</button>
+        <button class="playButton" type="button">
+          <template v-if="selectedPlayersCount > 0">
+            Start with {{ selectedPlayersCount }} players
+          </template>
+          <template v-else>Start without scoring</template>
+        </button>
+      </div>
     </form>
   </dialog>
 </template>
@@ -101,7 +115,7 @@ function close() {
   bottom: 0px;
   left: 0;
   height: fit-content;
-  padding: 2.5rem;
+  padding: 1.5rem;
   margin: auto;
   backdrop-filter: blur(10px);
   background: rgb(15 15 15 / 80%);
@@ -118,7 +132,6 @@ function close() {
     right: 0px;
     bottom: 0px;
     left: 0px;
-    width: 100vw;
     background-color: $backdrop-background;
   }
 }
@@ -134,6 +147,7 @@ function close() {
 
 .playerList {
   display: flex;
+  margin: 2rem 0 1rem;
 }
 
 .playerListItem {
@@ -152,8 +166,16 @@ function close() {
   cursor: pointer;
   transition: box-shadow 0.2s ease;
 
+  &:focus-visible {
+    box-shadow: 0 0 1px 2px white;
+  }
+
   &.-checked {
     box-shadow: 0 0 0 1px white;
+
+    &:focus-visible {
+      box-shadow: 0 0 0 1px white, 0 0 3px 3px white;
+    }
   }
 }
 
@@ -182,5 +204,18 @@ function close() {
   height: 0;
   clip: 1px 1px 1px 1px;
   visibility: hidden;
+}
+
+.playDialogActions {
+  display: flex;
+}
+
+.playButton {
+  @include button(blue, true);
+}
+.cancelButton {
+  @include button(rgb(255, 255, 255, 10%), true);
+  margin-right: 1rem;
+  margin-left: auto;
 }
 </style>
