@@ -1,12 +1,13 @@
 import { Observable, Subscription } from 'rxjs'
-import { onBeforeUnmount, onMounted, ref } from 'vue'
+import { onBeforeUnmount, onMounted, Ref, ref } from 'vue'
 
-export function useObservable<T>(obs$: Observable<T>) {
+export function useObservable<T>(obs$: Observable<T>): Ref<T | undefined> {
   const valueRef = ref<T>()
-  safeSubscribe(obs$, (value) => (valueRef.value = value))
+  useSubscribe(obs$, (value) => (valueRef.value = value))
+  return valueRef
 }
 
-export function safeSubscribe<T>(obs$: Observable<T>, callback: (value: T) => unknown) {
+export function useSubscribe<T>(obs$: Observable<T>, callback: (value: T) => unknown) {
   let subscription: Subscription
   onMounted(() => {
     subscription = obs$.subscribe((data) => callback(data))

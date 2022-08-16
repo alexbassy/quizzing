@@ -3,7 +3,7 @@ import { forkJoin, fromEvent, map, mergeMap, of, switchMap, tap } from 'rxjs'
 import { computed, ref, unref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import Slide from '@/components/slide'
-import { safeSubscribe } from '@/composable/useObservable'
+import { useSubscribe } from '@/composable/useObservable'
 import PlayLayout from '@/layouts/PlayLayout.vue'
 import { watch$ } from '@/lib/observables'
 import { questions } from '@/lib/questions'
@@ -82,7 +82,7 @@ const onNext = () => {
   isPhotoShown.value = false
 }
 
-safeSubscribe(fromEvent<KeyboardEvent>(document, 'keyup'), (event) => {
+useSubscribe(fromEvent<KeyboardEvent>(document, 'keyup'), (event) => {
   if (event.key === ' ' || event.key === 'ArrowRight') onNext()
   if (event.key === 'ArrowLeft') onPrevious()
   if (event.key === 'ArrowUp') isPhotoShown.value = !isPhotoShown.value

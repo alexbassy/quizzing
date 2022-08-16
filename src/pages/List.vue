@@ -13,7 +13,7 @@ import { tap } from 'rxjs'
 
 const quizzes = useObservable<QuizEntry[]>(getQuizzes$())
 
-const players = useObservable<PlayerEntry[]>(getPlayers$().pipe(tap(console.log)))
+const players = useObservable<PlayerEntry[]>(getPlayers$())
 
 async function createQuiz() {
   await addQuiz()

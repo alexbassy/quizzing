@@ -2,7 +2,7 @@ import { Observable, Subject } from 'rxjs'
 import { takeUntil } from 'rxjs/operators'
 import { onBeforeUnmount, Ref, shallowRef, watch } from 'vue'
 
-export function safeSubscribe<T>(
+export function useSubscribe<T>(
   obs$: Observable<T>,
   next: (value: Readonly<T>) => void,
   error?: () => void
@@ -22,7 +22,7 @@ export function useObservable<T, D extends T | undefined>(
 ): Ref<Readonly<D extends T ? T : T | D>> {
   const r = shallowRef(defaultValue)
 
-  safeSubscribe(obs$, (newValue) => (r.value = newValue as any))
+  useSubscribe(obs$, (newValue) => (r.value = newValue as any))
 
   return r as any
 }
