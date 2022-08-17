@@ -1,10 +1,11 @@
 <script lang="ts" setup>
-import { computed, defineProps, reactive, ref, watch } from 'vue'
+import { computed, defineProps, inject, reactive, ref, watch } from 'vue'
 import { tap } from 'rxjs'
 import PlayerAvatar from '@/components/player/PlayerAvatar.vue'
 import { useObservable } from '@/composable/useObservable'
-import { getPlayers$ } from '@/lib/store/client'
+import { addRound, getPlayers$ } from '@/lib/store/client'
 import TickIcon from '../icons/TickIcon.vue'
+import { useRouter } from 'vue-router'
 
 interface Props {
   visible: boolean
@@ -13,6 +14,10 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), { visible: false })
 
 const emit = defineEmits(['cancel', 'close'])
+
+const quizId = inject<string>('quizId')
+
+const router = useRouter()
 
 const dialog = ref<HTMLDialogElement>()
 const isVisible = ref(props.visible)
@@ -31,6 +36,14 @@ function closeModal() {
     close()
   }
   dialog.value?.addEventListener('animationend', removeClasses, { once: true })
+}
+
+async function startRound() {
+  const players = Object.keys(selectedPlayers)
+  const roundId = await addRound({ quizId, players })
+  console.log(roundId)
+  router.push({ name: 'Play', params: { roundId } })
+  // closeModal()
 }
 
 watch(
@@ -96,7 +109,7 @@ function close() {
       </ul>
       <div class="playDialogActions">
         <button class="cancelButton" type="button" @click="closeModal">Close</button>
-        <button class="playButton" type="button">
+        <button class="playButton" type="button" @click="startRound">
           <template v-if="selectedPlayersCount > 0">
             Start with {{ selectedPlayersCount }} players
           </template>
