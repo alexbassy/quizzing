@@ -134,7 +134,6 @@ function close() {
   background: rgb(15 15 15 / 80%);
   border-radius: 8px;
   box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1), 0 1px 30px rgba(0, 0, 0, 0.5);
-  max-block-size: min(80vh, 100%);
   max-inline-size: min(90vw, 45ch);
 
   @include animate-dialog-entry-exit;
@@ -160,6 +159,7 @@ function close() {
 
 .playerList {
   display: flex;
+  flex-wrap: wrap;
   margin: 2rem 0 1rem;
 }
 

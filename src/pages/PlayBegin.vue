@@ -37,7 +37,9 @@ const firstQuestionId = useObservable(quiz$.pipe(map((quiz) => quiz!.questions![
       <h1>{{ quiz?.name }}</h1>
       Ready to begin??
       <!-- Could also resume an already started quiz here! -->
-      <router-link :to="{ name: 'PlayQuestion', params: { questionId: firstQuestionId } }"
+      <router-link
+        v-if="firstQuestionId"
+        :to="{ name: 'PlayQuestion', params: { questionId: firstQuestionId } }"
         >GO</router-link
       >
     </div>
