@@ -157,21 +157,15 @@ const backgroundColor = computed(() => question.value?.backgroundColor || '')
 
 .change-background-button {
   --background-alpha: 20%;
-
+  @include button(rgb(0 0 0 / var(--background-alpha)));
   position: absolute;
+  z-index: 3;
   right: 1rem;
   bottom: 1rem;
-  display: flex;
-  align-items: center;
-  padding: 0.5rem 0.75rem;
-  background-color: rgb(0 0 0 / var(--background-alpha));
-  border-radius: 5px;
+  height: unset;
   cursor: pointer;
   font-size: 0.9375rem;
-  font-weight: 500;
   gap: 0.5rem;
-  transition: 0.25s ease;
-  transition-property: background-color, transform;
 
   &:hover {
     --background-alpha: 30%;

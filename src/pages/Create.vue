@@ -140,24 +140,7 @@ function showPlayDialog() {
 }
 
 .play-button {
-  --background-alpha: 5%;
-  --foreground-alpha: 60%;
-  display: flex;
-  height: 100%;
-  align-items: center;
-  justify-content: center;
-  padding: 0.5rem 1rem;
-  background-color: #ef476f;
-  border-radius: 6px;
-  color: #fff;
-  cursor: pointer;
-  font-weight: bold;
-  transition: 0.25s ease;
-  transition-property: color, background-color, transform;
-
-  &:active {
-    transform: scale(0.95);
-  }
+  @include button(#ef476f);
 
   svg {
     margin-right: 0.5rem;

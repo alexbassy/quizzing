@@ -76,9 +76,6 @@
 }
 
 @mixin button($background-color, $inline: false) {
-  --background-alpha: 5%;
-  --foreground-alpha: 60%;
-
   display: flex;
   @if $inline {
     display: inline-flex;
