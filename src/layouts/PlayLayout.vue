@@ -1,11 +1,9 @@
 <template>
-  <div class="container"><slot /></div>
+  <div class="playLayoutContainer"><slot /></div>
 </template>
 
-<script lang="ts" setup></script>
-
 <style lang="scss" scoped>
-.container {
+.playLayoutContainer {
   display: flex;
   height: 100vh;
   flex-direction: column;

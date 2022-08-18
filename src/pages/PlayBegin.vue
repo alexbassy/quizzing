@@ -33,7 +33,7 @@ const firstQuestionId = useObservable(quiz$.pipe(map((quiz) => quiz!.questions![
 
 <template>
   <PlayLayout>
-    <div class="container">
+    <div class="playBeginContainer">
       <h1>{{ quiz?.name }}</h1>
       Ready to begin??
       <!-- Could also resume an already started quiz here! -->
@@ -47,7 +47,7 @@ const firstQuestionId = useObservable(quiz$.pipe(map((quiz) => quiz!.questions![
 </template>
 
 <style lang="scss" scoped>
-.container {
+.playBeginContainer {
   position: relative;
   display: flex;
   width: 100vw;

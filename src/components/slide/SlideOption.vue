@@ -20,7 +20,7 @@ const slideHidden = OPTION.hidden
 <template>
   <Motion
     tag="li"
-    class="container"
+    class="slideOptionContainer"
     :initial="slideInitial"
     :animate="slideShown"
     :exit="slideHidden"
@@ -33,7 +33,7 @@ const slideHidden = OPTION.hidden
 </template>
 
 <style lang="scss" scoped>
-.container {
+.slideOptionContainer {
   margin: 1.4rem 0;
   counter-increment: option-counter;
   font-size: var(--slide-option-font-size);

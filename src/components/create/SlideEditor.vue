@@ -85,7 +85,7 @@ const backgroundColor = computed(() => question.value?.backgroundColor || '')
 </script>
 
 <template>
-  <div class="container">
+  <div class="slideEditorContainer">
     <Dropzone @dropped="onDropzoneDrop">
       <div class="slide">
         <img v-if="hasImage" class="image" :src="imageSrc" />
@@ -140,7 +140,7 @@ const backgroundColor = computed(() => question.value?.backgroundColor || '')
 </template>
 
 <style lang="scss" scoped>
-.container {
+.slideEditorContainer {
   position: relative;
   height: 100%;
   align-self: center;

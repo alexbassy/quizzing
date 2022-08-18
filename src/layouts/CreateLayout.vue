@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="createLayoutContainer">
     <header class="header">
       <div class="header-title"><slot name="title" /></div>
       <div class="header-action"><slot name="action" /></div>
@@ -12,7 +12,7 @@
 </template>
 
 <style lang="scss" scoped>
-.container {
+.createLayoutContainer {
   display: flex;
   height: 100vh;
   flex-direction: column;
