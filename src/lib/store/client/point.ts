@@ -6,6 +6,10 @@ export function addPoint({ questionId, roundId, playerId }: PointEntry) {
   return db.points.add({ questionId, roundId, playerId })
 }
 
+export function removePoint(pointId: string) {
+  return db.points.delete(pointId)
+}
+
 export function getPoints$(roundId: string, questionId: string) {
   return from(liveQuery(() => db.points.where({ roundId, questionId }).toArray()))
 }

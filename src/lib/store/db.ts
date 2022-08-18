@@ -59,11 +59,11 @@ class QuizStore extends Dexie {
   public constructor() {
     super('QuizStore')
     this.version(1).stores({
-      quiz: '$$id,name',
-      question: '$$id,quizId',
-      player: '$$id,name',
-      round: '$$id,quizId',
-      points: '++id,roundId,questionId',
+      quiz: '$$id, name',
+      question: '$$id, quizId',
+      player: '$$id, name',
+      round: '$$id, quizId',
+      points: '++id, [roundId+questionId]',
     })
   }
 }
