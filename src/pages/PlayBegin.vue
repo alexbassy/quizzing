@@ -34,14 +34,40 @@ const firstQuestionId = useObservable(quiz$.pipe(map((quiz) => quiz!.questions![
 <template>
   <PlayLayout>
     <div class="playBeginContainer">
-      <h1>{{ quiz?.name }}</h1>
-      Ready to begin??
+      <h1 class="title">{{ quiz?.name }}</h1>
+      <p>Ready to rumble? Here are the controls</p>
+      <dl>
+        <dt>Show answer</dt>
+        <dd>
+          <kbd>{{ '->' }}</kbd>
+        </dd>
+        <dt>Hide answer</dt>
+        <dd>
+          <kbd>{{ '<-' }}</kbd> once
+        </dd>
+        <dt>Next question</dt>
+        <dd>
+          <kbd>{{ '->' }}</kbd> again
+        </dd>
+        <dt>Previous question</dt>
+        <dd>
+          <kbd>{{ '<-' }}</kbd> again
+        </dd>
+        <dt>Show background image</dt>
+        <dd>
+          <kbd>{{ '↑' }}</kbd> once
+        </dd>
+      </dl>
+
       <!-- Could also resume an already started quiz here! -->
-      <router-link
-        v-if="firstQuestionId"
-        :to="{ name: 'PlayQuestion', params: { questionId: firstQuestionId } }"
-        >GO</router-link
-      >
+      <div>
+        <router-link
+          v-if="firstQuestionId"
+          class="goButton"
+          :to="{ name: 'PlayQuestion', params: { questionId: firstQuestionId } }"
+          >Start quiz</router-link
+        >
+      </div>
     </div>
   </PlayLayout>
 </template>
@@ -53,7 +79,49 @@ const firstQuestionId = useObservable(quiz$.pipe(map((quiz) => quiz!.questions![
   width: 100vw;
   height: 100vh;
   flex-direction: column;
-  align-items: start;
+  align-items: center;
   justify-content: center;
+  text-align: center;
+}
+
+.title {
+  margin-bottom: 1em;
+  font-size: 2rem;
+}
+
+dl {
+  display: grid;
+  padding: 1rem;
+  margin: 1rem 0;
+  background: var(--background1);
+  border-radius: 6px;
+  column-gap: 2rem;
+  grid-template-columns: 3fr 2fr;
+  row-gap: 0.5rem;
+}
+
+dt {
+  text-align: right;
+}
+
+dd {
+  text-align: left;
+}
+
+kbd {
+  display: inline-block;
+  padding: 0.2rem 0.3rem;
+  border: 1px solid var(--background1);
+  background-color: var(--background1);
+  border-radius: 3px;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.5), 0 2px 0 0 rgba(255, 255, 255, 0.1) inset;
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.goButton {
+  @include button(#009900);
 }
 </style>
