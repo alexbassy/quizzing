@@ -1,33 +1,38 @@
 <script lang="ts" setup>
 import { defineProps } from 'vue'
-import { combineLatest } from 'rxjs'
+import { combineLatest, of } from 'rxjs'
 import { map, switchMap } from 'rxjs/operators'
 import { addPoint, getPlayersOfRound$, getPoints$, removePoint } from '@/lib/store/client'
-import { useObservable } from '@/composable/useObservable'
 import PlayerAvatar from './PlayerAvatar.vue'
 import { PlayerEntry } from '@/lib/store/db'
 import { watch$ } from '@/lib/observables'
+import { useObservable } from '@vueuse/rxjs'
 
 const props = defineProps<{
-  roundId: string
-  questionId: string
+  roundId: string | undefined
+  questionId: string | undefined
 }>()
 
 const roundId$ = watch$(() => props.roundId)
 const questionId$ = watch$(() => props.questionId)
 
-const players = useObservable(roundId$.pipe(switchMap(getPlayersOfRound$)))
+const players = useObservable(
+  roundId$.pipe(switchMap((roundId) => (roundId ? getPlayersOfRound$(roundId) : of([]))))
+)
 
-const points = useObservable<Record<string, string>>(
+const points = useObservable<Record<string, string>, Record<string, string>>(
   combineLatest([roundId$, questionId$]).pipe(
-    switchMap(([roundId, questionId]) => getPoints$(roundId, questionId)),
+    switchMap(([roundId, questionId]) =>
+      roundId && questionId ? getPoints$(roundId, questionId) : of([])
+    ),
     map((points) => Object.fromEntries(points.map((point) => [point.playerId, point.id])))
-  )
+  ),
+  { initialValue: {} }
 )
 
 async function togglePoint(player: PlayerEntry) {
   console.log(points.value, player.id)
-  const playerPoint = points.value[player.id]
+  const playerPoint = points.value[player.id!]
   if (typeof playerPoint === 'undefined') {
     await addPoint({ questionId: props.questionId, playerId: player.id, roundId: props.roundId })
   } else {
@@ -37,11 +42,11 @@ async function togglePoint(player: PlayerEntry) {
 </script>
 
 <template>
-  <ul class="list">
+  <ul class="list" v-if="roundId && questionId">
     <li v-for="player in players">
       <PlayerAvatar
         class="playerAvatarToggle"
-        :class="{ '-hasPoint': points[player.id] }"
+        :class="{ '-hasPoint': points[player.id!] }"
         :player="player"
         @click="togglePoint(player)"
       />
