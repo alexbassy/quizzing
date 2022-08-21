@@ -206,5 +206,6 @@ function closePlayerAttributes() {
 
 .player-list-button {
   all: unset;
+  cursor: pointer;
 }
 </style>

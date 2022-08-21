@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { defineProps, useSlots, VNode } from 'vue'
+import { useSlots, VNode } from 'vue'
 import { type Component } from '@vue/runtime-core'
 import { LinkTableColumn } from '.'
 

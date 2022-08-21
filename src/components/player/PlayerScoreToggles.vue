@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import { defineProps } from 'vue'
 import { combineLatest, of } from 'rxjs'
 import { map, switchMap } from 'rxjs/operators'
 import { addPoint, getPlayersOfRound$, getPoints$, removePoint } from '@/lib/store/client'

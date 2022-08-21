@@ -6,24 +6,23 @@ import { deletePlayer, getPlayer$, updatePlayer } from '@/lib/store/client'
 import { useObservable } from '@vueuse/rxjs'
 import PlayerAvatar from './PlayerAvatar.vue'
 import RubbishIcon from '../icons/RubbishIcon.vue'
+import Popover from '../Popover.vue'
 
 const props = defineProps<{
-  playerId: string | undefined
-  x: number | undefined
-  y: number | undefined
+  playerId?: string
+  x?: number
+  y?: number
 }>()
 
 const emit = defineEmits(['close'])
 
-const container = ref<HTMLFormElement>()
+const isVisible = ref<boolean>(false)
 
+// Focus the popover when it is opened (by changing the player ID prop)
 watch(
   () => props.playerId,
-  () => {
-    nextTick(() => {
-      console.log('yues', container.value)
-      container.value?.focus()
-    })
+  (playerId) => {
+    isVisible.value = Boolean(playerId)
   },
   { immediate: true }
 )
@@ -47,72 +46,48 @@ async function saveName() {
 
 async function removePlayer() {
   await deletePlayer(player.value!.id!)
-  emit('close')
+  close()
 }
 
-const blurEmit = ref()
-function onBlur() {
-  console.log('blur')
-  blurEmit.value = setTimeout(() => emit('close'), 1)
-}
-function onFocus() {
-  console.log('blur')
-  clearTimeout(blurEmit.value)
+function close() {
+  emit('close')
+  isVisible.value = false
 }
 </script>
 
 <template>
-  <form
-    class="playerAttributesPopover"
-    v-if="playerId"
-    @submit.prevent="saveName"
-    tabIndex="-1"
-    ref="container"
-    @focusout.capture="onBlur"
-    @focusin="onFocus"
-  >
-    <PlayerAvatar :player="player" v-if="player" large />
-    <div class="inputContainer">
-      <input class="playerName" type="text" v-model="playerName" />
-    </div>
-    <div class="actions">
-      <button
-        class="deleteButton"
-        type="button"
-        aria-label="Delete player"
-        title="Delete player"
-        @click="removePlayer"
-      >
-        <RubbishIcon />
-      </button>
-      <button class="saveButton" @click="saveName" :disabled="!nameChanged">Save</button>
-    </div>
-  </form>
+  <Popover :x="x" :y="y" class="playerAttributesPopover" @close="close">
+    <form v-if="playerId" @submit.prevent="saveName" class="playerAttributesForm">
+      <PlayerAvatar v-if="player" :player="player" large />
+      <div class="inputContainer">
+        <input class="playerName" type="text" v-model="playerName" />
+      </div>
+      <div class="actions">
+        <button
+          class="deleteButton"
+          type="button"
+          aria-label="Delete player"
+          title="Delete player"
+          @click="removePlayer"
+        >
+          <RubbishIcon />
+        </button>
+        <button class="saveButton" @click="saveName" :disabled="!nameChanged">Save</button>
+      </div>
+    </form>
+  </Popover>
 </template>
 
 <style lang="scss" scoped>
 .playerAttributesPopover {
-  --top: calc(v-bind('y') * 1px);
-  --left: calc(v-bind('x') * 1px);
-
-  position: absolute;
-  z-index: 2;
-  top: var(--top);
-  left: var(--left);
-  display: flex;
   width: 180px;
+}
+
+.playerAttributesForm {
+  display: flex;
+  width: 100%;
   flex-direction: column;
   align-items: center;
-  padding: 0.75rem;
-  border: 1px solid rgb(60 60 60);
-  backdrop-filter: blur(10px);
-  background: rgb(50 50 50 / 70%);
-  border-radius: 6px;
-  transform: translate(-100%, -35%);
-
-  &::before {
-    content: '';
-  }
 }
 
 .inputContainer {
