@@ -15,12 +15,9 @@ export function addPlayer({ name, photo, backgroundColor }: PlayerEntry) {
 }
 
 export function updatePlayer(playerId: string, player: PlayerEntry) {
-  return db.quiz.update(playerId, player)
+  return db.player.update(playerId, player)
 }
 
 export function deletePlayer(id: string) {
-  return db.transaction('rw', db.player, db.round, () => {
-    db.player.delete(id)
-    db.round.where('players').anyOf(id).delete()
-  })
+  return db.player.delete(id)
 }

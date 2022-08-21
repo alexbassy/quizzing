@@ -31,7 +31,6 @@ const points = useObservable<Record<string, string>, Record<string, string>>(
 )
 
 async function togglePoint(player: PlayerEntry) {
-  console.log(points.value, player.id)
   const playerPoint = points.value[player.id!]
   if (typeof playerPoint === 'undefined') {
     await addPoint({ questionId: props.questionId, playerId: player.id, roundId: props.roundId })

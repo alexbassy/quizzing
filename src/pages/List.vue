@@ -9,7 +9,8 @@ import { PlayerEntry, type QuizEntry } from '@/lib/store/db'
 import { LinkTable, LinkTableColumn } from '@/components/table'
 import randomColor from 'randomcolor'
 import PlayerAvatar from '@/components/player/PlayerAvatar.vue'
-import { tap } from 'rxjs'
+import { ref } from 'vue'
+import PlayerAttributesPopover from '@/components/player/PlayerAttributesPopover.vue'
 
 const quizzes = useObservable<QuizEntry[]>(getQuizzes$())
 
@@ -25,6 +26,19 @@ async function createPlayer() {
 
 async function remove(id: string) {
   await deleteQuiz(id)
+}
+
+const activePlayerAttributesPopover = ref<PlayerEntry['id']>()
+const activePlayerPosition = ref<{ x: number; y: number }>()
+function openPlayerAttributes(event: Event, playerId: string) {
+  activePlayerAttributesPopover.value = playerId
+  const { offsetTop, offsetLeft } = event.currentTarget as HTMLElement
+  activePlayerPosition.value = { x: offsetLeft, y: offsetTop }
+}
+
+function closePlayerAttributes() {
+  activePlayerAttributesPopover.value = undefined
+  activePlayerPosition.value = undefined
 }
 </script>
 
@@ -79,9 +93,18 @@ async function remove(id: string) {
         <div class="players">
           <ul class="player-list">
             <li v-for="player in players" :key="player.id">
-              <PlayerAvatar :player="player" />
+              <button class="player-list-button" @click="openPlayerAttributes($event, player.id!)">
+                <PlayerAvatar :player="player" />
+              </button>
             </li>
           </ul>
+          <PlayerAttributesPopover
+            :visible="Boolean(activePlayerAttributesPopover && activePlayerPosition)"
+            :player-id="activePlayerAttributesPopover"
+            :x="activePlayerPosition?.x"
+            :y="activePlayerPosition?.y"
+            @close="closePlayerAttributes"
+          />
         </div>
       </section>
     </div>
@@ -120,6 +143,7 @@ async function remove(id: string) {
 }
 
 .players {
+  position: relative;
   padding: 0.5rem;
   background-color: var(--background1);
   border-radius: 10px;
@@ -178,5 +202,9 @@ async function remove(id: string) {
       transform: scale(0.95);
     }
   }
+}
+
+.player-list-button {
+  all: unset;
 }
 </style>

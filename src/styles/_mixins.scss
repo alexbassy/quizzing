@@ -91,9 +91,13 @@
   cursor: pointer;
   font-weight: bold;
   transition: 0.25s ease;
-  transition-property: color, background-color, transform;
+  transition-property: opacity, color, background-color, transform;
 
-  &:active {
+  &[disabled] {
+    opacity: 0.6;
+  }
+
+  &:not([disabled]):active {
     transform: scale(0.95);
   }
 }

@@ -41,9 +41,7 @@ function closeModal() {
 async function startRound() {
   const players = Object.keys(selectedPlayers)
   const roundId = await addRound({ quizId, players })
-  console.log(roundId)
   router.push({ name: 'Play', params: { roundId } })
-  // closeModal()
 }
 
 watch(
@@ -56,7 +54,6 @@ watch(
 )
 
 const onPlayerClick = (id: string) => {
-  console.log('click!')
   if (selectedPlayers[id]) delete selectedPlayers[id]
   else selectedPlayers[id] = true
 }
