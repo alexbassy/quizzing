@@ -3,10 +3,11 @@ import { computed, defineProps, nextTick, ref, watch } from 'vue'
 import { filter, switchMap, tap } from 'rxjs/operators'
 import { watch$ } from '@/lib/observables'
 import { deletePlayer, getPlayer$, updatePlayer } from '@/lib/store/client'
-import { useObservable } from '@vueuse/rxjs'
+import { useObservable, useSubscription } from '@vueuse/rxjs'
 import PlayerAvatar from './PlayerAvatar.vue'
 import RubbishIcon from '../icons/RubbishIcon.vue'
 import Popover from '../Popover.vue'
+import { fromEvent } from 'rxjs'
 
 const props = defineProps<{
   playerId?: string
@@ -53,12 +54,50 @@ function close() {
   emit('close')
   isVisible.value = false
 }
+
+const isSelectingFile = ref(false)
+const photoInput = ref<HTMLInputElement>()
+function openFileInput() {
+  isSelectingFile.value = true
+  photoInput.value?.click()
+}
+
+useSubscription(
+  fromEvent(window, 'focus').subscribe((e) => {
+    if (isSelectingFile.value) {
+      console.log('regained focus')
+      isSelectingFile.value = false
+    }
+  })
+)
+
+async function fileInputChange(ev: Event) {
+  console.log('fileInputChange', ev)
+  isSelectingFile.value = false
+  const file = (ev.target as HTMLInputElement).files?.[0]
+  if (!file || !file.type.startsWith('image')) {
+    return
+  }
+  const buffer = await file?.arrayBuffer()
+  const blob = new Blob([buffer!], { type: file?.type })
+
+  await updatePlayer(player.value!.id!, { photo: blob })
+}
 </script>
 
 <template>
-  <Popover :x="x" :y="y" class="playerAttributesPopover" @close="close">
+  <Popover
+    :x="x"
+    :y="y"
+    class="playerAttributesPopover"
+    :stay-on-top="isSelectingFile"
+    @close="close"
+  >
     <form v-if="playerId" @submit.prevent="saveName" class="playerAttributesForm">
-      <PlayerAvatar v-if="player" :player="player" large />
+      <input type="file" ref="photoInput" class="fileUploadInput" @change="fileInputChange" />
+      <button type="button" class="avatarUploadButton" @click="openFileInput">
+        <PlayerAvatar v-if="player" :player="player" large />
+      </button>
       <div class="inputContainer">
         <input class="playerName" type="text" v-model="playerName" />
       </div>
@@ -88,6 +127,17 @@ function close() {
   width: 100%;
   flex-direction: column;
   align-items: center;
+}
+
+.fileUploadInput {
+  width: 0;
+  height: 0;
+  clip: 0 0 0 0;
+  visibility: hidden;
+}
+
+.avatarUploadButton {
+  unset: all;
 }
 
 .inputContainer {

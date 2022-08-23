@@ -21,7 +21,7 @@ const backgroundColor = computed(() => props.player.backgroundColor ?? '#fff')
 <template>
   <span class="player" :class="{ '-large': large }">
     <div class="background">
-      <img v-if="imageSrc" :src="imageSrc" />
+      <img v-if="imageSrc" :src="imageSrc" class="photo" />
     </div>
     <span class="initials" v-if="!imageSrc">{{ initials }}</span>
   </span>
@@ -44,10 +44,17 @@ const backgroundColor = computed(() => props.player.backgroundColor ?? '#fff')
 }
 .background {
   position: absolute;
+  overflow: hidden;
   width: 100%;
   height: 100%;
   background-color: v-bind('backgroundColor');
   border-radius: 100px;
+}
+
+.photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .initials {

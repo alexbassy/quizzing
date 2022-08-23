@@ -11,6 +11,7 @@ const props = defineProps<{
   visible?: boolean
   x?: number
   y?: number
+  stayOnTop?: boolean
 }>()
 
 const emit = defineEmits(['close'])
@@ -32,6 +33,7 @@ watch(
 
 const blurEmit = ref()
 function onBlur() {
+  if (props.stayOnTop) return
   // Queue the closure to account for new `focusin` event from interaction inside the popover
   blurEmit.value = setTimeout(() => exitAnimation(), 0)
 }
