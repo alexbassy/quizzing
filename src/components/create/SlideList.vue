@@ -1,12 +1,12 @@
 <script lang="ts" setup>
+import { inject, ref } from 'vue'
+import { useObservable } from '@vueuse/rxjs'
+import randomColor from 'randomcolor'
+import { map, switchMap } from 'rxjs/operators'
 import { onMounted$ } from '@/composable/useObservable'
 import * as client from '@/lib/store/client'
 import { getQuestions$ } from '@/lib/store/client'
 import { QuestionEntry } from '@/lib/store/db'
-import { useObservable } from '@vueuse/rxjs'
-import randomColor from 'randomcolor'
-import { map, switchMap } from 'rxjs/operators'
-import { inject, ref } from 'vue'
 import RubbishIcon from '../icons/RubbishIcon.vue'
 
 const props = defineProps<{ questions: QuestionEntry[]; activeQuestionId?: string }>()
@@ -58,18 +58,18 @@ function getImageObjectURL(question: QuestionEntry) {
 
 <template>
   <div class="list-container">
-    <ol class="list" ref="listElem" v-auto-animate>
+    <ol ref="listElem" v-auto-animate class="list">
       <li
-        class="item"
-        :style="`--background-color: ${question.backgroundColor || 'gray'};`"
         v-for="(question, index) in questions"
         :key="question.id"
+        class="item"
+        :style="`--background-color: ${question.backgroundColor || 'gray'};`"
         tabindex="0"
         role="button"
+        :class="{ '-active': activeQuestionId === question.id }"
         @click="setActiveSlide(question.id!)"
         @keyup.enter="setActiveSlide(question.id!)"
         @keyup.space.prevent="setActiveSlide(question.id!)"
-        :class="{ '-active': activeQuestionId === question.id }"
       >
         <button
           class="delete-button"

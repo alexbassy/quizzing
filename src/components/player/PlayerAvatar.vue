@@ -1,8 +1,7 @@
 <script lang="ts" setup>
-import { type PlayerEntry } from '@/lib/store/db'
 import { computed } from 'vue'
+import { type PlayerEntry } from '@/lib/store/db'
 
-interface Props extends PlayerEntry {}
 const props = defineProps<{ player: PlayerEntry; large?: boolean }>()
 
 const initials = computed(() =>
@@ -23,7 +22,7 @@ const backgroundColor = computed(() => props.player.backgroundColor ?? '#fff')
     <div class="background">
       <img v-if="imageSrc" :src="imageSrc" class="photo" />
     </div>
-    <span class="initials" v-if="!imageSrc">{{ initials }}</span>
+    <span v-if="!imageSrc" class="initials">{{ initials }}</span>
   </span>
 </template>
 
@@ -42,6 +41,7 @@ const backgroundColor = computed(() => props.player.backgroundColor ?? '#fff')
     height: 100px;
   }
 }
+
 .background {
   position: absolute;
   overflow: hidden;

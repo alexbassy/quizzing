@@ -1,4 +1,8 @@
 <script lang="ts" setup>
+import { computed, nextTick, ref } from 'vue'
+import { useObservable, useSubscription } from '@vueuse/rxjs'
+import { combineLatest, fromEvent, startWith, switchMap } from 'rxjs'
+import * as Stretchy from 'stretchy'
 import { onMounted$ } from '@/composable/useObservable'
 import { watch$ } from '@/lib/observables'
 import {
@@ -9,10 +13,6 @@ import {
   updateQuestionTitle,
 } from '@/lib/store/client'
 import { IUnsplashSearchResult } from '@/worker/types'
-import { useObservable, useSubscription } from '@vueuse/rxjs'
-import { combineLatest, fromEvent, startWith, switchMap } from 'rxjs'
-import * as Stretchy from 'stretchy'
-import { computed, nextTick, ref } from 'vue'
 import PictureIcon from '../icons/PictureIcon.vue'
 import ImagePicker from './ImagePicker.vue'
 import Dropzone from './Dropzone.vue'
@@ -97,15 +97,15 @@ const backgroundColor = computed(() => question.value?.backgroundColor || '')
           <span class="count">&times;</span>
           <div class="title">
             <textarea
+              ref="slideTitle"
               type="text"
               :value="title"
               placeholder="Question title"
-              ref="slideTitle"
               class="title-textarea"
               @input="handleTitleInput"
             />
           </div>
-          <ol class="options" ref="slideOptions">
+          <ol ref="slideOptions" class="options">
             <li
               v-for="(option, index) in options"
               :key="`${questionId}-option-${index}`"

@@ -1,11 +1,5 @@
 <script lang="ts" setup>
-import { computed, defineProps, nextTick, ref, watch } from 'vue'
-import { filter, switchMap, tap } from 'rxjs/operators'
-import { watch$ } from '@/lib/observables'
-import { deletePlayer, getPlayer$, updatePlayer } from '@/lib/store/client'
-import { useObservable } from '@vueuse/rxjs'
-import PlayerAvatar from './PlayerAvatar.vue'
-import RubbishIcon from '../icons/RubbishIcon.vue'
+import { defineProps, nextTick, ref, watch } from 'vue'
 
 const props = defineProps<{
   visible?: boolean
@@ -64,8 +58,8 @@ function exitAnimation() {
 <template>
   <div
     v-if="visible"
-    class="popover"
     ref="container"
+    class="popover"
     tabIndex="-1"
     @focusout.capture="onBlur"
     @focusin="onFocus"

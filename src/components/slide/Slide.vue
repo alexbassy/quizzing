@@ -1,8 +1,8 @@
 <script lang="ts" setup>
+import { computed, provide } from 'vue'
+import { Motion, Presence } from 'motion/vue'
 import { FADE, SLIDE } from '@/lib/motion-variants'
 import { QuestionEntry } from '@/lib/store/db'
-import { Motion, Presence } from 'motion/vue'
-import { computed, provide } from 'vue'
 import SlideImage from './SlideImage.vue'
 import SlideOption from './SlideOption.vue'
 
@@ -38,9 +38,9 @@ const slideHidden = SLIDE.hidden
   <Motion class="text-content" :initial="fadeInitial" :animate="fadeShown" :exit="fadeHidden">
     <!-- Count -->
     <Motion
+      :key="'count ' + questionIndex"
       tag="span"
       class="count"
-      :key="'count ' + questionIndex"
       :initial="slideInitial"
       :animate="slideShown"
       :exit="slideHidden"
@@ -50,9 +50,9 @@ const slideHidden = SLIDE.hidden
 
     <!-- Title -->
     <Motion
+      :key="'title ' + question.id"
       tag="h2"
       class="title"
-      :key="'title ' + question.id"
       :initial="slideInitial"
       :animate="slideShown"
       :exit="slideHidden"
@@ -61,8 +61,8 @@ const slideHidden = SLIDE.hidden
     >
 
     <!-- Options list -->
-    <Motion tag="ol" class="options" :key="'options ' + question.id">
-      <Presence v-for="(option, i) in question.options">
+    <Motion :key="'options ' + question.id" tag="ol" class="options">
+      <Presence v-for="(option, i) in question.options" :key="i">
         <SlideOption
           :key="option"
           :option="option"

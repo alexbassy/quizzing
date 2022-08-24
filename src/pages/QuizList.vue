@@ -1,5 +1,7 @@
 <script lang="ts" setup>
+import { ref } from 'vue'
 import { useObservable } from '@vueuse/rxjs'
+import randomColor from 'randomcolor'
 import AddIcon from '@/components/icons/AddIcon.vue'
 import RubbishIcon from '@/components/icons/RubbishIcon.vue'
 import CreateLayout from '@/layouts/CreateLayout.vue'
@@ -7,9 +9,7 @@ import { formatRelativeTime } from '@/lib/relative-time'
 import { addQuiz, deleteQuiz, getQuizzes$, getPlayers$, addPlayer } from '@/lib/store/client'
 import { PlayerEntry, type QuizEntry } from '@/lib/store/db'
 import { LinkTable, LinkTableColumn } from '@/components/table'
-import randomColor from 'randomcolor'
 import PlayerAvatar from '@/components/player/PlayerAvatar.vue'
-import { ref } from 'vue'
 import PlayerAttributesPopover from '@/components/player/PlayerAttributesPopover.vue'
 
 const quizzes = useObservable<QuizEntry[]>(getQuizzes$())
@@ -48,7 +48,7 @@ function closePlayerAttributes() {
       <h1 class="title">Quizzing 🥷</h1>
     </template>
     <template #action>
-      <button @click="createQuiz" class="add-button"><AddIcon /> Create quiz</button>
+      <button class="add-button" @click="createQuiz"><AddIcon /> Create quiz</button>
     </template>
 
     <div class="page">
@@ -59,21 +59,21 @@ function closePlayerAttributes() {
           play button.
         </p>
         <LinkTable :data="quizzes" class="table" :row-link="({ id }) => `/create/${id}`">
-          <LinkTableColumn title="Name" #default="{ name }: QuizEntry">{{ name }}</LinkTableColumn>
-          <LinkTableColumn title="Questions" #default="{ questions }: QuizEntry">
+          <LinkTableColumn v-slot="{ name }: QuizEntry" title="Name">{{ name }}</LinkTableColumn>
+          <LinkTableColumn v-slot="{ questions }: QuizEntry" title="Questions">
             {{ questions?.length ?? 0 }}
           </LinkTableColumn>
-          <LinkTableColumn title="Created" #default="{ createdAt }: QuizEntry">
+          <LinkTableColumn v-slot="{ createdAt }: QuizEntry" title="Created">
             {{ formatRelativeTime(createdAt!) }}
           </LinkTableColumn>
-          <LinkTableColumn title="Updated" #default="{ updatedAt }: QuizEntry">
+          <LinkTableColumn v-slot="{ updatedAt }: QuizEntry" title="Updated">
             {{ formatRelativeTime(updatedAt!) }}
           </LinkTableColumn>
-          <LinkTableColumn title="" #default="{ id, name }: QuizEntry">
+          <LinkTableColumn v-slot="{ id, name }: QuizEntry" title="">
             <button
               class="delete-button"
-              @click.prevent="remove(id!)"
               :aria-label="`Delete ${name}`"
+              @click.prevent="remove(id!)"
             >
               <RubbishIcon />
             </button>

@@ -1,6 +1,5 @@
 <script lang="ts" setup>
-import { useSlots, VNode } from 'vue'
-import { type Component } from '@vue/runtime-core'
+import { useSlots, VNode, type Component } from 'vue'
 import { LinkTableColumn } from '.'
 
 type Data = unknown & { id?: string }
@@ -21,19 +20,21 @@ const columns = children.filter((child) => (child.type as Component)?.name === L
   <div class="table" role="table">
     <div role="rowgroup">
       <div class="titles" role="row">
-        <span v-for="column in columns" role="columnheader">{{ column.props?.title }}</span>
+        <span v-for="column in columns" :key="column.props?.id" role="columnheader">{{
+          column.props?.title
+        }}</span>
       </div>
     </div>
-    <ol class="list" v-if="data?.length" role="rowgroup" v-auto-animate>
-      <li class="item" v-for="entity in data" :key="entity.id" role="row">
+    <ol v-if="data?.length" v-auto-animate class="list" role="rowgroup">
+      <li v-for="entity in data" :key="entity.id" class="item" role="row">
         <RouterLink class="link" :to="rowLink(entity)">
-          <span v-for="column in columns" role="cell">
+          <span v-for="column in columns" :key="column.props?.id" role="cell">
             <component :is="(column.children as any).default" v-bind="entity" />
           </span>
         </RouterLink>
       </li>
     </ol>
-    <div class="list -empty" v-else>
+    <div v-else class="list -empty">
       <slot name="empty" />
     </div>
   </div>

@@ -1,5 +1,5 @@
-import { Observable, Subscription } from 'rxjs'
 import { onBeforeUnmount, onMounted, Ref, ref } from 'vue'
+import { Observable, Subscription } from 'rxjs'
 
 export function useObservable<T>(obs$: Observable<T>): Ref<T | undefined> {
   const valueRef = ref<T>()

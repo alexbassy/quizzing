@@ -1,11 +1,10 @@
 <script lang="ts" setup>
 import { computed, defineProps, inject, reactive, ref, watch } from 'vue'
-import { tap } from 'rxjs'
+import { useRouter } from 'vue-router'
 import PlayerAvatar from '@/components/player/PlayerAvatar.vue'
 import { useObservable } from '@/composable/useObservable'
 import { addRound, getPlayers$ } from '@/lib/store/client'
 import TickIcon from '../icons/TickIcon.vue'
-import { useRouter } from 'vue-router'
 
 interface Props {
   visible: boolean
@@ -20,7 +19,6 @@ const quizId = inject<string>('quizId')
 const router = useRouter()
 
 const dialog = ref<HTMLDialogElement>()
-const isVisible = ref(props.visible)
 
 const players = useObservable(getPlayers$())
 
@@ -41,7 +39,7 @@ function closeModal() {
 async function startRound() {
   const players = Object.keys(selectedPlayers)
   const roundId = await addRound({ quizId, players })
-  router.push({ name: 'Play', params: { roundId } })
+  router.push({ name: 'PlayBegin', params: { roundId } })
 }
 
 watch(
@@ -69,15 +67,15 @@ function close() {
 
 <template>
   <dialog
-    class="playDialog"
     ref="dialog"
+    class="playDialog"
+    aria-labelledby="play-dialog-description"
     @cancel="cancel"
     @close="close"
-    aria-labelledby="play-dialog-description"
   >
     <form method="dialog">
       <h1 class="title">Who’s playing?</h1>
-      <p class="message" id="play-dialog-description">
+      <p id="play-dialog-description" class="message">
         Add some participants to the quiz for easy scoring as you go along. You can also start the
         quiz without adding any players.
       </p>
@@ -93,10 +91,10 @@ function close() {
             @keydown.space="onPlayerClick(player.id!)"
           >
             <input
+              id="player-{{ player.id }}"
               type="checkbox"
               name="players"
               class="hiddenCheckbox"
-              id="player-{{ player.id }}"
               :value="selectedPlayers[player.id!] || false"
             />
             <PlayerAvatar :player="player" class="playerAvatar" />
@@ -162,9 +160,6 @@ function close() {
 
 .playerListItem {
   margin: 0 1rem 1rem 0;
-}
-
-.playerAvatar {
 }
 
 .playerCheckbox {

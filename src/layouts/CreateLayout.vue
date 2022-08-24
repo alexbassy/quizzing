@@ -5,7 +5,7 @@
       <div class="header-action"><slot name="action" /></div>
     </header>
     <div class="contentWrap">
-      <aside class="sidebar" v-if="$slots.sidebar"><slot name="sidebar" /></aside>
+      <aside v-if="$slots.sidebar" class="sidebar"><slot name="sidebar" /></aside>
       <main class="content"><slot /></main>
     </div>
   </div>

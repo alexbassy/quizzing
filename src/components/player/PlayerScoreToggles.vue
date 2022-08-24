@@ -1,11 +1,11 @@
 <script lang="ts" setup>
 import { combineLatest, of } from 'rxjs'
 import { map, switchMap } from 'rxjs/operators'
+import { useObservable } from '@vueuse/rxjs'
 import { addPoint, getPlayersOfRound$, getPoints$, removePoint } from '@/lib/store/client'
-import PlayerAvatar from './PlayerAvatar.vue'
 import { PlayerEntry } from '@/lib/store/db'
 import { watch$ } from '@/lib/observables'
-import { useObservable } from '@vueuse/rxjs'
+import PlayerAvatar from './PlayerAvatar.vue'
 
 const props = defineProps<{
   roundId: string | undefined
@@ -40,8 +40,8 @@ async function togglePoint(player: PlayerEntry) {
 </script>
 
 <template>
-  <ul class="list" v-if="roundId && questionId">
-    <li v-for="player in players">
+  <ul v-if="roundId && questionId" class="list">
+    <li v-for="player in players" :key="player.id">
       <PlayerAvatar
         class="playerAvatarToggle"
         :class="{ '-hasPoint': points[player.id!] }"

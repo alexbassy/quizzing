@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import { IUnsplashSearchResult } from '@/worker/types'
 import { ref } from 'vue'
+import { IUnsplashSearchResult } from '@/worker/types'
 
 const props = defineProps<{ isOpen: boolean }>()
 
@@ -20,10 +20,10 @@ async function searchPictures() {
 
 <template>
   <div class="imagePicker" :class="{ '-visible': isOpen }">
-    <form @submit.prevent="searchPictures" class="search-form">
+    <form class="search-form" @submit.prevent="searchPictures">
       <input
-        type="text"
         v-model="query"
+        type="text"
         placeholder="Search for images"
         class="search-field"
         autofocus
@@ -31,7 +31,7 @@ async function searchPictures() {
     </form>
     <div class="results">
       <ul v-if="results.length" class="results-list">
-        <li v-for="result in results" class="result" :key="result.id">
+        <li v-for="result in results" :key="result.id" class="result">
           <img
             :src="result.urls.thumb"
             :style="`background-color: ${result.color}`"

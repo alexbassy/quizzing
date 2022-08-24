@@ -3,7 +3,7 @@ import { computed, inject } from 'vue'
 import { Motion } from 'motion/vue'
 import { OPTION } from '@/lib/motion-variants'
 
-const props = defineProps<{
+defineProps<{
   option: string
   index: number
   isAnswerShown: boolean
@@ -66,20 +66,18 @@ const slideHidden = OPTION.hidden
     will-change: color, background-color;
   }
 
-  &.-answerShown.-correct {
-    &::before {
-      background-color: #28bb2e;
-      box-shadow: 0 0 20px #28bb2e85, 0 0 60px #28bb2e50;
-      color: #ffffff;
-    }
-  }
-
   &.-answerShown {
     opacity: 0.2;
     text-shadow: 0 0 30px rgb(0 0 0 / 100%);
 
     &.-correct {
       opacity: 1;
+
+      &::before {
+        background-color: #28bb2e;
+        box-shadow: 0 0 20px #28bb2e85, 0 0 60px #28bb2e50;
+        color: #ffffff;
+      }
     }
   }
 }

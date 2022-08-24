@@ -1,11 +1,11 @@
 <script lang="ts" setup>
-import { catchError, map, of, switchMap } from 'rxjs'
 import { ref, watch } from 'vue'
+import { catchError, map, of, switchMap } from 'rxjs'
 import { useRoute, useRouter } from 'vue-router'
+import { useObservable } from '@vueuse/rxjs'
 import PlayLayout from '@/layouts/PlayLayout.vue'
 import { watch$ } from '@/lib/observables'
 import { getQuiz$, getRound$ } from '@/lib/store/client'
-import { useObservable } from '@vueuse/rxjs'
 
 const router = useRouter()
 const route = useRoute()

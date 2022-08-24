@@ -1,15 +1,15 @@
 <script lang="ts" setup>
+import { nextTick, provide, ref, watch } from 'vue'
+import { useRoute } from 'vue-router'
+import * as Stretchy from 'stretchy'
+import { useObservable, useSubscription } from '@vueuse/rxjs'
+import { take } from 'rxjs/operators'
 import SlideEditor from '@/components/create/SlideEditor.vue'
 import SlideList from '@/components/create/SlideList.vue'
 import CaretLeftIcon from '@/components/icons/CaretLeftIcon.vue'
 import CreateLayout from '@/layouts/CreateLayout.vue'
 import { getQuestions$, getQuiz$, updateQuizTitle } from '@/lib/store/client'
 import { QuestionEntry, QuizEntry } from '@/lib/store/db'
-import { useObservable, useSubscription } from '@vueuse/rxjs'
-import { nextTick, provide, ref, watch } from 'vue'
-import { useRoute } from 'vue-router'
-import * as Stretchy from 'stretchy'
-import { take } from 'rxjs/operators'
 import PlayDialog from '@/components/create/PlayDialog.vue'
 
 const route = useRoute()
@@ -53,20 +53,22 @@ function showPlayDialog() {
 <template>
   <CreateLayout>
     <template #title>
-      <RouterLink to="/create" class="back-button"><CaretLeftIcon /></RouterLink>
+      <RouterLink to="/create" class="back-button">
+        <CaretLeftIcon />
+      </RouterLink>
       <input
+        ref="titleInput"
         type="text"
         class="title-input"
-        ref="titleInput"
         :value="quiz?.name"
-        @input="handleTitleChange"
         placeholder="Untitled"
         maxlength="40"
+        @input="handleTitleChange"
       />
     </template>
 
     <template #action>
-      <button @click="showPlayDialog" class="play-button">Play</button>
+      <button class="play-button" @click="showPlayDialog">Play</button>
     </template>
 
     <template #sidebar>

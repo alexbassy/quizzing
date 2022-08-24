@@ -18,8 +18,8 @@ const imageSrc = computed(() => (props.image ? URL.createObjectURL(props.image) 
 <template>
   <Presence exit-before-enter>
     <Motion
-      class="imageContainer"
       :key="id"
+      class="imageContainer"
       :initial="
         isAnimated
           ? {

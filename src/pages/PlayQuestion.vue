@@ -1,13 +1,13 @@
 <script lang="ts" setup>
+import { ref } from 'vue'
 import { catchError, combineLatest, fromEvent, map, of, switchMap } from 'rxjs'
-import { computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useObservable } from '@vueuse/rxjs'
 import Slide from '@/components/slide'
 import { useSubscribe } from '@/composable/useObservable'
 import PlayLayout from '@/layouts/PlayLayout.vue'
 import { watch$ } from '@/lib/observables'
 import { getQuestion$, getQuiz$, getRound$, getPlayersOfRound$ } from '@/lib/store/client'
-import { useObservable } from '@vueuse/rxjs'
 import PlayerScoreToggles from '@/components/player/PlayerScoreToggles.vue'
 
 const isAnswerShown = ref(false)
