@@ -9,6 +9,7 @@ import PlayLayout from '@/layouts/PlayLayout.vue'
 import { watch$ } from '@/lib/observables'
 import { getQuestion$, getQuiz$, getRound$, getPlayersOfRound$ } from '@/lib/store/client'
 import PlayerScoreToggles from '@/components/player/PlayerScoreToggles.vue'
+import { Routes } from '@/routes'
 
 const isAnswerShown = ref(false)
 const isPhotoShown = ref(false)
@@ -23,7 +24,7 @@ const quiz$ = round$.pipe(
   switchMap((round) => getQuiz$(round!.quizId!)),
   catchError((error) => {
     console.error(error)
-    router.push({ name: 'NotFound' })
+    router.push({ name: Routes.NotFound })
     return of(undefined)
   })
 )
@@ -73,7 +74,10 @@ const onNext = () => {
 
   // Otherwise go to next question
   const nextQuestion = prevNextQuestions.value[1]
-  if (!nextQuestion) return null // TODO: Go to scores page
+  if (!nextQuestion) {
+    router.push({ name: Routes.Scores, params: { questionId: prevNextQuestions.value[1] } })
+    return
+  }
   isAnswerShown.value = false
   isPhotoShown.value = false
   router.push({ params: { questionId: prevNextQuestions.value[1] } })

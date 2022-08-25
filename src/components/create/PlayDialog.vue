@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 import PlayerAvatar from '@/components/player/PlayerAvatar.vue'
 import { useObservable } from '@/composable/useObservable'
 import { addRound, getPlayers$ } from '@/lib/store/client'
+import { Routes } from '@/routes'
 import TickIcon from '../icons/TickIcon.vue'
 
 interface Props {
@@ -39,7 +40,7 @@ function closeModal() {
 async function startRound() {
   const players = Object.keys(selectedPlayers)
   const roundId = await addRound({ quizId, players })
-  router.push({ name: 'PlayBegin', params: { roundId } })
+  router.push({ name: Routes.BeginQuiz, params: { roundId } })
 }
 
 watch(

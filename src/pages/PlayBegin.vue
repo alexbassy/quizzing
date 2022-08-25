@@ -6,6 +6,7 @@ import { useObservable } from '@vueuse/rxjs'
 import PlayLayout from '@/layouts/PlayLayout.vue'
 import { watch$ } from '@/lib/observables'
 import { getQuiz$, getRound$ } from '@/lib/store/client'
+import { Routes } from '@/routes'
 
 const router = useRouter()
 const route = useRoute()
@@ -22,7 +23,7 @@ const quiz$ = round$.pipe(
   switchMap((round) => getQuiz$(round!.quizId!)),
   catchError((error) => {
     console.log(error)
-    router.push({ name: 'NotFound' })
+    router.push({ name: Routes.NotFound })
     return of(undefined)
   })
 )
@@ -64,7 +65,7 @@ const firstQuestionId = useObservable(quiz$.pipe(map((quiz) => quiz!.questions![
         <router-link
           v-if="firstQuestionId"
           class="goButton"
-          :to="{ name: 'PlayQuestion', params: { questionId: firstQuestionId } }"
+          :to="{ name: Routes.PlayQuestion, params: { questionId: firstQuestionId } }"
           >Start quiz</router-link
         >
       </div>
