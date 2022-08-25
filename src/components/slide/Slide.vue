@@ -30,10 +30,12 @@ const slideHidden = SLIDE.hidden
   <SlideImage
     :id="question.id!"
     :image="question.image"
+    :background-color="question.backgroundColor"
     :flipped="question.imageFlipped"
     :obscurred="question.imageObscurred"
     :is-answer-shown="false"
   />
+
   <!-- Gradient background -->
   <Motion class="text-content" :initial="fadeInitial" :animate="fadeShown" :exit="fadeHidden">
     <!-- Count -->

@@ -7,6 +7,7 @@ const props = defineProps<{
   id: string
   isAnswerShown: boolean
   image: QuestionEntry['image']
+  backgroundColor: QuestionEntry['backgroundColor']
   flipped: QuestionEntry['imageFlipped']
   obscurred: QuestionEntry['imageObscurred']
 }>()
@@ -37,11 +38,13 @@ const imageSrc = computed(() => (props.image ? URL.createObjectURL(props.image) 
       :transition="{ delay: 0.25, duration: 1 }"
     >
       <img
+        v-if="imageSrc"
         :src="imageSrc"
         alt=""
         class="slideImage"
         :class="{ '-obscured': !isAnswerShown && obscurred, '-flipped': flipped }"
       />
+      <div v-else class="slideBlockColor" />
     </Motion>
   </Presence>
 </template>
@@ -71,5 +74,11 @@ const imageSrc = computed(() => (props.image ? URL.createObjectURL(props.image) 
     opacity: 0.8;
     transform: scale(1.2);
   }
+}
+
+.slideBlockColor {
+  width: 100%;
+  height: 100%;
+  background-color: v-bind('backgroundColor');
 }
 </style>
