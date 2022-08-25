@@ -96,7 +96,7 @@ async function fileInputChange(ev: Event) {
     <form v-if="playerId" class="playerAttributesForm" @submit.prevent="saveName">
       <input ref="photoInput" type="file" class="fileUploadInput" @change="fileInputChange" />
       <button type="button" class="avatarUploadButton" @click="openFileInput">
-        <PlayerAvatar v-if="player" :player="player" large />
+        <PlayerAvatar v-if="player" :player="player" size="large" />
       </button>
       <div class="inputContainer">
         <input v-model="playerName" class="playerName" type="text" />

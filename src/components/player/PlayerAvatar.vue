@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import { type PlayerEntry } from '@/lib/store/db'
 
-const props = defineProps<{ player: PlayerEntry; large?: boolean }>()
+const props = defineProps<{ player: PlayerEntry; size?: 'large' | 'medium' | 'small' }>()
 
 const initials = computed(() =>
   props.player.name
@@ -18,7 +18,7 @@ const backgroundColor = computed(() => props.player.backgroundColor ?? '#fff')
 </script>
 
 <template>
-  <span class="player" :class="{ '-large': large }">
+  <span class="player" :class="{ '-large': size === 'large', '-medium': size === 'medium' }">
     <div class="background">
       <img v-if="imageSrc" :src="imageSrc" class="photo" />
     </div>
@@ -35,6 +35,11 @@ const backgroundColor = computed(() => props.player.backgroundColor ?? '#fff')
   align-items: center;
   justify-content: center;
   border-radius: 100px;
+
+  &.-medium {
+    width: 75px;
+    height: 75px;
+  }
 
   &.-large {
     width: 100px;

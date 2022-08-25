@@ -2,7 +2,7 @@
 import { combineLatest, of } from 'rxjs'
 import { map, switchMap } from 'rxjs/operators'
 import { useObservable } from '@vueuse/rxjs'
-import { addPoint, getPlayersOfRound$, getPoints$, removePoint } from '@/lib/store/client'
+import { addPoint, getPlayersOfRound$, getPointsForQuestion$, removePoint } from '@/lib/store/client'
 import { PlayerEntry } from '@/lib/store/db'
 import { watch$ } from '@/lib/observables'
 import PlayerAvatar from './PlayerAvatar.vue'
@@ -22,7 +22,7 @@ const players = useObservable(
 const points = useObservable<Record<string, string>, Record<string, string>>(
   combineLatest([roundId$, questionId$]).pipe(
     switchMap(([roundId, questionId]) =>
-      roundId && questionId ? getPoints$(roundId, questionId) : of([])
+      roundId && questionId ? getPointsForQuestion$(roundId, questionId) : of([])
     ),
     map((points) => Object.fromEntries(points.map((point) => [point.playerId, point.id])))
   ),

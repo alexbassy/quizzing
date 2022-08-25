@@ -16,6 +16,5 @@ html {
 body {
   background-color: #000;
   color: #fff;
-  overflow: hidden;
 }
 </style>

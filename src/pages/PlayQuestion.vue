@@ -75,7 +75,7 @@ const onNext = () => {
   // Otherwise go to next question
   const nextQuestion = prevNextQuestions.value[1]
   if (!nextQuestion) {
-    router.push({ name: Routes.Scores, params: { questionId: prevNextQuestions.value[1] } })
+    router.push({ name: Routes.Scores, params: { roundId: roundId.value } })
     return
   }
   isAnswerShown.value = false
