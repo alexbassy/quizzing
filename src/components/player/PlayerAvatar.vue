@@ -10,12 +10,9 @@ const initials = computed(() =>
     .map((word) => word[0])
     .join('')
 )
-const imageSrc = computed(() => {
-  console.time('get photo object url')
-  const returnValue = props.player.photo ? URL.createObjectURL(props.player.photo) : undefined
-  console.timeEnd('get photo object url')
-  return returnValue
-})
+const imageSrc = computed(() =>
+  props.player.photo ? URL.createObjectURL(props.player.photo) : undefined
+)
 
 const backgroundColor = computed(() => props.player.backgroundColor ?? '#fff')
 </script>
