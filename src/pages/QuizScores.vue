@@ -3,10 +3,12 @@ import { map, mergeMap, switchMap } from 'rxjs/operators'
 import { combineLatest } from 'rxjs'
 import { useSubscription } from '@vueuse/rxjs'
 import { useObservable } from '@/composable/useObservable'
+import CaretLeftIcon from '@/components/icons/CaretLeftIcon.vue'
 import useRound from '@/composable/useRound'
 import { getPlayer$, getPointsForRound$, getQuiz$ } from '@/lib/store/client'
 import { PlayerEntry } from '@/lib/store/db'
 import PlayerAvatar from '@/components/player/PlayerAvatar.vue'
+import CreateLayout from '@/layouts/CreateLayout.vue'
 
 const round$ = useRound()
 
@@ -28,6 +30,13 @@ const pointsInRound$ = round$.pipe(
       accum[point.playerId!]++
       return accum
     }, {})
+  )
+)
+
+const quizName = useObservable(
+  round$.pipe(
+    switchMap((round) => getQuiz$(round!.quizId!)),
+    map((quiz) => quiz?.name)
   )
 )
 
@@ -61,60 +70,104 @@ useSubscription(
 </script>
 
 <template>
-  <div class="scoresContainer">
-    <h1 class="title">Scores</h1>
-    <ol class="rankingList">
-      <li v-for="player in playerPoints" :key="player.id" class="rankingListItem">
-        <div class="playerDetails">
-          <PlayerAvatar :player="player" size="medium" />
-          <span class="playerName">{{ player.name }}</span>
-        </div>
+  <CreateLayout>
+    <template #title>
+      <RouterLink to="/create" class="back-button">
+        <CaretLeftIcon />
+      </RouterLink>
+      <h1 class="quizName">{{ quizName }}</h1>
+    </template>
+    <div class="scoresContainer">
+      <h2 class="title">The scores are in!</h2>
+      <ol class="rankingList">
+        <li v-for="player in playerPoints" :key="player.id" class="rankingListItem">
+          <div class="playerDetails">
+            <PlayerAvatar class="playerAvatar" :player="player" size="medium" />
+            <span class="playerName">{{ player.name }}</span>
 
-        <span class="playerScore" aria-label="Score">
-          <div>{{ player.score }} / {{ numQuestions }}</div>
-          <div>{{ Math.round((player.score / numQuestions) * 1000) / 10 }}%</div>
-        </span>
-      </li>
-    </ol>
-  </div>
+            <span class="playerScore" aria-label="Score">
+              <div>{{ player.score }}</div>
+            </span>
+          </div>
+        </li>
+      </ol>
+    </div>
+  </CreateLayout>
 </template>
 
 <style lang="scss" scoped>
+.back-button {
+  --background-alpha: 5%;
+  --foreground-alpha: 35%;
+
+  display: inline-flex;
+  width: 1.75rem;
+  height: 100%;
+  height: 1.75rem;
+  align-items: center;
+  justify-content: center;
+  margin-right: 0.75rem;
+  background: rgb(255 255 255 / var(--background-alpha));
+  border-radius: 5px;
+  color: rgb(255 255 255 / var(--foreground-alpha));
+  cursor: pointer;
+  transition: 0.25s ease;
+  transition-property: color, background-color, transform;
+
+  &:hover {
+    --background-alpha: 10%;
+    --foreground-alpha: 70%;
+  }
+
+  &:active {
+    --background-alpha: 5%;
+    --foreground-alpha: 30%;
+    transform: scale(0.95);
+  }
+
+  svg {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+}
+
+.quizName {
+  display: inline-block;
+}
+
 .scoresContainer {
   max-width: 400px;
   margin: 2rem auto 0;
 }
 
 .title {
-  font-size: 2rem;
+  margin: 0 0 2rem;
+  font-size: 1.5rem;
+  text-align: center;
 }
-.rankingList {
-  background-color: var(--background1);
+.playerAvatar {
+  flex-shrink: 0;
 }
 
 .rankingListItem {
-  display: flex;
-  align-items: center;
-  padding: 1rem;
-
-  &:nth-child(odd) {
-    background-color: var(--background1);
-  }
+  margin-bottom: 1rem;
+  background-color: var(--background1);
+  border-radius: 100px;
 }
 
 .playerDetails {
-  max-width: 75px;
-  font-size: 0.875rem;
-  text-align: center;
+  display: flex;
+  align-items: center;
 }
 
 .playerName {
   display: block;
-  margin-top: 0.25rem;
+  margin: auto;
+  font-size: 1.25rem;
 }
 
 .playerScore {
-  margin-left: auto;
+  margin-right: 2rem;
   font-size: 1.5rem;
 }
 </style>

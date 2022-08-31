@@ -122,8 +122,9 @@ useSubscribe(fromEvent<KeyboardEvent>(document, 'keyup'), (event) => {
 
 .playersList {
   position: absolute;
-  right: 1rem;
-  bottom: 1rem;
+  z-index: 4;
+  right: 4rem;
+  bottom: 4rem;
   display: flex;
 }
 </style>
