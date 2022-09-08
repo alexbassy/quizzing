@@ -1,16 +1,36 @@
-# Vue 3 + TypeScript + Vite
+# Quizzing Ninja 🥷
 
-This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+An small offline-first app for creating zoom quizzes. 
 
-## Recommended IDE Setup
+- You share the screen and use arrow keys to navigate through the quiz. 
+- Players hold up A, B, C, or D cards up to the camera. 
+- You score them by clicking their little avatar at the bottom right of the screen.
 
-- [VS Code](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar)
+## How to use
 
-## Type Support For `.vue` Imports in TS
+1. Visit https://quizzing.ninja
+2. Click "Create quiz" at the top right
+3. Select the newly created quiz and start adding some questions
+4. Add background images via Unsplash or by dragging an image onto the page
+5. Select the correct answer by clicking the letter
+6. Go back to home screen and add some players with the `+` button
+7. Click on the players to edit their name and add a picture
+8. Navigate back to the quiz and click "play at the top"
+10. Select some players who will take part (optional)
+10. Share the screen over zoom/google meet/etc.
+11. Click on players if they get the answer right
+12. At the end of the quiz, the scores will be shown
 
-Since TypeScript cannot handle type information for `.vue` imports, they are shimmed to be a generic Vue component type by default. In most cases this is fine if you don't really care about component prop types outside of templates. However, if you wish to get actual prop types in `.vue` imports (for example to get props validation when using manual `h(...)` calls), you can enable Volar's Take Over mode by following these steps:
+## Stack
 
-1. Run `Extensions: Show Built-in Extensions` from VS Code's command palette, look for `TypeScript and JavaScript Language Features`, then right click and select `Disable (Workspace)`. By default, Take Over mode will enable itself if the default TypeScript extension is disabled.
-2. Reload the VS Code window by running `Developer: Reload Window` from the command palette.
+Vue 3, TypeScript, Cloudflare Workers, Dexie.js, RxJS
 
-You can learn more about Take Over mode [here](https://github.com/johnsoncodehk/volar/discussions/471).
+All data is stored locally on-device in IndexedDB. There is no login, no cookies, no user data.
+
+## To do
+
+Lots of things
+
+- Remove UX friction of adding players
+- Mobile/tablet support (it’s completely unusable)
+- Download quiz to a file and allow uploading on another computer
