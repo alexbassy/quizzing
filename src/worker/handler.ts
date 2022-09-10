@@ -5,7 +5,7 @@ import { createApi } from 'unsplash-js'
 import { type Photos } from 'unsplash-js/dist/methods/search/types/response'
 import { IUnsplashSearchResult } from './types'
 
-declare var UNSPLASH_ACCESS_KEY: string
+declare let UNSPLASH_ACCESS_KEY: string
 
 const unsplashApi = createApi({
   accessKey: UNSPLASH_ACCESS_KEY,
@@ -20,10 +20,6 @@ API.prepare = CORS.preflight({
   methods: ['GET', 'HEAD', 'PUT', 'POST', 'DELETE'],
 })
 
-API.add('GET', '/alive', (req, res) => {
-  res.end('OK') // Node.js-like `res.end`
-})
-
 API.add('GET', '/backgrounds/search', async (req, res) => {
   const query = req.query.get('query')
   if (!query) {
@@ -34,6 +30,7 @@ API.add('GET', '/backgrounds/search', async (req, res) => {
     orientation: 'landscape',
     perPage: 20,
   })
+
   const slimResults: IUnsplashSearchResult[] = (results.response as Photos).results.map((item) => {
     return {
       id: item.id,
@@ -43,6 +40,7 @@ API.add('GET', '/backgrounds/search', async (req, res) => {
       urls: item.urls,
     }
   })
+
   return res.send(200, slimResults)
 })
 
