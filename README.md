@@ -38,3 +38,6 @@ Lots of things
 - Remove UX friction of adding players
 - Mobile/tablet support (it’s completely unusable)
 - Download quiz to a file and allow uploading on another computer
+- Add player to quiz mid-game
+- Reorganise quiz questions
+- Add category slides
