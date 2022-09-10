@@ -37,6 +37,7 @@ Lots of things
 
 - Remove UX friction of adding players
 - Mobile/tablet support (it’s completely unusable)
+- Register service worker to make it an actually offline-first PWA (right now, your data is simply stored offline)
 - Download quiz to a file and allow uploading on another computer
 - Add player to quiz mid-game
 - Reorganise quiz questions
