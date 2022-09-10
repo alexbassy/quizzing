@@ -21,6 +21,10 @@ An small offline-first app for creating zoom quizzes.
 11. Click on players if they get the answer right
 12. At the end of the quiz, the scores will be shown
 
+### Video demo
+
+https://user-images.githubusercontent.com/1243909/189476782-06e07ce8-550a-4a6f-b42c-88b85bad8a61.mp4
+
 ## Stack
 
 Vue 3, TypeScript, Cloudflare Workers, Dexie.js, RxJS
