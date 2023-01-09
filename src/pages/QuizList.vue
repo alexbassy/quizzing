@@ -6,15 +6,25 @@ import AddIcon from '@/components/icons/AddIcon.vue'
 import RubbishIcon from '@/components/icons/RubbishIcon.vue'
 import CreateLayout from '@/layouts/CreateLayout.vue'
 import { formatRelativeTime } from '@/lib/relative-time'
-import { addQuiz, deleteQuiz, getQuizzes$, getPlayers$, addPlayer } from '@/lib/store/client'
-import { PlayerEntry, type QuizEntry } from '@/lib/store/db'
+import {
+  addQuiz,
+  deleteQuiz,
+  getQuizzes$,
+  getPlayers$,
+  addPlayer,
+  getRounds$,
+} from '@/lib/store/client'
+import { PlayerEntry, RoundEntry, type QuizEntry } from '@/lib/store/db'
 import { LinkTable, LinkTableColumn } from '@/components/table'
 import PlayerAvatar from '@/components/player/PlayerAvatar.vue'
 import PlayerAttributesPopover from '@/components/player/PlayerAttributesPopover.vue'
+import PlayerAvatarList from '@/components/player/PlayerAvatarList.vue'
 
 const quizzes = useObservable<QuizEntry[]>(getQuizzes$())
 
 const players = useObservable<PlayerEntry[]>(getPlayers$())
+
+const rounds = useObservable<RoundEntry[]>(getRounds$())
 
 async function createQuiz() {
   await addQuiz()
@@ -107,6 +117,34 @@ function closePlayerAttributes() {
           />
         </div>
       </section>
+
+      <section>
+        <h3 class="section-title">Rounds</h3>
+        <p class="help">
+          A round is a set of questions from a quiz. To start a round, select a quiz from above and
+          click the play button.
+        </p>
+        <div class="rounds">
+          <LinkTable
+            :data="rounds"
+            class="rounds-table"
+            :row-link="({ id }) => `/play/${id}/scores`"
+          >
+            <LinkTableColumn v-slot="round: RoundEntry" title="Quiz">
+              {{ quizzes?.find(({ id }) => id === round.quizId)?.name ?? round.id }}
+            </LinkTableColumn>
+            <LinkTableColumn v-slot="round: RoundEntry" title="Date">
+              {{ formatRelativeTime(round.createdAt) }}
+            </LinkTableColumn>
+            <LinkTableColumn v-slot="round: RoundEntry" title="Players">
+              <PlayerAvatarList v-if="round.players" :player-ids="round.players" />
+            </LinkTableColumn>
+            <LinkTableColumn v-slot="round: RoundEntry" title="Completed">
+              {{ round.completed ? '✅' : '🚫' }}
+            </LinkTableColumn>
+          </LinkTable>
+        </div>
+      </section>
     </div>
   </CreateLayout>
 </template>
@@ -115,6 +153,10 @@ function closePlayerAttributes() {
 .table {
   --column-spans: repeat(4, 2fr) 1fr;
   margin-top: 2rem;
+}
+
+.rounds-table {
+  --column-spans: repeat(2, 1fr) 2fr 1px;
 }
 
 .title {

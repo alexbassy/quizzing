@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { defineProps, nextTick, ref, watch } from 'vue'
+import { nextTick, ref, watch } from 'vue'
 
 const props = defineProps<{
   visible?: boolean

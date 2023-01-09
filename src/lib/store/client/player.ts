@@ -10,6 +10,10 @@ export function getPlayer$(id: string) {
   return from(liveQuery(() => db.player.get(id)))
 }
 
+export function getPlayersById$(ids: string[]) {
+  return from(liveQuery(() => db.player.where('id').anyOf(ids).toArray()))
+}
+
 export function addPlayer({ name, photo, backgroundColor }: PlayerEntry) {
   return db.player.add({ name, photo, backgroundColor })
 }
