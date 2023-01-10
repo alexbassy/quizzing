@@ -40,7 +40,7 @@ function closeModal() {
 async function startRound() {
   const players = Object.keys(selectedPlayers)
   const roundId = await addRound({ quizId, players })
-  router.push({ name: Routes.BeginQuiz, params: { roundId } })
+  router.push({ name: Routes.PrePresent, params: { roundId } })
 }
 
 watch(

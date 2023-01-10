@@ -90,10 +90,6 @@ function showPlayDialog() {
 </template>
 
 <style lang="scss" scoped>
-:global(body) {
-  overflow: hidden;
-}
-
 .title-input {
   @include textarea-outline;
   display: inline-block;

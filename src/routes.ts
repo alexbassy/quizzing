@@ -1,10 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
 export enum Routes {
-  List = 'QuizList',
-  Editor = 'QuizEditor',
-  BeginQuiz = 'PlayBegin',
-  PlayQuestion = 'PlayQuestion',
+  Home = 'Home',
+  Creator = 'Creator',
+  PrePresent = 'PrePresent',
+  Present = 'Present',
   Scores = 'Scores',
   NotFound = 'NotFound',
   Index = 'Index',
@@ -12,39 +12,39 @@ export enum Routes {
 
 const routes = [
   {
-    name: Routes.List,
+    name: Routes.Index,
+    path: '/',
+    redirect: '/create',
+  },
+  {
+    name: Routes.Home,
     path: '/create',
-    component: () => import('@/pages/QuizList.vue'),
+    component: () => import('@/pages/Home.vue'),
   },
   {
-    name: Routes.Editor,
+    name: Routes.Creator,
     path: '/create/:id',
-    component: () => import('@/pages/QuizEditor.vue'),
-  },
-  {
-    name: Routes.BeginQuiz,
-    path: '/play/:roundId/',
-    component: () => import('@/pages/PlayBegin.vue'),
+    component: () => import('@/pages/Creator.vue'),
   },
   {
     name: Routes.Scores,
     path: '/play/:roundId/scores',
-    component: () => import('@/pages/QuizScores.vue'),
+    component: () => import('@/pages/Scores.vue'),
   },
   {
-    name: Routes.PlayQuestion,
+    name: Routes.PrePresent,
+    path: '/play/:roundId/',
+    component: () => import('@/pages/PrePresent.vue'),
+  },
+  {
+    name: Routes.Present,
     path: '/play/:roundId/:questionId',
-    component: () => import('@/pages/PlayQuestion.vue'),
+    component: () => import('@/pages/Present.vue'),
   },
   {
     name: Routes.NotFound,
     path: '/404',
     component: () => import('@/pages/NotFound.vue'),
-  },
-  {
-    name: Routes.Index,
-    path: '/',
-    redirect: '/create',
   },
 ]
 

@@ -65,7 +65,7 @@ const firstQuestionId = useObservable(quiz$.pipe(map((quiz) => quiz!.questions![
         <router-link
           v-if="firstQuestionId"
           class="goButton"
-          :to="{ name: Routes.PlayQuestion, params: { questionId: firstQuestionId } }"
+          :to="{ name: Routes.Present, params: { questionId: firstQuestionId } }"
           >Start quiz</router-link
         >
       </div>
