@@ -9,6 +9,7 @@ import { getPlayer$, getPointsForRound$, getQuiz$ } from '@/lib/store/client'
 import { PlayerEntry } from '@/lib/store/db'
 import PlayerAvatar from '@/components/player/PlayerAvatar.vue'
 import CreateLayout from '@/layouts/CreateLayout.vue'
+import ScoresChart from '@/components/scores/ScoresChart.vue'
 
 const round$ = useRound()
 
@@ -77,6 +78,7 @@ useSubscription(
       </RouterLink>
       <h1 class="quizName">{{ quizName }}</h1>
     </template>
+    <ScoresChart />
     <div class="scoresContainer">
       <h2 class="title">The scores are in!</h2>
       <ol class="rankingList">
