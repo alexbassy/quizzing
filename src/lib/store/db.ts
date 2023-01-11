@@ -1,5 +1,6 @@
 import Dexie, { Table } from 'dexie'
 import 'dexie-observable'
+import { exportDB, ExportProgress } from 'dexie-export-import'
 
 export interface QuizEntry {
   id?: string
@@ -88,3 +89,23 @@ const updatingHookAddUpdatedTime = () => {
 
 db.quiz.hook('updating', updatingHookAddUpdatedTime)
 db.question.hook('updating', updatingHookAddUpdatedTime)
+
+export async function exportDatabase(): Promise<unknown> {
+  try {
+    const blob = await exportDB(db, {
+      // We have a lot of blobs and this makes sure that the browser tab
+      // doesn’t crash and also that the resulting file is not so huge.
+      numRowsPerChunk: 1,
+      progressCallback: (progress: ExportProgress) => console.log('exporting', progress),
+    })
+    return blob
+  } catch (error) {
+    console.log('there was an error exporting the db', error)
+  }
+}
+
+export async function importDatabase(file: File): Promise<unknown> {
+  await Dexie.import(file, {
+    progressCallback: (progress: ExportProgress) => console.log('importing', progress),
+  })
+}

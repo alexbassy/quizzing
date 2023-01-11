@@ -23,7 +23,6 @@ function closeModal() {
   const removeClasses = () => {
     dialog.value?.classList.remove('is-hidden')
     dialog.value?.close()
-    // emit('close')
   }
   dialog.value?.addEventListener('animationend', removeClasses, { once: true })
 }

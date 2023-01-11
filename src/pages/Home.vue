@@ -15,6 +15,7 @@ import PlayerAttributesPopover from '@/components/player/PlayerAttributesPopover
 import PlayerAvatarList from '@/components/player/PlayerAvatarList.vue'
 import SecondaryButton from '@/components/SecondaryButton.vue'
 import PrimaryButton from '@/components/PrimaryButton.vue'
+import SettingsDialog from '@/components/SettingsDialog.vue'
 
 const quizzes = useObservable<QuizEntry[]>(getQuizzes$())
 
@@ -46,6 +47,8 @@ function closePlayerAttributes() {
   activePlayerAttributesPopover.value = undefined
   activePlayerPosition.value = undefined
 }
+
+const isSettingsDialogShown = ref(false)
 </script>
 
 <template>
@@ -55,9 +58,14 @@ function closePlayerAttributes() {
     </template>
     <template #action>
       <PrimaryButton bg="#ef476f" inline @click="createQuiz"><AddIcon /> Create quiz</PrimaryButton>
-      <SecondaryButton aria-label="Settings" is-icon inline>
+      <SecondaryButton aria-label="Settings" is-icon inline @click="isSettingsDialogShown = true">
         <CogIcon />
       </SecondaryButton>
+      <SettingsDialog
+        :visible="isSettingsDialogShown"
+        @cancel="isSettingsDialogShown = false"
+        @close="isSettingsDialogShown = false"
+      />
     </template>
 
     <div class="page">
