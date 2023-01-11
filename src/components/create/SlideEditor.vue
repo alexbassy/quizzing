@@ -14,6 +14,7 @@ import {
 } from '@/lib/store/client'
 import { IUnsplashSearchResult } from '@/worker/types'
 import PictureIcon from '../icons/PictureIcon.vue'
+import SecondaryButton from '../SecondaryButton.vue'
 import ImagePicker from './ImagePicker.vue'
 import Dropzone from './Dropzone.vue'
 
@@ -89,9 +90,13 @@ const backgroundColor = computed(() => question.value?.backgroundColor || '')
     <Dropzone @dropped="onDropzoneDrop">
       <div class="slide">
         <img v-if="hasImage" class="image" :src="imageSrc" />
-        <button class="change-background-button" @click="imagePickerOpen = !imagePickerOpen">
+        <SecondaryButton
+          class="changeBackgroundButton"
+          bg="rgb(0 0 0 / 20%)"
+          @click="imagePickerOpen = !imagePickerOpen"
+        >
           <PictureIcon /> Change background
-        </button>
+        </SecondaryButton>
         <image-picker :is-open="imagePickerOpen" @select="onImageSelect" />
         <div class="content">
           <span class="count">&times;</span>
@@ -155,26 +160,12 @@ const backgroundColor = computed(() => question.value?.backgroundColor || '')
   background-color: v-bind(backgroundColor);
 }
 
-.change-background-button {
+.changeBackgroundButton {
   --background-alpha: 20%;
-  @include button(rgb(0 0 0 / var(--background-alpha)));
   position: absolute;
   z-index: 3;
   right: 1rem;
   bottom: 1rem;
-  height: unset;
-  cursor: pointer;
-  font-size: 0.9375rem;
-  gap: 0.5rem;
-
-  &:hover {
-    --background-alpha: 30%;
-  }
-
-  &:active {
-    --background-alpha: 40%;
-    transform: scale(0.975);
-  }
 }
 
 .image {

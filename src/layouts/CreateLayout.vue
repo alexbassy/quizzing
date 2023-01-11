@@ -2,7 +2,9 @@
   <div class="createLayoutContainer">
     <header class="header">
       <div class="header-title"><slot name="title" /></div>
-      <div class="header-action"><slot name="action" /></div>
+      <div class="header-action">
+        <slot name="action" />
+      </div>
     </header>
     <div class="contentWrap">
       <aside v-if="$slots.sidebar" class="sidebar"><slot name="sidebar" /></aside>

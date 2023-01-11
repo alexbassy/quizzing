@@ -19,6 +19,8 @@ import { LinkTable, LinkTableColumn } from '@/components/table'
 import PlayerAvatar from '@/components/player/PlayerAvatar.vue'
 import PlayerAttributesPopover from '@/components/player/PlayerAttributesPopover.vue'
 import PlayerAvatarList from '@/components/player/PlayerAvatarList.vue'
+import SecondaryButton from '@/components/SecondaryButton.vue'
+import PrimaryButton from '@/components/PrimaryButton.vue'
 
 const quizzes = useObservable<QuizEntry[]>(getQuizzes$())
 
@@ -58,7 +60,7 @@ function closePlayerAttributes() {
       <h1 class="title">Quizzing 🥷</h1>
     </template>
     <template #action>
-      <button class="add-button" @click="createQuiz"><AddIcon /> Create quiz</button>
+      <PrimaryButton bg="#ef476f" @click="createQuiz"><AddIcon /> Create quiz</PrimaryButton>
     </template>
 
     <div class="page">
@@ -80,13 +82,15 @@ function closePlayerAttributes() {
             {{ formatRelativeTime(updatedAt!) }}
           </LinkTableColumn>
           <LinkTableColumn v-slot="{ id, name }: QuizEntry" title="">
-            <button
-              class="delete-button"
+            <SecondaryButton
               :aria-label="`Delete ${name}`"
+              round
+              is-icon
+              class="delete-button"
               @click.prevent="remove(id!)"
             >
               <RubbishIcon />
-            </button>
+            </SecondaryButton>
           </LinkTableColumn>
           <template #empty>
             <p>No quizzes yet. Create one?</p>
@@ -205,30 +209,7 @@ function closePlayerAttributes() {
   font-weight: normal;
 }
 
-.add-button {
-  @include button(#ef476f);
-
-  svg {
-    margin-right: 0.5rem;
-    color: rgb(255 255 255 / var(--foreground-alpha));
-  }
-}
-
 .delete-button {
-  --background-alpha: 0%;
-  --foreground-alpha: 20%;
-  display: flex;
-  width: 2rem;
-  height: 2rem;
-  align-items: center;
-  justify-content: center;
-  background: rgb(255 255 255 / var(--background-alpha));
-  border-radius: 50%;
-  color: rgb(255 255 255 / var(--foreground-alpha));
-  cursor: pointer;
-  transition: 0.25s ease;
-  transition-property: color, background-color, transform;
-
   .item:hover & {
     --background-alpha: 10%;
     --foreground-alpha: 30%;

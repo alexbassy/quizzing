@@ -74,30 +74,3 @@
     }
   }
 }
-
-@mixin button($background-color, $inline: false) {
-  display: flex;
-  @if $inline {
-    display: inline-flex;
-  }
-
-  height: 100%;
-  align-items: center;
-  justify-content: center;
-  padding: 0.5rem 1rem;
-  background-color: $background-color;
-  border-radius: 6px;
-  color: #fff;
-  cursor: pointer;
-  font-weight: bold;
-  transition: 0.25s ease;
-  transition-property: opacity, color, background-color, transform;
-
-  &[disabled] {
-    opacity: 0.6;
-  }
-
-  &:not([disabled]):active {
-    transform: scale(0.95);
-  }
-}

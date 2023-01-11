@@ -7,6 +7,7 @@ import { watch$ } from '@/lib/observables'
 import { deletePlayer, getPlayer$, updatePlayer } from '@/lib/store/client'
 import RubbishIcon from '../icons/RubbishIcon.vue'
 import Popover from '../Popover.vue'
+import PrimaryButton from '../PrimaryButton.vue'
 import PlayerAvatar from './PlayerAvatar.vue'
 
 const props = defineProps<{
@@ -102,16 +103,20 @@ async function fileInputChange(ev: Event) {
         <input v-model="playerName" class="playerName" type="text" />
       </div>
       <div class="actions">
-        <button
+        <PrimaryButton
           class="deleteButton"
+          bg="#891d0c"
           type="button"
+          is-icon
           aria-label="Delete player"
           title="Delete player"
           @click="removePlayer"
         >
           <RubbishIcon />
-        </button>
-        <button class="saveButton" :disabled="!nameChanged" @click="saveName">Save</button>
+        </PrimaryButton>
+        <PrimaryButton bg="#1361a4" class="saveButton" :disabled="!nameChanged" @click="saveName"
+          >Save</PrimaryButton
+        >
       </div>
     </form>
   </Popover>
@@ -161,13 +166,8 @@ async function fileInputChange(ev: Event) {
 
 .saveButton,
 .deleteButton {
-  @include button(#891d0c);
   flex-grow: 1;
   padding-right: 0.5rem;
   padding-left: 0.5rem;
-}
-
-.saveButton {
-  background-color: #1361a4;
 }
 </style>

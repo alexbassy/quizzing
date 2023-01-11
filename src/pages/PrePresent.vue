@@ -7,6 +7,7 @@ import PlayLayout from '@/layouts/PlayLayout.vue'
 import { watch$ } from '@/lib/observables'
 import { getQuiz$, getRound$ } from '@/lib/store/client'
 import { Routes } from '@/routes'
+import PrimaryButton from '@/components/PrimaryButton.vue'
 
 const router = useRouter()
 const route = useRoute()
@@ -62,11 +63,10 @@ const firstQuestionId = useObservable(quiz$.pipe(map((quiz) => quiz!.questions![
 
       <!-- Could also resume an already started quiz here! -->
       <div>
-        <router-link
+        <PrimaryButton
           v-if="firstQuestionId"
-          class="goButton"
           :to="{ name: Routes.Present, params: { questionId: firstQuestionId } }"
-          >Start quiz</router-link
+          >Start quiz</PrimaryButton
         >
       </div>
     </div>
@@ -120,9 +120,5 @@ kbd {
   font-size: 0.85rem;
   font-weight: 700;
   line-height: 1;
-}
-
-.goButton {
-  @include button(#009900);
 }
 </style>

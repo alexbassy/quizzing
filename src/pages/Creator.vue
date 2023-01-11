@@ -11,6 +11,8 @@ import CreateLayout from '@/layouts/CreateLayout.vue'
 import { getQuestions$, getQuiz$, updateQuizTitle } from '@/lib/store/client'
 import { QuestionEntry, QuizEntry } from '@/lib/store/db'
 import PlayDialog from '@/components/create/PlayDialog.vue'
+import PrimaryButton from '@/components/PrimaryButton.vue'
+import SecondaryButton from '@/components/SecondaryButton.vue'
 
 const route = useRoute()
 
@@ -53,9 +55,9 @@ function showPlayDialog() {
 <template>
   <CreateLayout>
     <template #title>
-      <RouterLink to="/create" class="back-button">
+      <SecondaryButton to="/create" inline is-icon>
         <CaretLeftIcon />
-      </RouterLink>
+      </SecondaryButton>
       <input
         ref="titleInput"
         type="text"
@@ -68,7 +70,7 @@ function showPlayDialog() {
     </template>
 
     <template #action>
-      <button class="play-button" @click="showPlayDialog">Play</button>
+      <PrimaryButton bg="#ef476f" @click="showPlayDialog">Play</PrimaryButton>
     </template>
 
     <template #sidebar>
@@ -99,50 +101,6 @@ function showPlayDialog() {
 
   &::placeholder {
     color: var(--placeholder-color);
-  }
-}
-
-.back-button {
-  --background-alpha: 5%;
-  --foreground-alpha: 35%;
-
-  display: inline-flex;
-  width: 1.75rem;
-  height: 100%;
-  height: 1.75rem;
-  align-items: center;
-  justify-content: center;
-  margin-right: 0.75rem;
-  background: rgb(255 255 255 / var(--background-alpha));
-  border-radius: 5px;
-  color: rgb(255 255 255 / var(--foreground-alpha));
-  cursor: pointer;
-  transition: 0.25s ease;
-  transition-property: color, background-color, transform;
-
-  &:hover {
-    --background-alpha: 10%;
-    --foreground-alpha: 70%;
-  }
-
-  &:active {
-    --background-alpha: 5%;
-    --foreground-alpha: 30%;
-    transform: scale(0.95);
-  }
-
-  svg {
-    width: 1.25rem;
-    height: 1.25rem;
-  }
-}
-
-.play-button {
-  @include button(#ef476f);
-
-  svg {
-    margin-right: 0.5rem;
-    color: rgb(255 255 255 / var(--foreground-alpha));
   }
 }
 </style>

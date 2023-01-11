@@ -6,6 +6,8 @@ import { useObservable } from '@/composable/useObservable'
 import { addRound, getPlayers$ } from '@/lib/store/client'
 import { Routes } from '@/routes'
 import TickIcon from '../icons/TickIcon.vue'
+import PrimaryButton from '../PrimaryButton.vue'
+import SecondaryButton from '../SecondaryButton.vue'
 
 interface Props {
   visible: boolean
@@ -104,13 +106,15 @@ function close() {
         </li>
       </ul>
       <div class="playDialogActions">
-        <button class="cancelButton" type="button" @click="closeModal">Close</button>
-        <button class="playButton" type="button" @click="startRound">
+        <SecondaryButton class="cancelButton" type="button" @click="closeModal">
+          Close
+        </SecondaryButton>
+        <PrimaryButton bg="rgb(0, 36, 196)" type="button" @click="startRound">
           <template v-if="selectedPlayersCount > 0">
             Start with {{ selectedPlayersCount }} players
           </template>
           <template v-else>Start without scoring</template>
-        </button>
+        </PrimaryButton>
       </div>
     </form>
   </dialog>
@@ -216,11 +220,7 @@ function close() {
   display: flex;
 }
 
-.playButton {
-  @include button(blue, true);
-}
 .cancelButton {
-  @include button(rgb(255, 255, 255, 10%), true);
   margin-right: 1rem;
   margin-left: auto;
 }
