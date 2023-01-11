@@ -74,7 +74,7 @@ const isSettingsDialogShown = ref(false)
         <p class="help">
           A quiz is a set of questions. To start a round, select a quiz from below and click the play button.
         </p>
-        <LinkTable :data="quizzes" class="table" :row-link="({ id }) => `/create/${id}`">
+        <LinkTable :data="quizzes" class="table" :row-link="({ id }: QuizEntry) => `/create/${id}`">
           <LinkTableColumn v-slot="{ name }: QuizEntry" title="Name">{{ name }}</LinkTableColumn>
           <LinkTableColumn v-slot="{ questions }: QuizEntry" title="Questions">
             {{ questions?.length ?? 0 }}
@@ -133,12 +133,16 @@ const isSettingsDialogShown = ref(false)
           play button.
         </p>
         <div class="rounds">
-          <LinkTable :data="rounds" class="rounds-table" :row-link="({ id }) => `/play/${id}/scores`">
+          <LinkTable
+            :data="rounds"
+            class="rounds-table"
+            :row-link="({ id } : QuizEntry) => `/play/${id}/scores`"
+          >
             <LinkTableColumn v-slot="round: RoundEntry" title="Quiz">
               {{ quizzes?.find(({ id }) => id === round.quizId)?.name ?? round.id }}
             </LinkTableColumn>
             <LinkTableColumn v-slot="round: RoundEntry" title="Date">
-              {{ formatRelativeTime(round.createdAt) }}
+              {{ formatRelativeTime(round.createdAt!) }}
             </LinkTableColumn>
             <LinkTableColumn v-slot="round: RoundEntry" title="Players">
               <PlayerAvatarList v-if="round.players" :player-ids="round.players" />

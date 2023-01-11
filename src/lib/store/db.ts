@@ -1,6 +1,6 @@
 import Dexie, { Table } from 'dexie'
 import 'dexie-observable'
-import { exportDB, ExportProgress } from 'dexie-export-import'
+import { exportDB } from 'dexie-export-import'
 
 export interface QuizEntry {
   id?: string
@@ -96,7 +96,10 @@ export async function exportDatabase(): Promise<unknown> {
       // We have a lot of blobs and this makes sure that the browser tab
       // doesn’t crash and also that the resulting file is not so huge.
       numRowsPerChunk: 1,
-      progressCallback: (progress: ExportProgress) => console.log('exporting', progress),
+      progressCallback: (progress) => {
+        console.log('exporting', progress)
+        return true
+      },
     })
     return blob
   } catch (error) {
@@ -104,8 +107,11 @@ export async function exportDatabase(): Promise<unknown> {
   }
 }
 
-export async function importDatabase(file: File): Promise<unknown> {
+export async function importDatabase(file: File): Promise<void> {
   await Dexie.import(file, {
-    progressCallback: (progress: ExportProgress) => console.log('importing', progress),
+    progressCallback: (progress) => {
+      console.log('importing', progress)
+      return true
+    },
   })
 }

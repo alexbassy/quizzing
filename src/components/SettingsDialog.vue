@@ -2,7 +2,6 @@
 import { ref } from 'vue'
 import dayjs from 'dayjs'
 import download from 'downloadjs'
-import Dexie from 'dexie'
 import { exportDatabase, importDatabase } from '@/lib/store/db'
 import Dialog from './Dialog.vue'
 import PrimaryButton from './PrimaryButton.vue'
@@ -10,19 +9,18 @@ import SecondaryButton from './SecondaryButton.vue'
 
 async function doExport() {
   const result = await exportDatabase()
-  console.log(dayjs().format('YYYY-MM-DD_HH:mm'))
-  download(result, `quiz-export-${dayjs().format('YYYY-MM-DD_HH:mm')}.json`, 'application/json')
+  download(result as string, `quiz-export-${dayjs().format('YYYY-MM-DD_HH:mm')}.json`, 'application/json')
 }
 
 const fileInput = ref<HTMLInputElement | null>(null)
 
-async function doImport(event: Event) {
+async function doImport() {
   const file = fileInput.value?.files?.[0]
   if (file) {
     console.log(file)
+    await importDatabase(file)
+    console.log('imported!')
   }
-  await importDatabase(file)
-  console.log('imported!')
 }
 </script>
 
