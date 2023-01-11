@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, inject, reactive, ref, watch } from 'vue'
+import { computed, inject, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import PlayerAvatar from '@/components/player/PlayerAvatar.vue'
 import { useObservable } from '@/composable/useObservable'
@@ -8,79 +8,34 @@ import { Routes } from '@/routes'
 import TickIcon from '../icons/TickIcon.vue'
 import PrimaryButton from '../PrimaryButton.vue'
 import SecondaryButton from '../SecondaryButton.vue'
-
-interface Props {
-  visible: boolean
-}
-
-const props = withDefaults(defineProps<Props>(), { visible: false })
-
-const emit = defineEmits(['cancel', 'close'])
+import Dialog from '../Dialog.vue'
 
 const quizId = inject<string>('quizId')
 
-const router = useRouter()
-
-const dialog = ref<HTMLDialogElement>()
-
 const players = useObservable(getPlayers$())
-
 const selectedPlayers = reactive<Record<string, boolean>>({})
-
 const selectedPlayersCount = computed(() => Object.values(selectedPlayers).length)
 
-function closeModal() {
-  dialog.value?.classList.add('is-hidden')
-  const removeClasses = () => {
-    dialog.value?.classList.remove('is-hidden')
-    ;(dialog.value as any)?.close()
-    close()
-  }
-  dialog.value?.addEventListener('animationend', removeClasses, { once: true })
-}
-
+const router = useRouter()
 async function startRound() {
   const players = Object.keys(selectedPlayers)
   const roundId = await addRound({ quizId, players })
   router.push({ name: Routes.PrePresent, params: { roundId } })
 }
 
-watch(
-  () => props.visible,
-  (isVisible) => {
-    if (isVisible) {
-      ;(dialog.value as any)?.showModal()
-    }
-  }
-)
-
 const onPlayerClick = (id: string) => {
   if (selectedPlayers[id]) delete selectedPlayers[id]
   else selectedPlayers[id] = true
 }
-
-function cancel() {
-  emit('cancel')
-}
-
-function close() {
-  emit('close')
-}
 </script>
 
 <template>
-  <dialog
-    ref="dialog"
-    class="playDialog"
-    aria-labelledby="play-dialog-description"
-    @cancel="cancel"
-    @close="close"
-  >
+  <Dialog v-slot="{ close }" class="playDialog" aria-labelledby="play-dialog-description" v-bind="$attrs">
     <form method="dialog">
       <h1 class="title">Who’s playing?</h1>
       <p id="play-dialog-description" class="message">
-        Add some participants to the quiz for easy scoring as you go along. You can also start the
-        quiz without adding any players.
+        Add some participants to the quiz for easy scoring as you go along. You can also start the quiz
+        without adding any players.
       </p>
       <ul class="playerList">
         <li v-for="player in players" :key="player.id" class="playerListItem">
@@ -106,48 +61,17 @@ function close() {
         </li>
       </ul>
       <div class="playDialogActions">
-        <SecondaryButton class="cancelButton" type="button" @click="closeModal">
-          Close
-        </SecondaryButton>
+        <SecondaryButton class="cancelButton" type="button" @click="close"> Close </SecondaryButton>
         <PrimaryButton bg="rgb(0, 36, 196)" type="button" @click="startRound">
-          <template v-if="selectedPlayersCount > 0">
-            Start with {{ selectedPlayersCount }} players
-          </template>
+          <template v-if="selectedPlayersCount > 0"> Start with {{ selectedPlayersCount }} players </template>
           <template v-else>Start without scoring</template>
         </PrimaryButton>
       </div>
     </form>
-  </dialog>
+  </Dialog>
 </template>
 
 <style lang="scss" scoped>
-.playDialog {
-  position: fixed;
-  top: 0px;
-  right: 0;
-  bottom: 0px;
-  left: 0;
-  height: fit-content;
-  padding: 1.5rem;
-  margin: auto;
-  backdrop-filter: blur(10px);
-  background: rgb(15 15 15 / 80%);
-  border-radius: 8px;
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1), 0 1px 30px rgba(0, 0, 0, 0.5);
-  max-inline-size: min(90vw, 45ch);
-
-  @include animate-dialog-entry-exit;
-
-  &::backdrop {
-    position: fixed;
-    top: 0px;
-    right: 0px;
-    bottom: 0px;
-    left: 0px;
-    background-color: $backdrop-background;
-  }
-}
-
 .title {
   font-size: 2rem;
   font-weight: bold;

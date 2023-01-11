@@ -3,17 +3,11 @@ import { ref } from 'vue'
 import { useObservable } from '@vueuse/rxjs'
 import randomColor from 'randomcolor'
 import AddIcon from '@/components/icons/AddIcon.vue'
+import CogIcon from '@/components/icons/CogIcon.vue'
 import RubbishIcon from '@/components/icons/RubbishIcon.vue'
 import CreateLayout from '@/layouts/CreateLayout.vue'
 import { formatRelativeTime } from '@/lib/relative-time'
-import {
-  addQuiz,
-  deleteQuiz,
-  getQuizzes$,
-  getPlayers$,
-  addPlayer,
-  getRounds$,
-} from '@/lib/store/client'
+import { addQuiz, deleteQuiz, getQuizzes$, getPlayers$, addPlayer, getRounds$ } from '@/lib/store/client'
 import { PlayerEntry, RoundEntry, type QuizEntry } from '@/lib/store/db'
 import { LinkTable, LinkTableColumn } from '@/components/table'
 import PlayerAvatar from '@/components/player/PlayerAvatar.vue'
@@ -60,15 +54,17 @@ function closePlayerAttributes() {
       <h1 class="title">Quizzing 🥷</h1>
     </template>
     <template #action>
-      <PrimaryButton bg="#ef476f" @click="createQuiz"><AddIcon /> Create quiz</PrimaryButton>
+      <PrimaryButton bg="#ef476f" inline @click="createQuiz"><AddIcon /> Create quiz</PrimaryButton>
+      <SecondaryButton aria-label="Settings" is-icon inline>
+        <CogIcon />
+      </SecondaryButton>
     </template>
 
     <div class="page">
       <section>
         <h3 class="section-title">Quizzes</h3>
         <p class="help">
-          A quiz is a set of questions. To start a round, select a quiz from below and click the
-          play button.
+          A quiz is a set of questions. To start a round, select a quiz from below and click the play button.
         </p>
         <LinkTable :data="quizzes" class="table" :row-link="({ id }) => `/create/${id}`">
           <LinkTableColumn v-slot="{ name }: QuizEntry" title="Name">{{ name }}</LinkTableColumn>
@@ -101,8 +97,8 @@ function closePlayerAttributes() {
       <section>
         <h3 class="section-title">Players <button @click="createPlayer">+</button></h3>
         <p class="help">
-          Add players to keep score while running the quiz. You can choose who is taking part when
-          starting the round.
+          Add players to keep score while running the quiz. You can choose who is taking part when starting
+          the round.
         </p>
         <div class="players">
           <ul class="player-list">
@@ -125,15 +121,11 @@ function closePlayerAttributes() {
       <section>
         <h3 class="section-title">Rounds</h3>
         <p class="help">
-          A round is a set of questions from a quiz. To start a round, select a quiz from above and
-          click the play button.
+          A round is a set of questions from a quiz. To start a round, select a quiz from above and click the
+          play button.
         </p>
         <div class="rounds">
-          <LinkTable
-            :data="rounds"
-            class="rounds-table"
-            :row-link="({ id }) => `/play/${id}/scores`"
-          >
+          <LinkTable :data="rounds" class="rounds-table" :row-link="({ id }) => `/play/${id}/scores`">
             <LinkTableColumn v-slot="round: RoundEntry" title="Quiz">
               {{ quizzes?.find(({ id }) => id === round.quizId)?.name ?? round.id }}
             </LinkTableColumn>
