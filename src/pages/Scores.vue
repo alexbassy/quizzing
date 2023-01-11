@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { map, mergeMap, switchMap } from 'rxjs/operators'
+import { map, mergeMap, switchMap, tap } from 'rxjs/operators'
 import { combineLatest } from 'rxjs'
 import { useSubscription } from '@vueuse/rxjs'
 import { useObservable } from '@/composable/useObservable'
@@ -34,6 +34,41 @@ const pointsInRound$ = round$.pipe(
   )
 )
 
+const pointsByQuestion$ = round$.pipe(
+  switchMap((round) => getPointsForRound$(round!.id!)),
+  map((points) => {
+    console.log(new Set([...points.map((point) => point.questionId!)]).size)
+    return points.reduce<Record<string, Record<string, number>>>((accum, point) => {
+      if (!accum[point.questionId!]) accum[point.questionId!] = {}
+      if (!accum[point.questionId!][point.playerId!]) accum[point.questionId!][point.playerId!] = 0
+      accum[point.questionId!][point.playerId!]++
+      return accum
+    }, {})
+  }),
+  tap((pointsByQuestion) => console.log({ pointsByQuestion }))
+)
+
+useObservable(
+  round$.pipe(
+    switchMap((round) => combineLatest([playersInRound$, pointsByQuestion$])),
+    map(([players, points]) => {
+      // make a record where the key is the question ID and the value is an object of player IDs and their score
+      const scores = Object.fromEntries(
+        Object.entries(points).map(([questionId, points]) => {
+          const scores = Object.fromEntries(
+            Object.entries(players).map(([playerId, player]) => {
+              return [playerId, points[playerId] || 0]
+            })
+          )
+          return [questionId, scores]
+        })
+      )
+      console.log({ scores, points })
+      return scores
+    })
+  )
+)
+
 const quizName = useObservable(
   round$.pipe(
     switchMap((round) => getQuiz$(round!.quizId!)),
@@ -51,23 +86,7 @@ const playerPoints$ = combineLatest([playersInRound$, pointsInRound$]).pipe(
   })
 )
 
-const numQuestions = useObservable(
-  round$.pipe(
-    switchMap((round) => getQuiz$(round!.quizId!)),
-    map((quiz) => quiz!.questions!.length)
-  )
-)
-
 const playerPoints = useObservable(playerPoints$)
-
-useSubscription(
-  playerPoints$.subscribe({
-    next: (value) => {
-      console.log('playerPoints', value)
-    },
-    error: console.error,
-  })
-)
 </script>
 
 <template>
