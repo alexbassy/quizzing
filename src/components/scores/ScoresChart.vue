@@ -1,114 +1,260 @@
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue'
 import * as d3 from 'd3'
+import { useSubscription } from '@vueuse/rxjs'
+import { combineLatest, concat, fromEvent, map, mergeMap, switchMap, take, tap, throttleTime } from 'rxjs'
+import { group, last } from 'radash'
+import useRound from '@/composable/useRound'
+import { getPlayer$, getPointsForRound$, getQuestions$ } from '@/lib/store/client'
+import { PlayerEntry } from '@/lib/store/db'
+import { onMounted$ } from '@/composable/useObservable'
+import { getTransformation } from '@/lib/d3-helpers'
 
-const props = defineProps({})
+const chartContainerElement = ref<HTMLElement>()
+const chartElement = ref<HTMLElement>()
+const chartId = 'scoreChart'
 
-const chartElem = ref<HTMLElement>()
+const round$ = useRound()
 
-function drawChart(): void {
-  const data = [
-    {
-      series: 'Emma',
-      data: [
-        { x: 'Q1', y: 1 },
-        { x: 'Q2', y: 1 },
-        { x: 'Q3', y: 2 },
-        { x: 'Q4', y: 3 },
-        { x: 'Q5', y: 3 },
-        { x: 'Q6', y: 4 },
-        { x: 'Q7', y: 5 },
-        { x: 'Q8', y: 5 },
-        { x: 'Q9', y: 6 },
-        { x: 'Q10', y: 7 },
-      ],
-      shape: 'circle',
-    },
-    {
-      series: 'Laura',
-      data: [
-        { x: 'Q1', y: 0 },
-        { x: 'Q2', y: 1 },
-        { x: 'Q3', y: 1 },
-        { x: 'Q4', y: 2 },
-        { x: 'Q5', y: 3 },
-        { x: 'Q6', y: 3 },
-        { x: 'Q7', y: 4 },
-        { x: 'Q8', y: 5 },
-        { x: 'Q9', y: 6 },
-        { x: 'Q10', y: 6 },
-      ],
-      shape: 'circle',
-    },
-  ]
+interface ScoreDataPoint {
+  questionId: string
+  questionTitle: string
+  point: number
+  score: number
+}
 
-  // @ts-ignore
-  const svg = d3.select(chartElem.value).append('svg').attr('width', 800).attr('height', 600)
+interface ScoresData {
+  series: string // player id
+  player: PlayerEntry
+  score: number
+  data: ScoreDataPoint[]
+}
+
+const playersInRound$ = round$.pipe(
+  map((round) => round!.players!.map((id) => getPlayer$(id!))),
+  mergeMap((players) => combineLatest(players)),
+  map((players) => Object.fromEntries(players.map((player) => [player!.id as string, player])))
+)
+
+const pointsByQuestion$ = round$.pipe(
+  switchMap((round) => getPointsForRound$(round!.id!)),
+  map((points) =>
+    points.reduce<Record<string, Record<string, number>>>((accum, point) => {
+      if (!accum[point.questionId!]) accum[point.questionId!] = {}
+      if (!accum[point.questionId!][point.playerId!]) accum[point.questionId!][point.playerId!] = 0
+      accum[point.questionId!][point.playerId!]++
+      return accum
+    }, {})
+  )
+)
+
+const questionsInRound$ = round$.pipe(switchMap((round) => getQuestions$(round!.quizId!)))
+
+useSubscription(
+  combineLatest([playersInRound$, questionsInRound$, pointsByQuestion$])
+    .pipe(
+      map(
+        ([players, questions, points]) =>
+          // make { [playerId]: [ {questionId, accumulatedPoints} ] }
+          Object.entries(players).map(([playerId, player]) => {
+            let accumulatedPoints = 0
+            const playerScores = questions.map((question) => {
+              const questionId = question.id as string
+              const point = points?.[questionId]?.[playerId] ?? 0
+              accumulatedPoints += point
+              return {
+                questionId: questionId,
+                questionTitle: question.title,
+                point,
+                score: accumulatedPoints,
+              }
+            })
+            return { series: playerId, player, score: last(playerScores)!.score, data: playerScores }
+          }) as ScoresData[]
+      ),
+      take(1)
+    )
+    .subscribe((data) => {
+      drawChart(data)
+    })
+)
+
+const chartWidth = ref(450)
+const chartHeight = ref(450)
+
+let container: d3.Selection<SVGSVGElement, unknown, HTMLElement, any>
+
+function getContainerSize() {
+  const { width, height } = chartElement.value?.getBoundingClientRect()
+  chartWidth.value = width
+  chartHeight.value = height
+  chartContainerElement.value!.style.minHeight = `${height}px`
+}
+
+useSubscription(
+  concat(onMounted$(), fromEvent(window, 'resize'))
+    .pipe(throttleTime(100, undefined, { leading: true }))
+    .subscribe(getContainerSize)
+)
+
+function drawSvg(): void {
+  container = d3.select(chartElement.value).append('svg')
+  updateSvgElement()
+}
+
+function updateSvgElement(): void {
+  container.attr('viewBox', `0 0 ${chartWidth.value} ${chartHeight.value}`)
+}
+
+onMounted(() => {
+  drawSvg()
+})
+
+function drawChart(data: ScoresData[]): void {
+  console.log('drawChart', data)
+  getContainerSize()
+  updateSvgElement()
+
+  const X_MARGIN = 50
 
   const xScale = d3
     .scalePoint()
-    .domain(data[0].data.map((d) => d.x))
-    .range([0, 800])
+    .domain(data[0].data.map((d, i) => d.questionTitle))
+    .range([0, chartWidth.value - X_MARGIN * 2])
 
-  const yScale = d3.scaleLinear().domain([0, data[0].data.length]).range([600, 0])
+  // this should be the number of questions?
+  const yScale = d3
+    .scaleLinear()
+    .domain([0, 20])
+    .range([chartHeight.value - 50, 0])
 
   const colorScale = d3.scaleOrdinal(d3.schemeCategory10)
+
+  // Draw clip path for avatar
+  const avatarSize = 40
+  container
+    .append('clipPath')
+    .attr('id', 'clipCircle')
+    .append('circle')
+    .attr('cx', avatarSize / 2)
+    .attr('cy', avatarSize / 2)
+    .attr('r', avatarSize / 2)
+
+  const playersWithSameScore = group(data, (d) => d.score)
 
   data.forEach((seriesData) => {
     // @ts-ignore
     const lineGenerator = d3
-      .line<{ x: string; y: number }>()
-      .x((d) => xScale(d.x))
-      .y((d) => yScale(d.y))
+      .line<ScoreDataPoint>()
+      .x((d) => xScale(d.questionTitle))
+      .y((d) => yScale(d.score))
 
     lineGenerator.curve(d3.curveBumpX)
 
-    const path = svg
+    const path = container
       .append('path')
       .attr('d', lineGenerator(seriesData.data))
       .attr('stroke', colorScale(seriesData.series))
-      .attr('stroke-width', 2)
+      .attr('stroke-width', 4)
       .attr('fill', 'none')
-      .attr('stroke-dasharray', function () {
-        return this.getTotalLength()
-      })
-      .attr('stroke-dashoffset', function () {
-        return this.getTotalLength()
-      })
+      .attr('stroke-dasharray', (_d, i, nodes) => nodes[i].getTotalLength())
+      .attr('stroke-dashoffset', (_d, i, nodes) => nodes[i].getTotalLength())
 
     const t = d3.transition().duration(5000).ease(d3.easeCubicOut)
 
-    const shape = svg.append(seriesData.shape).attr('r', 5).attr('fill', colorScale(seriesData.series))
+    // Make the circle an avatar here
+    // const shape = container.append('circle').attr('r', 10).attr('fill', colorScale(seriesData.series))
 
+    // create a group and within a circle 4px bigger than the avatar to serve as a border
+    const avatarGroup = container.append('g').classed('playerAvatar', true)
+
+    avatarGroup
+      .append('circle')
+      .attr('cx', avatarSize / 2)
+      .attr('cy', avatarSize / 2)
+      .attr('r', avatarSize / 2 + 4)
+      .attr('fill', colorScale(seriesData.series))
+
+    // add the avatar to the group
+    if (seriesData.player.photo) {
+      avatarGroup
+        .append('image')
+        .attr('xlink:href', URL.createObjectURL(seriesData.player.photo))
+        .attr('width', avatarSize)
+        .attr('height', avatarSize)
+        .attr('clip-path', 'url(#clipCircle)')
+    } else {
+      avatarGroup
+        .append('circle')
+        .attr('cx', avatarSize / 2)
+        .attr('cy', avatarSize / 2)
+        .attr('r', avatarSize / 2)
+        .attr('fill', colorScale(seriesData.series))
+    }
+
+    // Animate the line going across the page
     path.transition(t).attr('stroke-dashoffset', 0)
 
-    shape.transition(t).attrTween('transform', function () {
-      return function (t) {
-        const point = path.node()!.getPointAtLength(t * path.node()!.getTotalLength())
-        return `translate(${Math.min(point.x, 795)}, ${point.y})`
-      }
-    })
+    avatarGroup
+      .transition(t)
+      .attrTween('transform', () => (t) => {
+        const avatarOffset = -avatarSize / 2
+        let { x, y } = path.node()!.getPointAtLength(t * path.node()!.getTotalLength())
+        x += avatarOffset
+        y += avatarOffset
+        return `translate(${Math.min(x, chartWidth.value - 5)}, ${y})`
+      })
+      .on('end', function () {
+        // if any avatars have the same score, push them to the right
+        if (playersWithSameScore[seriesData.score]) {
+          const index =
+            playersWithSameScore[seriesData.score].findIndex((d) => d.player.id === seriesData.player.id) ?? 0
+          d3.timeout(() => {
+            const transform = getTransformation(avatarGroup.attr('transform'))
+            const offsetX = index * ((avatarSize + 8) * -1)
+
+            const interpolate = d3.interpolateTransformSvg(
+              `translate(${transform.translateX}, ${transform.translateY})`,
+              `translate(${transform.translateX + offsetX}, ${transform.translateY})`
+            )
+
+            avatarGroup
+              .transition()
+              .duration(500)
+              .attrTween('transform', () => (t) => interpolate(t))
+          })
+        }
+      })
   })
+
+  d3.selectAll('.playerAvatar').raise()
 
   const xAxis = d3.axisBottom(xScale)
 
-  svg.append('g').attr('transform', `translate(0, 600)`).call(xAxis)
+  container
+    .append('g')
+    .attr('transform', `translate(0, ${chartHeight.value - 50})`)
+    .call(xAxis)
 
   const yAxis = d3.axisLeft(yScale)
 
-  svg.append('g').attr('transform', `translate(0, 0)`).call(yAxis)
+  container.append('g').attr('transform', `translate(0, 0)`).call(yAxis)
 }
-
-onMounted(() => {
-  drawChart()
-})
 </script>
 
 <template>
-  <div id="chart" ref="chartElem" />
+  <div ref="chartContainerElement" class="scoresChartContainer">
+    <div id="chart" ref="chartElement" class="scoresChart" />
+  </div>
 </template>
 
 <style lang="scss" scoped>
-.Chart {
+.scoresChartContainer {
+  width: 100%;
+  height: calc(100vh - var(--create-header-height));
+}
+.scoresChart {
+  width: 100%;
+  height: 100%;
 }
 </style>

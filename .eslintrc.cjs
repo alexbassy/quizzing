@@ -22,6 +22,8 @@ module.exports = {
 
     'vue/max-attributes-per-line': 'off',
 
+    '@typescript-eslint/no-non-null-assertion': 'off',
+
     'vue/html-self-closing': [
       'error',
       {

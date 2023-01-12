@@ -6,7 +6,7 @@ export function getQuestion$(questionId: string): Observable<QuestionEntry | und
   return from(liveQuery(() => db.question.get(questionId)))
 }
 
-export function getQuestions$(quizId: string) {
+export function getQuestions$(quizId: string): Observable<QuestionEntry[]> {
   return from(
     liveQuery(async () => {
       const [quiz, questions] = await Promise.all([
