@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, defineProps, ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { filter, switchMap, tap } from 'rxjs/operators'
 import { useObservable, useSubscription } from '@vueuse/rxjs'
 import { fromEvent } from 'rxjs'
@@ -87,13 +87,7 @@ async function fileInputChange(ev: Event) {
 </script>
 
 <template>
-  <Popover
-    :x="x"
-    :y="y"
-    class="playerAttributesPopover"
-    :stay-on-top="isSelectingFile"
-    @close="close"
-  >
+  <Popover :x="x" :y="y" class="playerAttributesPopover" :stay-on-top="isSelectingFile" @close="close">
     <form v-if="playerId" class="playerAttributesForm" @submit.prevent="saveName">
       <input ref="photoInput" type="file" class="fileUploadInput" @change="fileInputChange" />
       <button type="button" class="avatarUploadButton" @click="openFileInput">

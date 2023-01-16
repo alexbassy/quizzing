@@ -12,7 +12,7 @@ const players = useObservable<PlayerEntry[]>(getPlayersById$(props.playerIds))
 <template>
   <ul class="playerAvatarList">
     <li v-for="player in players" :key="player.id" class="playerAvatarList__item">
-      <PlayerAvatar :player="player" class="playerAvatarList__icon" />
+      <PlayerAvatar :player="player" class="playerAvatarList__icon" size="xsmall" />
     </li>
   </ul>
 </template>
@@ -20,11 +20,13 @@ const players = useObservable<PlayerEntry[]>(getPlayersById$(props.playerIds))
 <style lang="scss" scoped>
 .playerAvatarList {
   &__item {
+    --offset: 12px;
+
     display: inline-block;
     margin-right: 0.5rem;
 
     &:nth-child(1n + 2) {
-      margin-left: -20px;
+      margin-left: calc(var(--offset) * -1);
       transition: margin-left 0.2s ease-in-out;
 
       .playerAvatarList:hover & {
