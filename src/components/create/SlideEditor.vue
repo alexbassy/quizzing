@@ -38,9 +38,7 @@ const correctOption = computed(() => question.value?.correctOption)
 
 const letterIndex = ['A', 'B', 'C', 'D']
 
-const options = computed(() =>
-  Array.from({ length: 4 }).map((_, i) => question.value?.options?.[i] || '')
-)
+const options = computed(() => Array.from({ length: 4 }).map((_, i) => question.value?.options?.[i] || ''))
 
 async function handleTitleInput(ev: Event) {
   resizeTitleInput()
@@ -62,11 +60,9 @@ function resizeTitleInput() {
   Stretchy.resize(slideTitle.value)
 }
 useSubscription(
-  combineLatest([
-    watch$(title),
-    onMounted$(),
-    fromEvent(window, 'resize').pipe(startWith(null)),
-  ]).subscribe(() => nextTick(() => resizeTitleInput()))
+  combineLatest([watch$(title), onMounted$(), fromEvent(window, 'resize').pipe(startWith(null))]).subscribe(
+    () => nextTick(() => resizeTitleInput())
+  )
 )
 
 // Handle image selection
@@ -100,7 +96,14 @@ const backgroundColor = computed(() => question.value?.backgroundColor || '')
         <image-picker :is-open="imagePickerOpen" @select="onImageSelect" />
         <div class="content">
           <span class="count">&times;</span>
-          <div class="title">
+          <div
+            class="title"
+            :class="{
+              '-s': title.length > 50,
+              '-xs': title.length > 80,
+              '-xxs': title.length > 110,
+            }"
+          >
             <textarea
               ref="slideTitle"
               type="text"
@@ -203,6 +206,18 @@ const backgroundColor = computed(() => question.value?.backgroundColor || '')
   margin: 0.5em 0;
   font-size: var(--slide-title-font-size);
   font-weight: 800;
+
+  &.-s {
+    font-size: var(--slide-title-font-size-s);
+  }
+
+  &.-xs {
+    font-size: var(--slide-title-font-size-xs);
+  }
+
+  &.-xxs {
+    font-size: var(--slide-title-font-size-xxs);
+  }
 }
 
 .title-textarea {

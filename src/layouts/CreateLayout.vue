@@ -38,6 +38,12 @@
   margin-right: auto;
 }
 
+.header-action {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
 .content {
   flex: 4;
 }

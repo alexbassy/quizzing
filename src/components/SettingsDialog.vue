@@ -15,7 +15,7 @@ async function doExport() {
 const fileInput = ref<HTMLInputElement | null>(null)
 
 async function doImport() {
-  const [file] = fileInput.value?.files
+  const file = fileInput.value?.files?.[0]
   if (file) {
     await importDatabase(file)
   }

@@ -13,6 +13,7 @@ import { QuestionEntry, QuizEntry } from '@/lib/store/db'
 import PlayDialog from '@/components/create/PlayDialog.vue'
 import PrimaryButton from '@/components/PrimaryButton.vue'
 import SecondaryButton from '@/components/SecondaryButton.vue'
+import FixedHeight from '@/components/FixedHeight.vue'
 
 const route = useRoute()
 
@@ -36,9 +37,7 @@ function onSlideChange(id: QuestionEntry['id']) {
 
 // Resize the title input when the quiz data is loaded
 const titleInput = ref<HTMLInputElement>()
-useSubscription(
-  quiz$.pipe(take(1)).subscribe((value) => nextTick(() => Stretchy.resize(titleInput.value)))
-)
+useSubscription(quiz$.pipe(take(1)).subscribe((value) => nextTick(() => Stretchy.resize(titleInput.value))))
 
 // Save the title input value to the database and resize on input
 async function handleTitleChange(ev: Event) {
@@ -54,6 +53,7 @@ function showPlayDialog() {
 
 <template>
   <CreateLayout>
+    <FixedHeight />
     <template #title>
       <SecondaryButton to="/create" inline is-icon>
         <CaretLeftIcon />

@@ -7,9 +7,10 @@ import Slide from '@/components/slide'
 import { useSubscribe } from '@/composable/useObservable'
 import PlayLayout from '@/layouts/PlayLayout.vue'
 import { watch$ } from '@/lib/observables'
-import { getQuestion$, getQuiz$, getRound$, getPlayersOfRound$ } from '@/lib/store/client'
+import { getQuestion$, getQuiz$, getRound$ } from '@/lib/store/client'
 import PlayerScoreToggles from '@/components/player/PlayerScoreToggles.vue'
 import { Routes } from '@/routes'
+import FixedHeight from '@/components/FixedHeight.vue'
 
 const isAnswerShown = ref(false)
 const isPhotoShown = ref(false)
@@ -93,6 +94,7 @@ useSubscribe(fromEvent<KeyboardEvent>(document, 'keyup'), (event) => {
 
 <template>
   <PlayLayout>
+    <FixedHeight />
     <div class="playContainer">
       <Slide
         v-if="activeQuestion"
