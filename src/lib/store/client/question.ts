@@ -1,5 +1,5 @@
 import { liveQuery } from 'dexie'
-import { from, map, Observable } from 'rxjs'
+import { from, Observable } from 'rxjs'
 import { db, QuestionEntry } from '@/lib/store/db'
 
 export function getQuestion$(questionId: string): Observable<QuestionEntry | undefined> {

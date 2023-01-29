@@ -12,8 +12,18 @@ import PlayDialog from '@/components/create/PlayDialog.vue'
 import PrimaryButton from '@/components/PrimaryButton.vue'
 import SecondaryButton from '@/components/SecondaryButton.vue'
 import FixedHeight from '@/components/FixedHeight.vue'
+import router from '@/routes'
 
 const route = useRoute()
+
+function getQuestionIdFromRoute() {
+  const questionId = route.query.q as string | undefined
+  return questionId || undefined
+}
+
+function updateQuestionIdInRoute(questionId: QuestionEntry['id'] | undefined) {
+  router.replace({ params: route.params, query: { q: questionId } })
+}
 
 const quizId = route.params.id as string
 provide('quizId', quizId)
@@ -21,16 +31,24 @@ provide('quizId', quizId)
 const quiz$ = getQuiz$(quizId)
 const quiz = useObservable<QuizEntry | undefined>(quiz$)
 const questions = useObservable(getQuestions$(quizId), { initialValue: [] as QuestionEntry[] })
-const activeQuestion = ref<QuestionEntry | undefined>(questions.value?.[0] ?? undefined)
+const activeQuestion = ref<QuestionEntry | undefined>()
 
+// Run effect when questions load
 watch(questions, (value, oldValue) => {
   if (oldValue.length === 0 && value.length > 0) {
     activeQuestion.value = value[0]
+
+    const routeQuestionId = getQuestionIdFromRoute()
+    const foundQuestion = routeQuestionId ? value.find((q) => q.id === routeQuestionId) : null
+    if (routeQuestionId && foundQuestion) {
+      activeQuestion.value = foundQuestion
+    }
   }
 })
 
 function onSlideChange(id: QuestionEntry['id']) {
   activeQuestion.value = questions.value.find((q) => q.id === id)!
+  updateQuestionIdInRoute(id)
 }
 
 // Save the title input value to the database and resize on input
