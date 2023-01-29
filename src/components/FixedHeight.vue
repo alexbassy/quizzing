@@ -1,7 +1,7 @@
 <script lang="ts">
-import { h, onMounted, onUnmounted } from 'vue'
+import { defineComponent, onMounted, onUnmounted } from 'vue'
 
-export default {
+export default defineComponent({
   name: 'FixedHeight',
   // render nothing
   setup(_, { slots }) {
@@ -13,5 +13,5 @@ export default {
     })
     return () => slots.default?.()
   },
-}
+})
 </script>

@@ -6,19 +6,18 @@ import { combineLatest, concat, fromEvent, map, mergeMap, switchMap, take, tap, 
 import { group, last } from 'radash'
 import useRound from '@/composable/useRound'
 import { getPlayer$, getPointsForRound$, getQuestions$ } from '@/lib/store/client'
-import { PlayerEntry } from '@/lib/store/db'
+import { PlayerEntry, QuestionEntry } from '@/lib/store/db'
 import { onMounted$ } from '@/composable/useObservable'
 import { getTransformation } from '@/lib/d3-helpers'
 
 const chartContainerElement = ref<HTMLElement>()
 const chartElement = ref<HTMLElement>()
-const chartId = 'scoreChart'
 
 const round$ = useRound()
 
 interface ScoreDataPoint {
   questionId: string
-  questionTitle: string
+  title: string
   point: number
   score: number
 }
@@ -28,6 +27,7 @@ interface ScoresData {
   player: PlayerEntry
   score: number
   data: ScoreDataPoint[]
+  questions: QuestionEntry[]
 }
 
 const playersInRound$ = round$.pipe(
@@ -58,23 +58,37 @@ useSubscription(
           // make { [playerId]: [ {questionId, accumulatedPoints} ] }
           Object.entries(players).map(([playerId, player]) => {
             let accumulatedPoints = 0
-            const playerScores = questions.map((question) => {
-              const questionId = question.id as string
-              const point = points?.[questionId]?.[playerId] ?? 0
-              accumulatedPoints += point
-              return {
-                questionId: questionId,
-                questionTitle: question.title,
-                point,
-                score: accumulatedPoints,
-              }
-            })
-            return { series: playerId, player, score: last(playerScores)!.score, data: playerScores }
+            const playerScores = questions
+              .map((question, i) => {
+                const questionId = question.id as string
+                const didPlayQuestion = Boolean(points?.[questionId])
+                if (!didPlayQuestion) {
+                  // if (i === 0) debugger
+                  return null
+                }
+                const point = points?.[questionId]?.[playerId] ?? null
+                if (point !== null) accumulatedPoints += point
+                return {
+                  questionId: questionId,
+                  title: question.title,
+                  point,
+                  score: accumulatedPoints,
+                }
+              })
+              .filter(Boolean)
+            return {
+              series: playerId,
+              player,
+              score: last(playerScores)!.score,
+              data: playerScores,
+              questions,
+            }
           }) as ScoresData[]
       ),
       take(1)
     )
     .subscribe((data) => {
+      console.log(data)
       drawChart(data)
     })
 )
@@ -82,10 +96,11 @@ useSubscription(
 const chartWidth = ref(450)
 const chartHeight = ref(450)
 
-let container: d3.Selection<SVGSVGElement, unknown, HTMLElement, any>
+let container: d3.Selection<SVGSVGElement, unknown, null, any>
 
 function getContainerSize() {
-  const { width, height } = chartElement.value?.getBoundingClientRect()
+  if (!chartElement.value) return
+  const { width, height } = chartElement.value.getBoundingClientRect()
   chartWidth.value = width
   chartHeight.value = height
   chartContainerElement.value!.style.minHeight = `${height}px`
@@ -98,6 +113,7 @@ useSubscription(
 )
 
 function drawSvg(): void {
+  if (!chartElement.value) return
   container = d3.select(chartElement.value).append('svg')
   updateSvgElement()
 }
@@ -111,7 +127,6 @@ onMounted(() => {
 })
 
 function drawChart(data: ScoresData[]): void {
-  console.log('drawChart', data)
   getContainerSize()
   updateSvgElement()
 
@@ -119,7 +134,7 @@ function drawChart(data: ScoresData[]): void {
 
   const xScale = d3
     .scalePoint()
-    .domain(data[0].data.map((d, i) => d.questionTitle))
+    .domain(data[0].questions.map((q) => q.title!))
     .range([0, chartWidth.value - X_MARGIN * 2])
 
   // this should be the number of questions?
@@ -146,7 +161,7 @@ function drawChart(data: ScoresData[]): void {
     // @ts-ignore
     const lineGenerator = d3
       .line<ScoreDataPoint>()
-      .x((d) => xScale(d.questionTitle))
+      .x((d) => xScale(d.title))
       .y((d) => yScale(d.score))
 
     lineGenerator.curve(d3.curveBumpX)
@@ -208,7 +223,8 @@ function drawChart(data: ScoresData[]): void {
         // if any avatars have the same score, push them to the right
         if (playersWithSameScore[seriesData.score]) {
           const index =
-            playersWithSameScore[seriesData.score].findIndex((d) => d.player.id === seriesData.player.id) ?? 0
+            playersWithSameScore[seriesData.score]!.findIndex((d) => d.player.id === seriesData.player.id) ??
+            0
           d3.timeout(() => {
             const transform = getTransformation(avatarGroup.attr('transform'))
             const offsetX = index * ((avatarSize + 8) * -1)
