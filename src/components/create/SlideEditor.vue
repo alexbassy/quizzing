@@ -1,9 +1,7 @@
 <script lang="ts" setup>
-import { computed, nextTick, ref } from 'vue'
-import { useObservable, useSubscription } from '@vueuse/rxjs'
-import { combineLatest, fromEvent, startWith, switchMap } from 'rxjs'
-import * as Stretchy from 'stretchy'
-import { onMounted$ } from '@/composable/useObservable'
+import { computed, ref } from 'vue'
+import { useObservable } from '@vueuse/rxjs'
+import { switchMap } from 'rxjs'
 import { watch$ } from '@/lib/observables'
 import {
   getQuestion$,
@@ -18,7 +16,7 @@ import SecondaryButton from '../SecondaryButton.vue'
 import ImagePicker from './ImagePicker.vue'
 import Dropzone from './Dropzone.vue'
 
-const props = defineProps<{ questionId: string }>()
+const props = defineProps<{ questionId: string; index: number }>()
 
 const imagePickerOpen = ref(false)
 
@@ -38,36 +36,19 @@ const correctOption = computed(() => question.value?.correctOption)
 
 const letterIndex = ['A', 'B', 'C', 'D']
 
-const options = computed(() =>
-  Array.from({ length: 4 }).map((_, i) => question.value?.options?.[i] || '')
-)
+const options = computed(() => Array.from({ length: 4 }).map((_, i) => question.value?.options?.[i] || ''))
 
 async function handleTitleInput(ev: Event) {
-  resizeTitleInput()
   await updateQuestionTitle(questionId.value, (ev.target as HTMLTextAreaElement).value)
 }
 
 async function handleOptionInput(ev: Event, index: number) {
-  Stretchy.resize(ev.target as HTMLTextAreaElement)
   await updateQuestionOption(questionId.value, index, (ev.target as HTMLTextAreaElement).value)
 }
 
 async function setCorrectOption(index: number) {
   await updateQuestionCorrectOption(questionId.value, index)
 }
-
-// Resize question textarea on input and window resize
-const slideTitle = ref<HTMLTextAreaElement>()
-function resizeTitleInput() {
-  Stretchy.resize(slideTitle.value)
-}
-useSubscription(
-  combineLatest([
-    watch$(title),
-    onMounted$(),
-    fromEvent(window, 'resize').pipe(startWith(null)),
-  ]).subscribe(() => nextTick(() => resizeTitleInput()))
-)
 
 // Handle image selection
 async function onImageSelect(image: IUnsplashSearchResult) {
@@ -97,12 +78,24 @@ const backgroundColor = computed(() => question.value?.backgroundColor || '')
         >
           <PictureIcon /> Change background
         </SecondaryButton>
-        <image-picker :is-open="imagePickerOpen" @select="onImageSelect" />
+        <ImagePicker
+          :is-open="imagePickerOpen"
+          @select="onImageSelect"
+          @upload="onDropzoneDrop"
+          @close="imagePickerOpen = false"
+        />
         <div class="content">
-          <span class="count">&times;</span>
-          <div class="title">
+          <span class="count">{{ index + 1 }}</span>
+          <div
+            class="title"
+            :class="{
+              '-s': title.length > 50,
+              '-xs': title.length > 80,
+              '-xxs': title.length > 110,
+            }"
+          >
             <textarea
-              ref="slideTitle"
+              v-stretchy="title"
               type="text"
               :value="title"
               placeholder="Question title"
@@ -130,6 +123,7 @@ const backgroundColor = computed(() => question.value?.backgroundColor || '')
                 }}</label>
               </div>
               <input
+                v-stretchy="option"
                 type="text"
                 :value="option"
                 :placeholder="`Option ${index}`"
@@ -203,6 +197,18 @@ const backgroundColor = computed(() => question.value?.backgroundColor || '')
   margin: 0.5em 0;
   font-size: var(--slide-title-font-size);
   font-weight: 800;
+
+  &.-s {
+    font-size: var(--slide-title-font-size-s);
+  }
+
+  &.-xs {
+    font-size: var(--slide-title-font-size-xs);
+  }
+
+  &.-xxs {
+    font-size: var(--slide-title-font-size-xxs);
+  }
 }
 
 .title-textarea {

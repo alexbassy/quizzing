@@ -7,9 +7,10 @@ import Slide from '@/components/slide'
 import { useSubscribe } from '@/composable/useObservable'
 import PlayLayout from '@/layouts/PlayLayout.vue'
 import { watch$ } from '@/lib/observables'
-import { getQuestion$, getQuiz$, getRound$, getPlayersOfRound$ } from '@/lib/store/client'
+import { completeRound, getQuestion$, getQuiz$, getRound$ } from '@/lib/store/client'
 import PlayerScoreToggles from '@/components/player/PlayerScoreToggles.vue'
 import { Routes } from '@/routes'
+import FixedHeight from '@/components/FixedHeight.vue'
 
 const isAnswerShown = ref(false)
 const isPhotoShown = ref(false)
@@ -65,7 +66,7 @@ const onPrevious = () => {
   router.push({ params: { questionId: prevNextQuestions.value[0] } })
 }
 
-const onNext = () => {
+const onNext = async () => {
   // Show the correct answer
   if (!isAnswerShown.value) {
     isAnswerShown.value = true
@@ -75,6 +76,7 @@ const onNext = () => {
   // Otherwise go to next question
   const nextQuestion = prevNextQuestions.value[1]
   if (!nextQuestion) {
+    await completeRound(roundId.value)
     router.push({ name: Routes.Scores, params: { roundId: roundId.value } })
     return
   }
@@ -93,6 +95,7 @@ useSubscribe(fromEvent<KeyboardEvent>(document, 'keyup'), (event) => {
 
 <template>
   <PlayLayout>
+    <FixedHeight />
     <div class="playContainer">
       <Slide
         v-if="activeQuestion"
@@ -103,7 +106,7 @@ useSubscribe(fromEvent<KeyboardEvent>(document, 'keyup'), (event) => {
         is-animated
       />
     </div>
-    <div class="playersList">
+    <div class="playersList" :hidden="!isAnswerShown">
       <PlayerScoreToggles :round-id="roundId" :question-id="questionId" />
     </div>
   </PlayLayout>
@@ -126,5 +129,10 @@ useSubscribe(fromEvent<KeyboardEvent>(document, 'keyup'), (event) => {
   right: 4rem;
   bottom: 4rem;
   display: flex;
+  transition: opacity 0.25s ease;
+
+  &[hidden] {
+    opacity: 0;
+  }
 }
 </style>

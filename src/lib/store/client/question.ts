@@ -1,12 +1,13 @@
 import { liveQuery } from 'dexie'
-import { from, map, Observable } from 'rxjs'
+import { from, Observable } from 'rxjs'
+import randomColor from 'randomcolor'
 import { db, QuestionEntry } from '@/lib/store/db'
 
 export function getQuestion$(questionId: string): Observable<QuestionEntry | undefined> {
   return from(liveQuery(() => db.question.get(questionId)))
 }
 
-export function getQuestions$(quizId: string) {
+export function getQuestions$(quizId: string): Observable<QuestionEntry[]> {
   return from(
     liveQuery(async () => {
       const [quiz, questions] = await Promise.all([
@@ -21,7 +22,11 @@ export function getQuestions$(quizId: string) {
 
 export async function addQuestion({ quizId, ...rest }: Partial<QuestionEntry> = {}) {
   if (!quizId) throw new Error('`quizId` is required')
-  const nQ = await db.question.add({ quizId, ...rest })
+  const nQ = await db.question.add({
+    quizId,
+    backgroundColor: randomColor({ luminosity: 'dark' }),
+    ...rest,
+  })
   return db.transaction('rw', db.quiz, async () => {
     const quiz = await db.quiz.get(quizId)
     const newQuestions = [...(quiz?.questions || []), nQ]

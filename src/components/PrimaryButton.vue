@@ -1,20 +1,22 @@
 <script lang="ts" setup>
-import { RouteLocation } from 'vue-router'
-
-defineProps<{
-  bg?: string
-  inline?: boolean
-  to?: string | Partial<RouteLocation>
-}>()
+defineProps({
+  bg: {
+    type: String,
+    default: '#ef476f',
+  },
+  inline: {
+    type: Boolean,
+    default: false,
+  },
+  to: {
+    type: [String, Object],
+    default: undefined,
+  },
+})
 </script>
 
 <template>
-  <component
-    :is="to ? 'RouterLink' : 'button'"
-    :to="to"
-    class="primaryButton"
-    :class="{ '-inline': inline }"
-  >
+  <component :is="to ? 'RouterLink' : 'button'" :to="to" class="primaryButton" :class="{ '-inline': inline }">
     <slot />
   </component>
 </template>
@@ -41,7 +43,10 @@ defineProps<{
   }
 
   &[disabled] {
+    cursor: not-allowed;
     opacity: 0.6;
+    pointer-events: none;
+    user-select: none;
   }
 
   &:deep(svg) {

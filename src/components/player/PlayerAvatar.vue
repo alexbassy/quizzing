@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import { type PlayerEntry } from '@/lib/store/db'
 
-const props = defineProps<{ player: PlayerEntry; size?: 'large' | 'medium' | 'small' }>()
+const props = defineProps<{ player: PlayerEntry; size?: 'large' | 'medium' | 'small' | 'xsmall' }>()
 
 const initials = computed(() =>
   props.player.name
@@ -10,15 +10,13 @@ const initials = computed(() =>
     .map((word) => word[0])
     .join('')
 )
-const imageSrc = computed(() =>
-  props.player.photo ? URL.createObjectURL(props.player.photo) : undefined
-)
+const imageSrc = computed(() => (props.player.photo ? URL.createObjectURL(props.player.photo) : undefined))
 
 const backgroundColor = computed(() => props.player.backgroundColor ?? '#fff')
 </script>
 
 <template>
-  <span class="player" :class="{ '-large': size === 'large', '-medium': size === 'medium' }">
+  <span class="player" :class="{ '-l': size === 'large', '-m': size === 'medium', '-xs': size === 'xsmall' }">
     <div class="background">
       <img v-if="imageSrc" :src="imageSrc" class="photo" />
     </div>
@@ -36,12 +34,17 @@ const backgroundColor = computed(() => props.player.backgroundColor ?? '#fff')
   justify-content: center;
   border-radius: 100px;
 
-  &.-medium {
+  &.-xs {
+    width: 30px;
+    height: 30px;
+  }
+
+  &.-m {
     width: 75px;
     height: 75px;
   }
 
-  &.-large {
+  &.-l {
     width: 100px;
     height: 100px;
   }

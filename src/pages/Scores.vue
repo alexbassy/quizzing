@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import { map, mergeMap, switchMap } from 'rxjs/operators'
 import { combineLatest } from 'rxjs'
-import { useSubscription } from '@vueuse/rxjs'
 import { useObservable } from '@/composable/useObservable'
 import CaretLeftIcon from '@/components/icons/CaretLeftIcon.vue'
 import useRound from '@/composable/useRound'
@@ -9,6 +8,7 @@ import { getPlayer$, getPointsForRound$, getQuiz$ } from '@/lib/store/client'
 import { PlayerEntry } from '@/lib/store/db'
 import PlayerAvatar from '@/components/player/PlayerAvatar.vue'
 import CreateLayout from '@/layouts/CreateLayout.vue'
+import ScoresChart from '@/components/scores/ScoresChart.vue'
 
 const round$ = useRound()
 
@@ -50,23 +50,7 @@ const playerPoints$ = combineLatest([playersInRound$, pointsInRound$]).pipe(
   })
 )
 
-const numQuestions = useObservable(
-  round$.pipe(
-    switchMap((round) => getQuiz$(round!.quizId!)),
-    map((quiz) => quiz!.questions!.length)
-  )
-)
-
 const playerPoints = useObservable(playerPoints$)
-
-useSubscription(
-  playerPoints$.subscribe({
-    next: (value) => {
-      console.log('playerPoints', value)
-    },
-    error: console.error,
-  })
-)
 </script>
 
 <template>
@@ -77,6 +61,7 @@ useSubscription(
       </RouterLink>
       <h1 class="quizName">{{ quizName }}</h1>
     </template>
+    <ScoresChart />
     <div class="scoresContainer">
       <h2 class="title">The scores are in!</h2>
       <ol class="rankingList">

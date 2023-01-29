@@ -45,9 +45,15 @@ defineProps<{
   }
 
   &.-isIcon {
-    width: 1.75rem;
-    height: 1.75rem;
+    width: 2rem;
+    height: 2rem;
     padding: unset;
+
+    &:deep(svg) {
+      width: 1.25rem;
+      height: 1.25rem;
+      margin-right: unset;
+    }
   }
 
   &:hover {
@@ -61,9 +67,15 @@ defineProps<{
     transform: scale(0.95);
   }
 
-  &::v-deep svg {
-    width: 1.25rem;
-    height: 1.25rem;
+  &[disabled] {
+    cursor: not-allowed;
+    opacity: 0.6;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  &:deep(svg) {
+    margin-right: 0.5rem;
   }
 }
 </style>
