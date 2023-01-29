@@ -43,7 +43,10 @@ defineProps({
   }
 
   &[disabled] {
+    cursor: not-allowed;
     opacity: 0.6;
+    pointer-events: none;
+    user-select: none;
   }
 
   &:deep(svg) {

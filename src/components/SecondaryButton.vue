@@ -4,6 +4,7 @@ defineProps<{
   round?: boolean
   isIcon?: boolean
   to?: string
+  disabled?: boolean
 }>()
 </script>
 
@@ -59,6 +60,13 @@ defineProps<{
     --background-alpha: 5%;
     --foreground-alpha: 30%;
     transform: scale(0.95);
+  }
+
+  &[disabled] {
+    cursor: not-allowed;
+    opacity: 0.6;
+    pointer-events: none;
+    user-select: none;
   }
 
   &::v-deep svg {

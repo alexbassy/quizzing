@@ -8,7 +8,7 @@ import { Routes } from '@/routes'
 import TickIcon from '../icons/TickIcon.vue'
 import PrimaryButton from '../PrimaryButton.vue'
 import SecondaryButton from '../SecondaryButton.vue'
-import Dialog from '../Dialog.vue'
+import ModalDialog from '../ModalDialog.vue'
 
 const quizId = inject<string>('quizId')
 
@@ -30,9 +30,13 @@ const onPlayerClick = (id: string) => {
 </script>
 
 <template>
-  <Dialog v-slot="{ close }" class="playDialog" aria-labelledby="play-dialog-description" v-bind="$attrs">
+  <ModalDialog
+    v-slot="{ close }"
+    class="playDialog"
+    title="Who’s playing?"
+    aria-describedby="play-dialog-description"
+  >
     <form method="dialog">
-      <h1 class="title">Who’s playing?</h1>
       <p id="play-dialog-description" class="message">
         Add some participants to the quiz for easy scoring as you go along. You can also start the quiz
         without adding any players.
@@ -68,7 +72,7 @@ const onPlayerClick = (id: string) => {
         </PrimaryButton>
       </div>
     </form>
-  </Dialog>
+  </ModalDialog>
 </template>
 
 <style lang="scss" scoped>

@@ -182,8 +182,8 @@ const isSettingsDialogShown = ref(false)
 
 .page {
   display: grid;
-  margin: 1rem 2rem 0;
-  margin-top: 3rem;
+  padding-bottom: 3rem;
+  margin: 3rem 2rem 0;
   grid-gap: 2rem;
   grid-template-columns: 2fr 1fr;
 

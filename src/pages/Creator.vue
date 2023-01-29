@@ -83,11 +83,7 @@ function showPlayDialog() {
 
     <SlideEditor v-if="activeQuestion" :question-id="activeQuestion.id!" />
 
-    <PlayDialog
-      :visible="isPlayDialogShown"
-      @cancel="isPlayDialogShown = false"
-      @close="isPlayDialogShown = false"
-    />
+    <PlayDialog :visible="isPlayDialogShown" @close="isPlayDialogShown = false" />
   </CreateLayout>
 </template>
 
@@ -95,6 +91,7 @@ function showPlayDialog() {
 .title-input {
   @include textarea-outline;
   display: inline-block;
+  padding: 0 0.5rem;
   margin: 0 auto 0 0;
   font-size: var(--create-header-font-size);
   font-weight: normal;

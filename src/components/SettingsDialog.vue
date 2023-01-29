@@ -1,23 +1,30 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
+import { TabGroup, TabList, Tab, TabPanels, TabPanel } from '@headlessui/vue'
 import dayjs from 'dayjs'
 import download from 'downloadjs'
 import { exportDatabase, importDatabase } from '@/lib/store/db'
-import Dialog from './Dialog.vue'
 import PrimaryButton from './PrimaryButton.vue'
 import SecondaryButton from './SecondaryButton.vue'
+import ModalDialog from './ModalDialog.vue'
+import Fieldset from './Fieldset.vue'
+import FileInput from './FileInput.vue'
 
 async function doExport() {
   const result = await exportDatabase()
   download(result as string, `quiz-export-${dayjs().format('YYYY-MM-DD_HH:mm')}.json`, 'application/json')
 }
 
-const fileInput = ref<HTMLInputElement | null>(null)
+const file = ref<File | null>(null)
+function onImportFieldChange(value: File | null) {
+  file.value = value
+}
+
+const isImportButtonEnabled = computed(() => file.value && file.value.type === 'application/json')
 
 async function doImport() {
-  const file = fileInput.value?.files?.[0]
-  if (file) {
-    await importDatabase(file)
+  if (file.value) {
+    await importDatabase(file.value)
   }
 }
 
@@ -25,68 +32,84 @@ const tabs = [
   { id: 'importExport', label: 'Import/Export' },
   { id: 'somethingElse', label: 'Something else' },
 ] as const
-
-const activeTab = ref(tabs[0].id)
 </script>
 
 <template>
-  <Dialog v-slot="{ close }" v-bind="$attrs" class="settings">
-    <div class="settings__tabsPane">
-      <h1 class="title">Settings</h1>
-      <ul class="settings__tabs">
-        <li v-for="tab in tabs" :key="tab.id" class="settings__tabItem">
-          <button
-            class="settings__tabItem"
-            :class="{ '-active': activeTab === tab.id }"
-            :aria-label="tab.label"
-            @click="activeTab = tab.id"
-          >
-            {{ tab.label }}
-          </button>
-        </li>
-      </ul>
-    </div>
-    <div class="settings__tabsContent">
-      <div v-if="activeTab === 'importExport'">
-        <div class="importExport">
-          <section>
-            <h2>Import</h2>
-            <input ref="fileInput" type="file" />
-            <SecondaryButton type="button" class="" @click="doImport">Import quizzes</SecondaryButton>
+  <ModalDialog class="settings" title="Settings">
+    <div class="settings__grid">
+      <TabGroup vertical>
+        <div class="settings__tabsPane">
+          <TabList class="settings__tabs">
+            <Tab v-for="tab in tabs" :key="tab.id" v-slot="{ selected }" class="settings__tabItem">
+              <button class="settings__tabButton" :class="{ '-active': selected }" :aria-label="tab.label">
+                {{ tab.label }}
+              </button>
+            </Tab>
+          </TabList>
+        </div>
+        <TabPanels class="settings__tabsContent">
+          <TabPanel>
+            <div class="importExport">
+              <p class="explainer">
+                The quizzing database is stored locally inside your browser. If you want to back up your work
+                or move to another computer, you can export and import all of your data below.
+              </p>
+              <section>
+                <Fieldset title="Import">
+                  <FileInput @change="onImportFieldChange" />
+                  <SecondaryButton type="button" :disabled="!isImportButtonEnabled" @click="doImport"
+                    >Import quizzes</SecondaryButton
+                  >
+                </Fieldset>
 
-            <h2>Export</h2>
-            <PrimaryButton type="button" @click="doExport">Export database</PrimaryButton>
-          </section>
-        </div>
-        <div class="playDialogActions">
-          <SecondaryButton type="button" @click="close">Close</SecondaryButton>
-        </div>
-      </div>
+                <Fieldset title="Export">
+                  <PrimaryButton type="button" @click="doExport">Export database</PrimaryButton>
+                </Fieldset>
+              </section>
+            </div>
+          </TabPanel>
+        </TabPanels>
+      </TabGroup>
     </div>
-  </Dialog>
+  </ModalDialog>
 </template>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .settings {
-  display: grid;
   width: 600px;
   max-width: 100vw;
-  height: 350px;
-  grid-template-columns: 2fr 4fr;
+  min-height: 350px;
+
+  &__grid {
+    display: grid;
+    grid-template-columns: 2fr 4fr;
+  }
 
   &__tabs {
     display: flex;
     flex-direction: column;
-    margin-top: 1rem;
+    gap: 0.5rem;
   }
 
   &__tabItem {
-    padding: 0.25rem 0.5rem;
     margin-left: -0.5rem;
+  }
+
+  &__tabButton {
+    padding: 0.25rem 0.5rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+
     &.-active {
-      background: rgb(255 255 255 / 15%);
+      background-color: rgb(255 255 255 / 15%);
+      border-radius: 4px;
     }
   }
+}
+
+.explainer {
+  color: rgb(255 255 255 / 80%);
+  font-size: 0.875rem;
 }
 
 .importExport {
