@@ -16,7 +16,7 @@ import SecondaryButton from '../SecondaryButton.vue'
 import ImagePicker from './ImagePicker.vue'
 import Dropzone from './Dropzone.vue'
 
-const props = defineProps<{ questionId: string }>()
+const props = defineProps<{ questionId: string; index: number }>()
 
 const imagePickerOpen = ref(false)
 
@@ -80,7 +80,7 @@ const backgroundColor = computed(() => question.value?.backgroundColor || '')
         </SecondaryButton>
         <image-picker :is-open="imagePickerOpen" @select="onImageSelect" />
         <div class="content">
-          <span class="count">&times;</span>
+          <span class="count">{{ index + 1 }}</span>
           <div
             class="title"
             :class="{

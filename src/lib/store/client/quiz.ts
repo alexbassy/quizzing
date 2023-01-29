@@ -13,7 +13,7 @@ export function getQuiz$(id: string) {
 }
 
 export function addQuiz() {
-  return db.quiz.add({ name: 'Untitled' })
+  return db.quiz.add({ name: 'New Quiz' })
 }
 
 export function updateQuizTitle(quizId: string, newName: string) {

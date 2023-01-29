@@ -2,12 +2,21 @@
 import { ref } from 'vue'
 import { useObservable } from '@vueuse/rxjs'
 import randomColor from 'randomcolor'
+import { useRouter } from 'vue-router'
 import AddIcon from '@/components/icons/AddIcon.vue'
 import CogIcon from '@/components/icons/CogIcon.vue'
 import RubbishIcon from '@/components/icons/RubbishIcon.vue'
 import CreateLayout from '@/layouts/CreateLayout.vue'
 import { formatRelativeTime } from '@/lib/relative-time'
-import { addQuiz, deleteQuiz, getQuizzes$, getPlayers$, addPlayer, getRounds$ } from '@/lib/store/client'
+import {
+  addQuiz,
+  deleteQuiz,
+  getQuizzes$,
+  getPlayers$,
+  addPlayer,
+  getRounds$,
+  addQuestion,
+} from '@/lib/store/client'
 import { PlayerEntry, RoundEntry, type QuizEntry } from '@/lib/store/db'
 import { LinkTable, LinkTableColumn } from '@/components/table'
 import PlayerAvatar from '@/components/player/PlayerAvatar.vue'
@@ -16,6 +25,7 @@ import PlayerAvatarList from '@/components/player/PlayerAvatarList.vue'
 import SecondaryButton from '@/components/SecondaryButton.vue'
 import PrimaryButton from '@/components/PrimaryButton.vue'
 import SettingsDialog from '@/components/SettingsDialog.vue'
+import { Routes } from '@/routes'
 
 const quizzes = useObservable<QuizEntry[]>(getQuizzes$())
 
@@ -23,8 +33,11 @@ const players = useObservable<PlayerEntry[]>(getPlayers$())
 
 const rounds = useObservable<RoundEntry[]>(getRounds$())
 
+const router = useRouter()
 async function createQuiz() {
-  await addQuiz()
+  const id = await addQuiz()
+  await addQuestion({ quizId: id })
+  router.push({ name: Routes.Creator, params: { id } })
 }
 
 async function createPlayer() {
@@ -77,7 +90,7 @@ const isSettingsDialogShown = ref(false)
         <LinkTable :data="quizzes" class="table" :row-link="({ id }: QuizEntry) => `/create/${id}`">
           <LinkTableColumn v-slot="{ name }: QuizEntry" title="Name">{{ name }}</LinkTableColumn>
           <LinkTableColumn v-slot="{ questions }: QuizEntry" title="Questions">
-            {{ questions?.length ?? 0 }}
+            {{ questions?.length ?? 'None' }}
           </LinkTableColumn>
           <LinkTableColumn v-slot="{ createdAt }: QuizEntry" title="Created">
             {{ formatRelativeTime(createdAt!) }}
@@ -97,13 +110,17 @@ const isSettingsDialogShown = ref(false)
             </SecondaryButton>
           </LinkTableColumn>
           <template #empty>
-            <p>No quizzes yet. Create one?</p>
+            <p :style="{ marginBottom: '1rem' }">You haven’t created any quizzes yet</p>
+            <PrimaryButton inline @click="createQuiz"><AddIcon /> Get started</PrimaryButton>
           </template>
         </LinkTable>
       </section>
 
       <section>
-        <h3 class="section-title">Players <button @click="createPlayer">+</button></h3>
+        <h3 class="section-title">
+          Players
+          <SecondaryButton inline round is-icon @click="createPlayer">+</SecondaryButton>
+        </h3>
         <p class="help">
           Add players to keep score while running the quiz. You can choose who is taking part when starting
           the round.
@@ -115,6 +132,7 @@ const isSettingsDialogShown = ref(false)
                 <PlayerAvatar :player="player" />
               </button>
             </li>
+            <li v-if="!players?.length">No players yet. Add one?</li>
           </ul>
           <PlayerAttributesPopover
             :visible="Boolean(activePlayerAttributesPopover && activePlayerPosition)"
@@ -150,6 +168,9 @@ const isSettingsDialogShown = ref(false)
             <LinkTableColumn v-slot="round: RoundEntry" title="Completed">
               {{ round.completed ? '✅' : '🚫' }}
             </LinkTableColumn>
+            <template #empty>
+              <p>No rounds yet. Once you start playing a quiz, it will appear here.</p>
+            </template>
           </LinkTable>
         </div>
       </section>

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { provide, ref, watch } from 'vue'
+import { computed, provide, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useObservable } from '@vueuse/rxjs'
 import SlideEditor from '@/components/create/SlideEditor.vue'
@@ -32,6 +32,9 @@ const quiz$ = getQuiz$(quizId)
 const quiz = useObservable<QuizEntry | undefined>(quiz$)
 const questions = useObservable(getQuestions$(quizId), { initialValue: [] as QuestionEntry[] })
 const activeQuestion = ref<QuestionEntry | undefined>()
+const activeQuestionIndex = computed(() =>
+  questions.value.findIndex((q) => q.id === activeQuestion.value?.id)
+)
 
 // Run effect when questions load
 watch(questions, (value, oldValue) => {
@@ -92,7 +95,7 @@ function showPlayDialog() {
       />
     </template>
 
-    <SlideEditor v-if="activeQuestion" :question-id="activeQuestion.id!" />
+    <SlideEditor v-if="activeQuestion" :question-id="activeQuestion.id!" :index="activeQuestionIndex" />
 
     <PlayDialog :visible="isPlayDialogShown" @close="isPlayDialogShown = false" />
   </CreateLayout>

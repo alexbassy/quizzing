@@ -1,5 +1,6 @@
 import { liveQuery } from 'dexie'
 import { from, Observable } from 'rxjs'
+import randomColor from 'randomcolor'
 import { db, QuestionEntry } from '@/lib/store/db'
 
 export function getQuestion$(questionId: string): Observable<QuestionEntry | undefined> {
@@ -21,7 +22,11 @@ export function getQuestions$(quizId: string): Observable<QuestionEntry[]> {
 
 export async function addQuestion({ quizId, ...rest }: Partial<QuestionEntry> = {}) {
   if (!quizId) throw new Error('`quizId` is required')
-  const nQ = await db.question.add({ quizId, ...rest })
+  const nQ = await db.question.add({
+    quizId,
+    backgroundColor: randomColor({ luminosity: 'dark' }),
+    ...rest,
+  })
   return db.transaction('rw', db.quiz, async () => {
     const quiz = await db.quiz.get(quizId)
     const newQuestions = [...(quiz?.questions || []), nQ]

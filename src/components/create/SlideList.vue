@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import { inject, nextTick, ref, watch } from 'vue'
-import randomColor from 'randomcolor'
 import * as client from '@/lib/store/client'
 import { QuestionEntry } from '@/lib/store/db'
 import SlideListItem from './SlideListItem.vue'
@@ -16,8 +15,7 @@ function setActiveSlide(questionId: string) {
 }
 
 async function addQuestion() {
-  const backgroundColor = randomColor({ luminosity: 'dark' })
-  const id = await client.addQuestion({ quizId: quizId!, backgroundColor })
+  const id = await client.addQuestion({ quizId: quizId! })
   setTimeout(() => {
     if (listElem.value) {
       listElem.value.scrollTo({ top: listElem.value.scrollHeight * 2, behavior: 'smooth' })
