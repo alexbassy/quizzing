@@ -28,6 +28,7 @@
     "dotenv": "^16.0.1",
     "downloadjs": "^1.4.7",
     "motion": "^10.8.1",
+    "nanoid": "^4.0.0",
     "radash": "^10.6.0",
     "randomcolor": "^0.6.2",
     "rxjs": "^7.5.5",

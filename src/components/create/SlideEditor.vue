@@ -1,9 +1,7 @@
 <script lang="ts" setup>
-import { computed, nextTick, ref } from 'vue'
-import { useObservable, useSubscription } from '@vueuse/rxjs'
-import { combineLatest, fromEvent, startWith, switchMap } from 'rxjs'
-import * as Stretchy from 'stretchy'
-import { onMounted$ } from '@/composable/useObservable'
+import { computed, ref } from 'vue'
+import { useObservable } from '@vueuse/rxjs'
+import { switchMap } from 'rxjs'
 import { watch$ } from '@/lib/observables'
 import {
   getQuestion$,
@@ -41,29 +39,16 @@ const letterIndex = ['A', 'B', 'C', 'D']
 const options = computed(() => Array.from({ length: 4 }).map((_, i) => question.value?.options?.[i] || ''))
 
 async function handleTitleInput(ev: Event) {
-  resizeTitleInput()
   await updateQuestionTitle(questionId.value, (ev.target as HTMLTextAreaElement).value)
 }
 
 async function handleOptionInput(ev: Event, index: number) {
-  Stretchy.resize(ev.target as HTMLTextAreaElement)
   await updateQuestionOption(questionId.value, index, (ev.target as HTMLTextAreaElement).value)
 }
 
 async function setCorrectOption(index: number) {
   await updateQuestionCorrectOption(questionId.value, index)
 }
-
-// Resize question textarea on input and window resize
-const slideTitle = ref<HTMLTextAreaElement>()
-function resizeTitleInput() {
-  Stretchy.resize(slideTitle.value)
-}
-useSubscription(
-  combineLatest([watch$(title), onMounted$(), fromEvent(window, 'resize').pipe(startWith(null))]).subscribe(
-    () => nextTick(() => resizeTitleInput())
-  )
-)
 
 // Handle image selection
 async function onImageSelect(image: IUnsplashSearchResult) {
@@ -105,7 +90,7 @@ const backgroundColor = computed(() => question.value?.backgroundColor || '')
             }"
           >
             <textarea
-              ref="slideTitle"
+              v-stretchy="title"
               type="text"
               :value="title"
               placeholder="Question title"
@@ -133,6 +118,7 @@ const backgroundColor = computed(() => question.value?.backgroundColor || '')
                 }}</label>
               </div>
               <input
+                v-stretchy="option"
                 type="text"
                 :value="option"
                 :placeholder="`Option ${index}`"

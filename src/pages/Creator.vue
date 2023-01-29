@@ -1,9 +1,7 @@
 <script lang="ts" setup>
-import { nextTick, provide, ref, watch } from 'vue'
+import { provide, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import * as Stretchy from 'stretchy'
-import { useObservable, useSubscription } from '@vueuse/rxjs'
-import { take } from 'rxjs/operators'
+import { useObservable } from '@vueuse/rxjs'
 import SlideEditor from '@/components/create/SlideEditor.vue'
 import SlideList from '@/components/create/SlideList.vue'
 import CaretLeftIcon from '@/components/icons/CaretLeftIcon.vue'
@@ -35,13 +33,8 @@ function onSlideChange(id: QuestionEntry['id']) {
   activeQuestion.value = questions.value.find((q) => q.id === id)!
 }
 
-// Resize the title input when the quiz data is loaded
-const titleInput = ref<HTMLInputElement>()
-useSubscription(quiz$.pipe(take(1)).subscribe((value) => nextTick(() => Stretchy.resize(titleInput.value))))
-
 // Save the title input value to the database and resize on input
 async function handleTitleChange(ev: Event) {
-  Stretchy.resize(ev.target as HTMLInputElement)
   await updateQuizTitle(quizId, (ev.target as HTMLInputElement).value)
 }
 
@@ -59,7 +52,7 @@ function showPlayDialog() {
         <CaretLeftIcon />
       </SecondaryButton>
       <input
-        ref="titleInput"
+        v-stretchy="quiz?.name"
         type="text"
         class="title-input"
         :value="quiz?.name"
