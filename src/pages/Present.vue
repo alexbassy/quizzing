@@ -7,7 +7,7 @@ import Slide from '@/components/slide'
 import { useSubscribe } from '@/composable/useObservable'
 import PlayLayout from '@/layouts/PlayLayout.vue'
 import { watch$ } from '@/lib/observables'
-import { getQuestion$, getQuiz$, getRound$ } from '@/lib/store/client'
+import { completeRound, getQuestion$, getQuiz$, getRound$ } from '@/lib/store/client'
 import PlayerScoreToggles from '@/components/player/PlayerScoreToggles.vue'
 import { Routes } from '@/routes'
 import FixedHeight from '@/components/FixedHeight.vue'
@@ -66,7 +66,7 @@ const onPrevious = () => {
   router.push({ params: { questionId: prevNextQuestions.value[0] } })
 }
 
-const onNext = () => {
+const onNext = async () => {
   // Show the correct answer
   if (!isAnswerShown.value) {
     isAnswerShown.value = true
@@ -76,6 +76,7 @@ const onNext = () => {
   // Otherwise go to next question
   const nextQuestion = prevNextQuestions.value[1]
   if (!nextQuestion) {
+    await completeRound(roundId.value)
     router.push({ name: Routes.Scores, params: { roundId: roundId.value } })
     return
   }

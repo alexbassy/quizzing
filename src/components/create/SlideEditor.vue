@@ -78,7 +78,12 @@ const backgroundColor = computed(() => question.value?.backgroundColor || '')
         >
           <PictureIcon /> Change background
         </SecondaryButton>
-        <image-picker :is-open="imagePickerOpen" @select="onImageSelect" />
+        <ImagePicker
+          :is-open="imagePickerOpen"
+          @select="onImageSelect"
+          @upload="onDropzoneDrop"
+          @close="imagePickerOpen = false"
+        />
         <div class="content">
           <span class="count">{{ index + 1 }}</span>
           <div

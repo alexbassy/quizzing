@@ -4,7 +4,6 @@ defineProps<{
   round?: boolean
   isIcon?: boolean
   to?: string
-  disabled?: boolean
 }>()
 </script>
 

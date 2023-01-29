@@ -50,9 +50,9 @@ function onChange(event: Event) {
   &__label {
     display: flex;
     align-items: center;
-    padding: 0.5rem;
-    border: 1px solid rgba(255 255 255 / 15%);
-    border-radius: 6px;
+    padding: 0.35rem 0.65rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
     color: #fff;
     cursor: pointer;
   }
@@ -61,7 +61,7 @@ function onChange(event: Event) {
     width: fit-content;
     flex-shrink: 0;
     margin-right: 1rem;
-    font-weight: bold;
+    font-weight: 500;
   }
 
   &__name {
