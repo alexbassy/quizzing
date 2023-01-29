@@ -105,7 +105,7 @@ useSubscribe(fromEvent<KeyboardEvent>(document, 'keyup'), (event) => {
         is-animated
       />
     </div>
-    <div class="playersList">
+    <div class="playersList" :hidden="!isAnswerShown">
       <PlayerScoreToggles :round-id="roundId" :question-id="questionId" />
     </div>
   </PlayLayout>
@@ -128,5 +128,10 @@ useSubscribe(fromEvent<KeyboardEvent>(document, 'keyup'), (event) => {
   right: 4rem;
   bottom: 4rem;
   display: flex;
+  transition: opacity 0.25s ease;
+
+  &[hidden] {
+    opacity: 0;
+  }
 }
 </style>
