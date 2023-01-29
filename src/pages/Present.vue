@@ -76,7 +76,7 @@ const onNext = async () => {
   // Otherwise go to next question
   const nextQuestion = prevNextQuestions.value[1]
   if (!nextQuestion) {
-    await completeRound(roundId.value)
+    await completeRound(roundId.value!)
     router.push({ name: Routes.Scores, params: { roundId: roundId.value } })
     return
   }

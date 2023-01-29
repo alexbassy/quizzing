@@ -48,6 +48,20 @@ export async function deleteQuestion(quizId: string, questionId: string) {
   })
 }
 
+export async function moveQuestion(quizId: string, questionId: string, targetQuestionId: string) {
+  return db.transaction('rw', db.quiz, async () => {
+    const quiz = await db.quiz.get(quizId)
+    if (!quiz) return
+    const questions = [...(quiz.questions || [])]
+    const fromIndex = questions.indexOf(questionId)
+    if (fromIndex === -1) return
+    questions.splice(fromIndex, 1)
+    const toIndex = questions.indexOf(targetQuestionId)
+    questions.splice(toIndex, 0, questionId)
+    await db.quiz.update(quiz, { questions })
+  })
+}
+
 export function updateQuestionTitle(questionId: string, title: string) {
   return db.question.update(questionId, { title })
 }

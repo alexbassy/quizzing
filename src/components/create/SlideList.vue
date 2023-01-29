@@ -56,6 +56,38 @@ function scrollQuestionIntoView(questionId: string) {
   const questionElem = document.getElementById(questionId)
   if (questionElem) questionElem.scrollIntoView({ block: 'center' })
 }
+
+function dragStart(ev: DragEvent, id: string) {
+  if (!ev.dataTransfer) return
+  ev.dataTransfer.effectAllowed = 'move'
+  ev.dataTransfer.setData('text', id)
+}
+
+const dropTarget = ref()
+function dragOver(ev: DragEvent, id: string) {
+  if (ev.preventDefault) {
+    ev.preventDefault() // Necessary. Allows us to drop.
+  }
+
+  if (dropTarget.value === id) return
+  ev.dataTransfer!.dropEffect = 'move'
+  dropTarget.value = id
+}
+
+function dragLeave() {
+  dropTarget.value = null
+}
+
+function dragEnd() {
+  dropTarget.value = null
+}
+
+function drop(event: DragEvent, targetId: string) {
+  if (!dropTarget.value) return
+  const draggedId = event.dataTransfer?.getData('text')
+  if (!draggedId || draggedId === targetId) return
+  client.moveQuestion(quizId!, draggedId, targetId)
+}
 </script>
 
 <template>
@@ -68,8 +100,14 @@ function scrollQuestionIntoView(questionId: string) {
         :question="question"
         :index="index"
         :is-active="question.id === activeQuestionId"
+        :dragged-over="dropTarget === question.id"
         @set-active="setActiveSlide($event)"
         @delete="deleteQuestion($event)"
+        @dragstart="dragStart($event, question.id!)"
+        @dragover="dragOver($event, question.id!)"
+        @dragend="dragEnd"
+        @dragleave="dragLeave"
+        @drop="drop($event, question.id!)"
       />
       <li
         class="slideList__addQuestion"

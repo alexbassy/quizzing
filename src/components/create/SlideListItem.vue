@@ -2,7 +2,12 @@
 import { QuestionEntry } from '@/lib/store/db'
 import RubbishIcon from '../icons/RubbishIcon.vue'
 
-const props = defineProps<{ question: QuestionEntry; isActive: boolean; index: number }>()
+const props = defineProps<{
+  question: QuestionEntry
+  isActive: boolean
+  index: number
+  draggedOver: boolean
+}>()
 
 const emit = defineEmits(['set-active', 'delete'])
 
@@ -23,10 +28,11 @@ function getImageObjectURL(question: QuestionEntry) {
 <template>
   <li
     class="slideListItem"
-    :class="{ '-active': isActive }"
+    :class="{ '-active': isActive, '-draggedOver': draggedOver }"
     :style="`--background-color: ${question.backgroundColor || 'gray'};`"
     tabindex="0"
     role="button"
+    draggable="true"
     @click="setActive"
     @keyup.enter="setActive"
     @keyup.space.prevent="setActive"
@@ -37,6 +43,7 @@ function getImageObjectURL(question: QuestionEntry) {
       :src="getImageObjectURL(question)"
       :alt="question.title"
       loading="lazy"
+      draggable="false"
     />
     <button
       class="slideListItem__deleteButton"
@@ -54,7 +61,6 @@ function getImageObjectURL(question: QuestionEntry) {
 .slideListItem {
   position: relative;
   display: flex;
-  overflow: hidden;
   width: 100%;
   align-items: center;
   margin-bottom: 1.5rem;
@@ -64,6 +70,20 @@ function getImageObjectURL(question: QuestionEntry) {
   cursor: pointer;
   transition: 0.25s ease;
   transition-property: transform, background-color, box-shadow;
+
+  &.-draggedOver {
+    &::before {
+      position: absolute;
+      z-index: 1;
+      top: calc(-0.75rem - 1px);
+      left: 5%;
+      width: 90%;
+      height: 2px;
+      background-color: #ef476f;
+      border-radius: 4px;
+      content: '';
+    }
+  }
 
   &:focus-visible {
     box-shadow: 0 0 0 0.25rem blue;
@@ -118,6 +138,7 @@ function getImageObjectURL(question: QuestionEntry) {
     font-size: 1.1vw;
     font-weight: bold;
     text-shadow: 0 1px 10px rgba(0 0 0 / 50%);
+    user-select: none;
   }
 
   &__cover {
@@ -125,8 +146,10 @@ function getImageObjectURL(question: QuestionEntry) {
     z-index: 0;
     width: 100%;
     height: 100%;
+    border-radius: 8px;
     filter: brightness(0.5);
     object-fit: cover;
+    user-select: none;
   }
 }
 </style>
