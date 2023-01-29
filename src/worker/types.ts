@@ -6,4 +6,8 @@ export interface IUnsplashSearchResult {
   color: string | null
   description: string | null
   urls: VeryBasic['urls']
+  credit: {
+    name: string
+    url: string
+  }
 }

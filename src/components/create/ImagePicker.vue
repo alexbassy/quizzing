@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 import { IUnsplashSearchResult } from '@/worker/types'
 
-const props = defineProps<{ isOpen: boolean }>()
+defineProps<{ isOpen: boolean }>()
 
 defineEmits<{ (e: 'select', image: IUnsplashSearchResult): void }>()
 
@@ -10,10 +10,14 @@ const query = ref<string>('')
 const results = ref<IUnsplashSearchResult[]>([])
 
 async function searchPictures() {
-  // todo: sanitise this
-  const response = await fetch(
-    `https://api.quizzing.ninja/backgrounds/search?query=${query.value}`
-  ).then((res) => res.json() as Promise<IUnsplashSearchResult[]>)
+  const q = query.value
+  if (!q || !q.match(/[a-z0-9]/i)) {
+    results.value = []
+    return
+  }
+  const response = await fetch(`https://api.quizzing.ninja/backgrounds/search?query=${query.value}`).then(
+    (res) => res.json() as Promise<IUnsplashSearchResult[]>
+  )
   results.value = response
 }
 </script>
@@ -21,25 +25,24 @@ async function searchPictures() {
 <template>
   <div class="imagePicker" :class="{ '-visible': isOpen }">
     <form class="search-form" @submit.prevent="searchPictures">
-      <input
-        v-model="query"
-        type="text"
-        placeholder="Search for images"
-        class="search-field"
-        autofocus
-      />
+      <input v-model="query" type="text" placeholder="Search for images" class="search-field" autofocus />
     </form>
     <div class="results">
       <ul v-if="results.length" class="results-list">
         <li v-for="result in results" :key="result.id" class="result">
-          <img
-            :src="result.urls.thumb"
-            :style="`background-color: ${result.color}`"
-            :alt="result.description ?? ''"
-            class="result-image"
-            tabindex="0"
-            @click="$emit('select', result)"
-          />
+          <figure>
+            <img
+              :src="result.urls.thumb"
+              :style="`background-color: ${result.color}`"
+              :alt="result.description ?? ''"
+              class="result-image"
+              tabindex="0"
+              @click="$emit('select', result)"
+            />
+            <figcaption>
+              by <a :href="result.credit.url" target="_blank">{{ result.credit.name }}</a>
+            </figcaption>
+          </figure>
         </li>
       </ul>
     </div>

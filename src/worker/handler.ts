@@ -38,6 +38,10 @@ API.add('GET', '/backgrounds/search', async (req, res) => {
       color: item.color,
       description: item.alt_description,
       urls: item.urls,
+      credit: {
+        name: item.user.name,
+        url: item.links.html,
+      },
     }
   })
 
