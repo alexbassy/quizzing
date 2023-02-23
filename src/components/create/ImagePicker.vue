@@ -50,8 +50,8 @@ function onFileChange(file: File | null) {
           </button>
         </Tab>
       </TabList>
-      <TabPanels>
-        <TabPanel>
+      <TabPanels class="imagePicker__tabPanels">
+        <TabPanel class="imagePicker__tabPanel">
           <form class="search-form" @submit.prevent="searchPictures">
             <input
               v-model="query"
@@ -81,7 +81,7 @@ function onFileChange(file: File | null) {
             </ul>
           </div>
         </TabPanel>
-        <TabPanel>
+        <TabPanel class="imagePicker__tabPanel">
           <FileInput @change="onFileChange" />
         </TabPanel>
       </TabPanels>
@@ -138,6 +138,19 @@ function onFileChange(file: File | null) {
       background-color: rgba(255 255 255 / 20%);
       opacity: 1;
     }
+  }
+
+  &__tabPanels {
+    display: flex;
+    max-height: 100%;
+    flex-direction: column;
+    padding-bottom: 2rem;
+  }
+
+  &__tabPanel {
+    display: flex;
+    max-height: 100%;
+    flex-direction: column;
   }
 }
 
