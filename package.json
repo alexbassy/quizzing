@@ -8,8 +8,8 @@
     "build": "vue-tsc --noEmit && vite build",
     "preview": "vite preview",
     "worker:build": "node build-worker.js",
-    "worker:dev": "miniflare --watch dist-worker/handler.js",
-    "worker:publish": "wrangler publish dist-worker/handler.js",
+    "worker:dev": "miniflare --modules --watch dist-worker/handler.mjs",
+    "worker:publish": "wrangler publish dist-worker/handler.mjs",
     "worker:all": "yarn worker:build && yarn worker:publish"
   },
   "dependencies": {
@@ -37,7 +37,7 @@
     "vue": "^3.2.45",
     "vue-router": "4",
     "vue-slicksort": "^2.0.0-alpha.5",
-    "worktop": "^0.7.3"
+    "worktop": "^0.8.0-next.14"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^3.11.0",
@@ -53,7 +53,7 @@
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-vue": "^9.3.0",
-    "miniflare": "2.2.0",
+    "miniflare": "^2.12.1",
     "postcss": "8",
     "postcss-html": "^1.4.1",
     "prettier": "^2.7.1",
@@ -66,6 +66,6 @@
     "vite": "^4.0.4",
     "vite-tsconfig-paths": "^3.4.1",
     "vue-tsc": "^0.34.7",
-    "wrangler": "^2.0.6"
+    "wrangler": "^2.11.0"
   }
 }

@@ -1,18 +1,22 @@
 import { Router } from 'worktop'
+import type { Context } from 'worktop'
 import * as CORS from 'worktop/cors'
-import { listen } from 'worktop/cache'
+import { start } from 'worktop/cfw'
+import * as utils from 'worktop/utils'
+import { reply } from 'worktop/response'
 import { createApi } from 'unsplash-js'
 import { type Photos } from 'unsplash-js/dist/methods/search/types/response'
-import { IUnsplashSearchResult } from './types'
+import { ITinyApiResponse, IUnsplashSearchResult } from './types'
 
-declare let UNSPLASH_ACCESS_KEY: string
-
-const unsplashApi = createApi({
-  accessKey: UNSPLASH_ACCESS_KEY,
-})
+interface Bindings extends Context {
+  bindings: {
+    UNSPLASH_ACCESS_KEY: string
+    TINIFY_API_KEY: string
+  }
+}
 
 // Initialize
-const API = new Router()
+const API = new Router<Bindings>()
 
 API.prepare = CORS.preflight({
   origin: /quizzing\.ninja|localhost:3000/,
@@ -20,11 +24,14 @@ API.prepare = CORS.preflight({
   methods: ['GET', 'HEAD', 'PUT', 'POST', 'DELETE'],
 })
 
-API.add('GET', '/backgrounds/search', async (req, res) => {
-  const query = req.query.get('query')
+API.add('GET', '/backgrounds/search', async (req, context) => {
+  const query = context.url.searchParams.get('query')
   if (!query) {
-    return res.send(421, { message: 'Query required' })
+    return reply(421, { message: 'Query required' })
   }
+  const unsplashApi = createApi({
+    accessKey: context.bindings.UNSPLASH_ACCESS_KEY,
+  })
   const results = await unsplashApi.search.getPhotos({
     query,
     orientation: 'landscape',
@@ -45,10 +52,32 @@ API.add('GET', '/backgrounds/search', async (req, res) => {
     }
   })
 
-  return res.send(200, slimResults)
+  return reply(200, slimResults)
+})
+
+API.add('POST', '/compress', async (req, context) => {
+  const body = await utils.body<ArrayBuffer>(req)
+  if (!body) {
+    return reply(421, { message: 'No body' })
+  }
+
+  const tinifyResponse = await fetch('https://api.tinify.com/shrink', {
+    method: 'POST',
+    headers: {
+      Authorization: `Basic ${btoa(`api:${context.bindings.TINIFY_API_KEY}`)}`,
+    },
+    body: body,
+  })
+
+  const data = await tinifyResponse.json<ITinyApiResponse>()
+
+  return reply(200, {
+    ratio: data.output.ratio,
+    url: data.output.url,
+  })
 })
 
 // Attach "fetch" event handler
 // ~> use `Cache` for request-matching, when permitted
 // ~> store Response in `Cache`, when permitted
-listen(API.run)
+export default start(API.run)
