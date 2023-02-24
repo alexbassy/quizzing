@@ -213,8 +213,10 @@ const backgroundColor = computed(() => question.value?.backgroundColor || '')
 
 .title-textarea {
   @include textarea-outline;
+  width: 100%;
   height: 1.7em;
   padding: 0.4rem 1rem 0.1rem;
+  padding-right: 4rem;
   margin-left: -1rem;
   word-break: break-word;
 
