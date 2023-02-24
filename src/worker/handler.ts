@@ -61,19 +61,33 @@ API.add('POST', '/compress', async (req, context) => {
     return reply(421, { message: 'No body' })
   }
 
+  const authHeader = { Authorization: `Basic ${btoa(`api:${context.bindings.TINIFY_API_KEY}`)}` }
+
   const tinifyResponse = await fetch('https://api.tinify.com/shrink', {
     method: 'POST',
-    headers: {
-      Authorization: `Basic ${btoa(`api:${context.bindings.TINIFY_API_KEY}`)}`,
-    },
+    headers: authHeader,
     body: body,
   })
 
   const data = await tinifyResponse.json<ITinyApiResponse>()
 
-  return reply(200, {
-    ratio: data.output.ratio,
-    url: data.output.url,
+  const convertedFile = await fetch(data.output.url, {
+    method: 'POST',
+    headers: { ...authHeader, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ convert: { type: '*/*' } }),
+  })
+
+  const fileBlob = await convertedFile.blob()
+
+  const form = new FormData()
+  form.append('file', fileBlob)
+  form.append('ratio', data.output.ratio.toString())
+
+  return new Response(form, {
+    status: 200,
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
   })
 })
 

@@ -10,6 +10,7 @@ const emit = defineEmits<{
   (e: 'close'): void
   (e: 'select', image: IUnsplashSearchResult): void
   (e: 'upload', file: File): void
+  (e: 'optimise'): void
 }>()
 
 const query = ref<string>('')
@@ -40,7 +41,7 @@ function onFileChange(file: File | null) {
     <TabGroup>
       <TabList class="imagePicker__tabList">
         <Tab
-          v-for="tab in ['Unsplash', 'Upload']"
+          v-for="tab in ['Unsplash', 'Upload', 'Optimise']"
           :key="tab"
           v-slot="{ selected }"
           class="imagePicker__tabItem"
@@ -83,6 +84,9 @@ function onFileChange(file: File | null) {
         </TabPanel>
         <TabPanel class="imagePicker__tabPanel">
           <FileInput @change="onFileChange" />
+        </TabPanel>
+        <TabPanel class="imagePicker__tabPanel">
+          <button @click="emit('optimise')">Optimise background image</button>
         </TabPanel>
       </TabPanels>
     </TabGroup>

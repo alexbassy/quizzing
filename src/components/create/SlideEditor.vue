@@ -59,6 +59,23 @@ async function onImageSelect(image: IUnsplashSearchResult) {
   await updateQuestionImage(question.value?.id!, fullImage, thumbnail)
 }
 
+async function onOptimise() {
+  const questionImage = question.value?.image
+  if (!questionImage) {
+    console.warn('No image to optimised; skipping')
+    return
+  }
+  const compressResponse = await fetch('https://api.quizzing.ninja/compress', {
+    method: 'POST',
+    body: questionImage,
+  })
+  const compressedImage = await compressResponse.json<{ ratio: string; url: string }>()
+  const fD = await compressResponse.formData()
+  console.log(compressedImage)
+  console.log(fD)
+  // await updateQuestionImage(question.value?.id!, question.value?.image!)
+}
+
 async function onDropzoneDrop(file: Blob) {
   await updateQuestionImage(question.value?.id!, file, file)
 }
@@ -83,6 +100,7 @@ const backgroundColor = computed(() => question.value?.backgroundColor || '')
           @select="onImageSelect"
           @upload="onDropzoneDrop"
           @close="imagePickerOpen = false"
+          @optimise="onOptimise"
         />
         <div class="content">
           <span class="count">{{ index + 1 }}</span>
