@@ -7,7 +7,13 @@ import Slide from '@/components/slide'
 import { useSubscribe } from '@/composable/useObservable'
 import PlayLayout from '@/layouts/PlayLayout.vue'
 import { watch$ } from '@/lib/observables'
-import { completeRound, getQuestion$, getQuiz$, getRound$ } from '@/lib/store/client'
+import {
+  updateQuestionReached,
+  getQuestion$,
+  getQuiz$,
+  getRound$,
+  getQuestionIndex,
+} from '@/lib/store/client'
 import PlayerScoreToggles from '@/components/player/PlayerScoreToggles.vue'
 import { Routes } from '@/routes'
 import FixedHeight from '@/components/FixedHeight.vue'
@@ -29,10 +35,12 @@ const quiz$ = round$.pipe(
     return of(undefined)
   })
 )
+const quizId = useObservable(round$.pipe(map((round) => round!.quizId!)))
 
 const questionId$ = watch$(() => String(route.params.questionId))
 const questionId = useObservable(questionId$)
 
+// Human readable version of the question
 const questionIndex = useObservable(
   combineLatest([quiz$, questionId$]).pipe(
     map(([quiz, questionId]) => quiz!.questions!.indexOf(questionId) + 1)
@@ -45,10 +53,10 @@ const prevNextQuestions = useObservable(
       const questions = quiz!.questions
       if (!questions) return [null, null]
       const index = questions.indexOf(questionId)
-      return [questions[index - 1], questions[index + 1]]
+      return [questions[index - 1], questions[index + 1]] as const
     })
   ),
-  { initialValue: [null, null] }
+  { initialValue: [null, null] as const }
 )
 
 const activeQuestion = useObservable(questionId$.pipe(switchMap((id) => getQuestion$(id))))
@@ -76,13 +84,13 @@ const onNext = async () => {
   // Otherwise go to next question
   const nextQuestion = prevNextQuestions.value[1]
   if (!nextQuestion) {
-    await completeRound(roundId.value!)
     router.push({ name: Routes.Scores, params: { roundId: roundId.value } })
     return
   }
   isAnswerShown.value = false
   isPhotoShown.value = false
-  router.push({ params: { questionId: prevNextQuestions.value[1] } })
+  await updateQuestionReached(roundId.value!, await getQuestionIndex(quizId.value!, nextQuestion))
+  router.push({ params: { questionId: nextQuestion } })
 }
 
 // TODO: handle touch events

@@ -3,6 +3,8 @@ import { computed, ref } from 'vue'
 import { useObservable } from '@vueuse/rxjs'
 import randomColor from 'randomcolor'
 import { useRouter } from 'vue-router'
+import ContextMenu from 'primevue/contextmenu'
+import { MenuItem } from 'primevue/menuitem'
 import AddIcon from '@/components/icons/AddIcon.vue'
 import CogIcon from '@/components/icons/CogIcon.vue'
 import RubbishIcon from '@/components/icons/RubbishIcon.vue'
@@ -15,6 +17,7 @@ import {
   addPlayer,
   getRounds$,
   addQuestion,
+  deleteRound,
 } from '@/lib/store/client'
 import { PlayerEntry, RoundEntry, type QuizEntry } from '@/lib/store/db'
 import { LinkTable, LinkTableColumn } from '@/components/table'
@@ -69,6 +72,39 @@ function closePlayerAttributes() {
 }
 
 const isSettingsDialogShown = ref(false)
+
+const contextMenuRef = ref<ContextMenu>()
+const selectedRound = ref<RoundEntry | null>(null)
+const openContextMenu = (event: Event, round: RoundEntry) => {
+  selectedRound.value = round
+  contextMenuRef.value?.show(event)
+}
+const roundMenuModel: MenuItem[] = [
+  {
+    id: 'resume',
+    icon: 'pi pi-play',
+    label: 'Resume',
+    command: () => {
+      router.push({ name: Routes.ResumeRound, params: { roundId: selectedRound.value!.id } })
+    },
+  },
+  {
+    id: 'scores',
+    label: 'View scores',
+    icon: 'pi pi-chart-bar',
+    command: () => {
+      router.push({ name: Routes.Scores, params: { roundId: selectedRound.value!.id } })
+    },
+  },
+  {
+    id: 'delete',
+    icon: 'pi pi-trash',
+    label: 'Remove',
+    command: () => {
+      deleteRound(selectedRound.value!.id!)
+    },
+  },
+]
 </script>
 
 <template>
@@ -158,11 +194,7 @@ const isSettingsDialogShown = ref(false)
           play button.
         </p>
         <div class="rounds">
-          <LinkTable
-            :data="rounds"
-            class="rounds-table"
-            :row-link="({ id } : QuizEntry) => `/play/${id}/scores`"
-          >
+          <LinkTable :data="rounds" class="rounds-table" @row-click="openContextMenu">
             <LinkTableColumn v-slot="round: RoundEntry" title="Quiz">
               {{ quizzesById?.get(round.quizId)?.name ?? round.id }}
             </LinkTableColumn>
@@ -172,15 +204,18 @@ const isSettingsDialogShown = ref(false)
             <LinkTableColumn v-slot="round: RoundEntry" title="Players">
               <PlayerAvatarList v-if="round.players" :player-ids="round.players" />
             </LinkTableColumn>
-            <LinkTableColumn v-slot="round: RoundEntry" title="Progress">
+            <LinkTableColumn v-slot="{ questionReached, quizId }: RoundEntry" title="Progress">
               <div class="white-space-nowrap">
-                {{ round.questionReached ?? 0 }}/{{ quizzesById?.get(round.quizId)?.questions?.length }}
+                {{ questionReached ? questionReached + 1 : 0 }}/{{
+                  quizzesById?.get(quizId)?.questions?.length
+                }}
               </div>
             </LinkTableColumn>
             <template #empty>
               <p>No rounds yet. Once you start playing a quiz, it will appear here.</p>
             </template>
           </LinkTable>
+          <ContextMenu ref="contextMenuRef" :model="roundMenuModel" />
         </div>
       </section>
     </div>

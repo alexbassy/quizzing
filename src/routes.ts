@@ -6,6 +6,7 @@ export enum Routes {
   PrePresent = 'PrePresent',
   Present = 'Present',
   Scores = 'Scores',
+  ResumeRound = 'ResumeRound',
   NotFound = 'NotFound',
   Index = 'Index',
 }
@@ -30,6 +31,11 @@ const routes = [
     name: Routes.Scores,
     path: '/play/:roundId/scores',
     component: () => import('@/pages/Scores.vue'),
+  },
+  {
+    name: Routes.ResumeRound,
+    path: '/play/:roundId/resume',
+    component: () => import('@/pages/ResumeRound.vue'),
   },
   {
     name: Routes.PrePresent,

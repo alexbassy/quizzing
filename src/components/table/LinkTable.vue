@@ -6,7 +6,11 @@ type Data = unknown & { id?: string }
 
 const props = defineProps<{
   data?: Data[]
-  rowLink: (entity: Data) => string
+  rowLink?: (entity: Data) => string
+}>()
+
+defineEmits<{
+  (name: 'row-click', event: Event, data: Data): void
 }>()
 
 const slots = useSlots()
@@ -27,11 +31,16 @@ const columns = children.filter((child) => (child.type as Component)?.name === L
     </div>
     <ol v-if="data?.length" v-auto-animate class="list" role="rowgroup">
       <li v-for="entity in data" :key="entity.id" class="item" role="row">
-        <RouterLink class="link" :to="rowLink(entity)">
+        <component
+          :is="rowLink ? 'RouterLink' : 'button'"
+          class="link"
+          :to="rowLink ? rowLink(entity) : undefined"
+          @click="$emit('row-click', $event, entity)"
+        >
           <span v-for="column in columns" :key="column.props?.id" role="cell">
             <component :is="(column.children as any).default" v-bind="entity" />
           </span>
-        </RouterLink>
+        </component>
       </li>
     </ol>
     <div v-else class="list -empty">

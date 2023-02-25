@@ -20,6 +20,18 @@ export function updateQuizTitle(quizId: string, newName: string) {
   return db.quiz.update(quizId, { name: newName })
 }
 
+export async function getQuestionIndex(quizId: string, questionId: string) {
+  const quiz = await db.quiz.get(quizId)
+  if (!quiz || !quiz.questions) return -1
+  return quiz.questions.findIndex((id) => id === questionId)
+}
+
+export async function getQuestionIdByIndex(quizId: string, index: number): Promise<string | null> {
+  const quiz = await db.quiz.get(quizId)
+  if (!quiz || !quiz.questions || !quiz.questions.length) return null
+  return quiz.questions[index] as string
+}
+
 export function deleteQuiz(id: string) {
   return db.transaction('rw', db.quiz, db.question, async () => {
     await db.question.where({ quizId: id }).modify((_value, ref) => {

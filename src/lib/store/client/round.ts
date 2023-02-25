@@ -28,6 +28,13 @@ export function getPlayersOfRound$(id: string) {
   )
 }
 
-export function completeRound(roundId: string) {
-  return db.round.update(roundId, { completed: true })
+export function updateQuestionReached(roundId: string, questionReached: number) {
+  return db.round.update(roundId, { questionReached })
+}
+
+export function deleteRound(id: string) {
+  return db.transaction('rw', db.round, db.points, async () => {
+    await db.points.where({ roundId: id }).delete()
+    return db.round.delete(id)
+  })
 }

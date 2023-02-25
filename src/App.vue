@@ -1,4 +1,7 @@
 <script lang="ts">
+import 'primevue/resources/themes/mdc-dark-indigo/theme.css'
+import 'primevue/resources/primevue.min.css'
+import 'primeicons/primeicons.css'
 import 'primeflex/primeflex.css'
 </script>
 
@@ -17,5 +20,9 @@ body {
   font-family: Inter, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.p-component {
+  font-family: inherit;
 }
 </style>
