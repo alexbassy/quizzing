@@ -1,37 +1,13 @@
 <script lang="ts" setup>
-import { map, mergeMap, switchMap } from 'rxjs/operators'
-import { combineLatest } from 'rxjs'
+import { map, switchMap } from 'rxjs/operators'
 import { useObservable } from '@/composable/useObservable'
 import CaretLeftIcon from '@/components/icons/CaretLeftIcon.vue'
 import useRound from '@/composable/useRound'
-import { getPlayer$, getPointsForRound$, getQuiz$ } from '@/lib/store/client'
-import { PlayerEntry } from '@/lib/store/db'
-import PlayerAvatar from '@/components/player/PlayerAvatar.vue'
+import { getQuiz$ } from '@/lib/store/client'
 import CreateLayout from '@/layouts/CreateLayout.vue'
 import ScoresChart from '@/components/scores/ScoresChart.vue'
 
 const round$ = useRound()
-
-interface PlayerScore extends PlayerEntry {
-  score: number
-}
-
-const playersInRound$ = round$.pipe(
-  map((round) => round!.players!.map((id) => getPlayer$(id!))),
-  mergeMap((players) => combineLatest(players)),
-  map((players) => Object.fromEntries(players.map((player) => [player!.id as string, player])))
-)
-
-const pointsInRound$ = round$.pipe(
-  switchMap((round) => getPointsForRound$(round!.id!)),
-  map((points) =>
-    points.reduce<Record<string, number>>((accum, point) => {
-      if (!accum[point.playerId!]) accum[point.playerId!] = 0
-      accum[point.playerId!]++
-      return accum
-    }, {})
-  )
-)
 
 const quizName = useObservable(
   round$.pipe(
@@ -39,18 +15,6 @@ const quizName = useObservable(
     map((quiz) => quiz?.name)
   )
 )
-
-const playerPoints$ = combineLatest([playersInRound$, pointsInRound$]).pipe(
-  map(([players, points]) => {
-    const scores = Object.values(players).map(
-      (player) => ({ ...player, score: points[player!.id!] } as PlayerScore)
-    )
-    scores.sort((a, b) => b.score - a.score)
-    return scores
-  })
-)
-
-const playerPoints = useObservable(playerPoints$)
 </script>
 
 <template>
@@ -62,21 +26,6 @@ const playerPoints = useObservable(playerPoints$)
       <h1 class="quizName">{{ quizName }}</h1>
     </template>
     <ScoresChart />
-    <div class="scoresContainer">
-      <h2 class="title">The scores are in!</h2>
-      <ol class="rankingList">
-        <li v-for="player in playerPoints" :key="player.id" class="rankingListItem">
-          <div class="playerDetails">
-            <PlayerAvatar class="playerAvatar" :player="player" size="medium" />
-            <span class="playerName">{{ player.name }}</span>
-
-            <span class="playerScore" aria-label="Score">
-              <div>{{ player.score }}</div>
-            </span>
-          </div>
-        </li>
-      </ol>
-    </div>
   </CreateLayout>
 </template>
 

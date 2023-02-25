@@ -1,0 +1,14 @@
+.p-component {
+  font-family: inherit;
+}
+
+.p-component {
+  cursor: pointer;
+
+  transition: 0.25s ease;
+  transition-property: color, background-color, transform;
+
+  &:active {
+    transform: scale(0.975);
+  }
+}

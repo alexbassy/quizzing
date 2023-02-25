@@ -21,8 +21,4 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-
-.p-component {
-  font-family: inherit;
-}
 </style>

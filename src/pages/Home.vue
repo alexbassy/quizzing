@@ -5,9 +5,7 @@ import randomColor from 'randomcolor'
 import { useRouter } from 'vue-router'
 import ContextMenu from 'primevue/contextmenu'
 import { MenuItem } from 'primevue/menuitem'
-import AddIcon from '@/components/icons/AddIcon.vue'
-import CogIcon from '@/components/icons/CogIcon.vue'
-import RubbishIcon from '@/components/icons/RubbishIcon.vue'
+import PrimeButton from 'primevue/button'
 import CreateLayout from '@/layouts/CreateLayout.vue'
 import {
   addQuiz,
@@ -24,8 +22,6 @@ import { LinkTable, LinkTableColumn } from '@/components/table'
 import PlayerAvatar from '@/components/player/PlayerAvatar.vue'
 import PlayerAttributesPopover from '@/components/player/PlayerAttributesPopover.vue'
 import PlayerAvatarList from '@/components/player/PlayerAvatarList.vue'
-import SecondaryButton from '@/components/SecondaryButton.vue'
-import PrimaryButton from '@/components/PrimaryButton.vue'
 import SettingsDialog from '@/components/SettingsDialog.vue'
 import { Routes } from '@/routes'
 import RelativeTime from '@/components/RelativeTime.vue'
@@ -113,10 +109,18 @@ const roundMenuModel: MenuItem[] = [
       <h1 class="title">Quizzing 🥷</h1>
     </template>
     <template #action>
-      <PrimaryButton bg="#ef476f" inline @click="createQuiz"><AddIcon /> Create quiz</PrimaryButton>
-      <SecondaryButton aria-label="Settings" is-icon inline @click="isSettingsDialogShown = true">
-        <CogIcon />
-      </SecondaryButton>
+      <PrimeButton
+        label="Create quiz"
+        class="p-button-secondary"
+        icon="pi pi-plus-circle"
+        @click="createQuiz"
+      />
+      <PrimeButton
+        aria-label="Settings"
+        icon="pi pi-cog"
+        class="p-button-text"
+        @click="isSettingsDialogShown = true"
+      />
       <SettingsDialog
         :visible="isSettingsDialogShown"
         @cancel="isSettingsDialogShown = false"
@@ -142,28 +146,35 @@ const roundMenuModel: MenuItem[] = [
             <RelativeTime :time="updatedAt!" />
           </LinkTableColumn>
           <LinkTableColumn v-slot="{ id, name }: QuizEntry" title="">
-            <SecondaryButton
+            <PrimeButton
               :aria-label="`Delete ${name}`"
-              round
-              is-icon
-              class="delete-button"
+              class="p-button-rounded p-button-text"
+              icon="pi pi-trash"
               @click.prevent="remove(id!)"
-            >
-              <RubbishIcon />
-            </SecondaryButton>
+            />
           </LinkTableColumn>
           <template #empty>
-            <p :style="{ marginBottom: '1rem' }">You haven’t created any quizzes yet</p>
-            <PrimaryButton inline @click="createQuiz"><AddIcon /> Get started</PrimaryButton>
+            <p class="mb-3">You haven’t created any quizzes yet</p>
+            <PrimeButton
+              class="p-button-secondary"
+              icon="pi pi-plus"
+              label="Get started"
+              @click="createQuiz"
+            />
           </template>
         </LinkTable>
       </section>
 
       <section>
-        <h3 class="section-title">
-          Players
-          <SecondaryButton inline round is-icon @click="createPlayer">+</SecondaryButton>
-        </h3>
+        <div class="flex align-items-center justify-content-between">
+          <h3 class="section-title">Players</h3>
+          <PrimeButton
+            label="Add Player"
+            icon="pi pi-plus"
+            class="p-button-rounded p-button-text p-button-sm"
+            @click="createPlayer"
+          />
+        </div>
         <p class="help">
           Add players to keep score while running the quiz. You can choose who is taking part when starting
           the round.
