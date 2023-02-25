@@ -23,7 +23,7 @@ useSubscription(
         return router.push({ name: Routes.PrePresent, params: { roundId } })
       }
       const questionId = await getQuestionIdByIndex(round.quizId!, round.questionReached!)
-      router.push({ name: Routes.Present, params: { roundId, questionId } })
+      router.replace({ name: Routes.Present, params: { roundId, questionId } })
     })
 )
 </script>
