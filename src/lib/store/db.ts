@@ -38,6 +38,10 @@ export interface RoundEntry {
   quizId?: string
   players?: PlayerEntry['id'][]
   createdAt?: number
+  questionReached?: number
+  /**
+   * @deprecated
+   */
   completed?: boolean
 }
 

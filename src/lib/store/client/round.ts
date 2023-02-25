@@ -4,7 +4,7 @@ import { switchMap } from 'rxjs/operators'
 import { db, RoundEntry } from '@/lib/store/db'
 
 export function getRounds$() {
-  return from(liveQuery(() => db.round.toArray()))
+  return from(liveQuery(() => db.round.toCollection().reverse().sortBy('createdAt')))
 }
 
 export function getRound$(id: string) {

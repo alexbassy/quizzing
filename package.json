@@ -29,6 +29,7 @@
     "downloadjs": "^1.4.7",
     "motion": "^10.8.1",
     "nanoid": "^4.0.0",
+    "primeflex": "^3.3.0",
     "radash": "^10.6.0",
     "randomcolor": "^0.6.2",
     "rxjs": "^7.5.5",

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useObservable } from '@vueuse/rxjs'
 import randomColor from 'randomcolor'
 import { useRouter } from 'vue-router'
@@ -7,7 +7,6 @@ import AddIcon from '@/components/icons/AddIcon.vue'
 import CogIcon from '@/components/icons/CogIcon.vue'
 import RubbishIcon from '@/components/icons/RubbishIcon.vue'
 import CreateLayout from '@/layouts/CreateLayout.vue'
-import { formatRelativeTime } from '@/lib/relative-time'
 import {
   addQuiz,
   deleteQuiz,
@@ -26,8 +25,16 @@ import SecondaryButton from '@/components/SecondaryButton.vue'
 import PrimaryButton from '@/components/PrimaryButton.vue'
 import SettingsDialog from '@/components/SettingsDialog.vue'
 import { Routes } from '@/routes'
+import RelativeTime from '@/components/RelativeTime.vue'
 
 const quizzes = useObservable<QuizEntry[]>(getQuizzes$())
+
+const quizzesById = computed(() =>
+  quizzes.value?.reduce((acc, quiz) => {
+    acc.set(quiz.id!, quiz)
+    return acc
+  }, new Map() as Map<QuizEntry['id'], QuizEntry>)
+)
 
 const players = useObservable<PlayerEntry[]>(getPlayers$())
 
@@ -93,10 +100,10 @@ const isSettingsDialogShown = ref(false)
             {{ questions?.length ?? 'None' }}
           </LinkTableColumn>
           <LinkTableColumn v-slot="{ createdAt }: QuizEntry" title="Created">
-            {{ formatRelativeTime(createdAt!) }}
+            <RelativeTime :time="createdAt!" />
           </LinkTableColumn>
           <LinkTableColumn v-slot="{ updatedAt }: QuizEntry" title="Updated">
-            {{ formatRelativeTime(updatedAt!) }}
+            <RelativeTime :time="updatedAt!" />
           </LinkTableColumn>
           <LinkTableColumn v-slot="{ id, name }: QuizEntry" title="">
             <SecondaryButton
@@ -157,16 +164,18 @@ const isSettingsDialogShown = ref(false)
             :row-link="({ id } : QuizEntry) => `/play/${id}/scores`"
           >
             <LinkTableColumn v-slot="round: RoundEntry" title="Quiz">
-              {{ quizzes?.find(({ id }) => id === round.quizId)?.name ?? round.id }}
+              {{ quizzesById?.get(round.quizId)?.name ?? round.id }}
             </LinkTableColumn>
             <LinkTableColumn v-slot="round: RoundEntry" title="Date">
-              {{ formatRelativeTime(round.createdAt!) }}
+              <RelativeTime :time="round.createdAt!" />
             </LinkTableColumn>
             <LinkTableColumn v-slot="round: RoundEntry" title="Players">
               <PlayerAvatarList v-if="round.players" :player-ids="round.players" />
             </LinkTableColumn>
-            <LinkTableColumn v-slot="round: RoundEntry" title="Completed">
-              {{ round.completed ? '✅' : '🚫' }}
+            <LinkTableColumn v-slot="round: RoundEntry" title="Progress">
+              <div class="white-space-nowrap">
+                {{ round.questionReached ?? 0 }}/{{ quizzesById?.get(round.quizId)?.questions?.length }}
+              </div>
             </LinkTableColumn>
             <template #empty>
               <p>No rounds yet. Once you start playing a quiz, it will appear here.</p>

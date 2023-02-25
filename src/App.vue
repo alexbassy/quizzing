@@ -1,3 +1,7 @@
+<script lang="ts">
+import 'primeflex/primeflex.css'
+</script>
+
 <template>
   <router-view />
 </template>
