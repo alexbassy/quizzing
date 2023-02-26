@@ -5,7 +5,7 @@ import randomColor from 'randomcolor'
 import { useRouter } from 'vue-router'
 import ContextMenu from 'primevue/contextmenu'
 import { MenuItem } from 'primevue/menuitem'
-import PrimeButton from 'primevue/button'
+import PButton from 'primevue/button'
 import CreateLayout from '@/layouts/CreateLayout.vue'
 import {
   addQuiz,
@@ -109,13 +109,8 @@ const roundMenuModel: MenuItem[] = [
       <h1 class="title">Quizzing 🥷</h1>
     </template>
     <template #action>
-      <PrimeButton
-        label="Create quiz"
-        class="p-button-secondary"
-        icon="pi pi-plus-circle"
-        @click="createQuiz"
-      />
-      <PrimeButton
+      <PButton label="Create quiz" class="p-button-secondary" icon="pi pi-plus-circle" @click="createQuiz" />
+      <PButton
         aria-label="Settings"
         icon="pi pi-cog"
         class="p-button-text"
@@ -146,7 +141,7 @@ const roundMenuModel: MenuItem[] = [
             <RelativeTime :time="updatedAt!" />
           </LinkTableColumn>
           <LinkTableColumn v-slot="{ id, name }: QuizEntry" title="">
-            <PrimeButton
+            <PButton
               :aria-label="`Delete ${name}`"
               class="p-button-rounded p-button-text"
               icon="pi pi-trash"
@@ -155,12 +150,7 @@ const roundMenuModel: MenuItem[] = [
           </LinkTableColumn>
           <template #empty>
             <p class="mb-3">You haven’t created any quizzes yet</p>
-            <PrimeButton
-              class="p-button-secondary"
-              icon="pi pi-plus"
-              label="Get started"
-              @click="createQuiz"
-            />
+            <PButton class="p-button-secondary" icon="pi pi-plus" label="Get started" @click="createQuiz" />
           </template>
         </LinkTable>
       </section>
@@ -168,7 +158,7 @@ const roundMenuModel: MenuItem[] = [
       <section>
         <div class="flex align-items-center justify-content-between">
           <h3 class="section-title">Players</h3>
-          <PrimeButton
+          <PButton
             label="Add Player"
             icon="pi pi-plus"
             class="p-button-rounded p-button-text p-button-sm"

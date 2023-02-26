@@ -9,7 +9,7 @@
  */
 
 // *:where(:not(html, iframe, canvas, img, svg, video):not(svg *, symbol *)) {
-*:where(:not(html, iframe, canvas, img, svg, video, .p-component):not(svg *, symbol *)) {
+*:where(:not(html, iframe, canvas, img, svg, video, .p-component, .pi):not(svg *, symbol *)) {
   all: unset;
   display: revert;
 }

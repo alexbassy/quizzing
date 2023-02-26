@@ -259,8 +259,15 @@ function drawChart(data: ScoresData[]): void {
 </script>
 
 <template>
-  <div ref="chartContainerElement" class="scoresChartContainer">
-    <div id="chart" ref="chartElement" class="scoresChart" />
+  <div class="w-full h-full">
+    <div v-if="noPoints === null" ref="chartContainerElement" class="scoresChartContainer">
+      <div id="chart" ref="chartElement" class="scoresChart" />
+    </div>
+
+    <div v-else class="w-full h-full flex flex-column align-items-center justify-content-center">
+      <i class="pi pi-chart-bar text-6xl mb-3" />
+      No points to display
+    </div>
   </div>
 </template>
 
