@@ -2,7 +2,6 @@ import { combineLatest, map, mergeMap, Observable, switchMap, take } from 'rxjs'
 import { isEmpty, last } from 'radash'
 import { getPlayer$, getPointsForRound$, getQuestions$, getRound$ } from '@/lib/store/client'
 import { PlayerEntry, QuestionEntry } from '@/lib/store/db'
-import { RoundEntry } from './../../lib/store/db'
 
 export interface ScoreDataPoint {
   questionId: string
@@ -31,12 +30,17 @@ export default function getChartData(roundId: string): Observable<ScoresData[]> 
   const pointsByQuestion$ = round$.pipe(
     switchMap((round) => getPointsForRound$(round!.id!)),
     map((points) =>
-      points.reduce<Record<string, Record<string, number>>>((accum, point) => {
-        if (!accum[point.questionId!]) accum[point.questionId!] = {}
-        if (!accum[point.questionId!][point.playerId!]) accum[point.questionId!][point.playerId!] = 0
-        accum[point.questionId!][point.playerId!]++
+      points.reduce<Map<string, Map<string, number>>>((accum, point) => {
+        const qId = point.questionId as string
+        const pId = point.playerId as string
+
+        if (!accum.has(qId)) accum.set(qId, new Map())
+        if (!accum.get(qId)!.get(pId)) accum.get(qId)!.set(pId, 0)
+
+        accum.get(qId)!.set(pId, accum.get(qId)!.get(pId)! + 1)
+
         return accum
-      }, {})
+      }, new Map())
     )
   )
 
@@ -48,21 +52,24 @@ export default function getChartData(roundId: string): Observable<ScoresData[]> 
         return []
       }
 
+      console.log(points)
+
       return (
         // make { [playerId]: [ {questionId, accumulatedPoints} ] }
         Object.entries(players).map(([playerId, player]) => {
           let accumulatedPoints = 0
           const playerScores = questions
             .map((question) => {
-              const questionId = question.id as string
-              const didPlayQuestion = Boolean(points?.[questionId])
+              const qId = question.id as string
+
+              const didPlayQuestion = points.has(qId)
               if (!didPlayQuestion) {
                 return null
               }
-              const point = points?.[questionId]?.[playerId] ?? null
+              const point = points.get(qId)?.get(playerId) ?? null
               if (point !== null) accumulatedPoints += point
               return {
-                questionId: questionId,
+                questionId: qId,
                 title: question.title,
                 point,
                 score: accumulatedPoints,
