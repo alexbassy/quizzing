@@ -2,95 +2,38 @@
 import { onMounted, ref } from 'vue'
 import * as d3 from 'd3'
 import { useSubscription } from '@vueuse/rxjs'
-import { combineLatest, concat, fromEvent, map, mergeMap, switchMap, take, tap, throttleTime } from 'rxjs'
-import { group, last } from 'radash'
-import useRound from '@/composable/useRound'
+import { combineLatest, concat, fromEvent, map, mergeMap, of, switchMap, take, tap, throttleTime } from 'rxjs'
+import { group, isEmpty, last } from 'radash'
+import useRound, { useRoundId$ } from '@/composable/useRound'
 import { getPlayer$, getPointsForRound$, getQuestions$ } from '@/lib/store/client'
 import { PlayerEntry, QuestionEntry } from '@/lib/store/db'
-import { onMounted$ } from '@/composable/useObservable'
+import { onMounted$, useObservable } from '@/composable/useObservable'
 import { getTransformation } from '@/lib/d3-helpers'
+import getChartData, { ScoreDataPoint, ScoresData } from './getChartData'
 
 const chartContainerElement = ref<HTMLElement>()
 const chartElement = ref<HTMLElement>()
 
 const round$ = useRound()
 
-interface ScoreDataPoint {
-  questionId: string
-  title: string
-  point: number
-  score: number
-}
+const noPoints = ref<boolean | null>(null)
 
-interface ScoresData {
-  series: string // player id
-  player: PlayerEntry
-  score: number
-  data: ScoreDataPoint[]
-  questions: QuestionEntry[]
-}
+const chartData$ = round$.pipe(switchMap((round) => (round?.id ? getChartData(round.id) : of([]))))
 
-const playersInRound$ = round$.pipe(
-  map((round) => round!.players!.map((id) => getPlayer$(id!))),
-  mergeMap((players) => combineLatest(players)),
-  map((players) => Object.fromEntries(players.map((player) => [player!.id as string, player])))
+const questionsInRound$ = round$.pipe(
+  switchMap((round) => (round?.quizId ? getQuestions$(round.quizId) : of([])))
 )
-
-const pointsByQuestion$ = round$.pipe(
-  switchMap((round) => getPointsForRound$(round!.id!)),
-  map((points) =>
-    points.reduce<Record<string, Record<string, number>>>((accum, point) => {
-      if (!accum[point.questionId!]) accum[point.questionId!] = {}
-      if (!accum[point.questionId!][point.playerId!]) accum[point.questionId!][point.playerId!] = 0
-      accum[point.questionId!][point.playerId!]++
-      return accum
-    }, {})
-  )
-)
-
-const questionsInRound$ = round$.pipe(switchMap((round) => getQuestions$(round!.quizId!)))
 
 useSubscription(
-  combineLatest([playersInRound$, questionsInRound$, pointsByQuestion$])
-    .pipe(
-      map(
-        ([players, questions, points]) =>
-          // make { [playerId]: [ {questionId, accumulatedPoints} ] }
-          Object.entries(players).map(([playerId, player]) => {
-            let accumulatedPoints = 0
-            const playerScores = questions
-              .map((question, i) => {
-                const questionId = question.id as string
-                const didPlayQuestion = Boolean(points?.[questionId])
-                if (!didPlayQuestion) {
-                  // if (i === 0) debugger
-                  return null
-                }
-                const point = points?.[questionId]?.[playerId] ?? null
-                if (point !== null) accumulatedPoints += point
-                return {
-                  questionId: questionId,
-                  title: question.title,
-                  point,
-                  score: accumulatedPoints,
-                }
-              })
-              .filter(Boolean)
-            return {
-              series: playerId,
-              player,
-              score: last(playerScores)!.score,
-              data: playerScores,
-              questions,
-            }
-          }) as ScoresData[]
-      ),
-      take(1)
-    )
-    .subscribe((data) => {
-      console.log(data)
-      drawChart(data)
-    })
+  combineLatest([chartData$, questionsInRound$]).subscribe(([chartData, questions]) => {
+    if (!chartData.length) {
+      noPoints.value = true
+      return
+    }
+    noPoints.value = null
+    console.log(chartData)
+    drawChart(chartData, questions)
+  })
 )
 
 const chartWidth = ref(450)
@@ -126,7 +69,7 @@ onMounted(() => {
   drawSvg()
 })
 
-function drawChart(data: ScoresData[]): void {
+function drawChart(data: ScoresData[], questions: QuestionEntry[]): void {
   getContainerSize()
   updateSvgElement()
 
@@ -134,7 +77,7 @@ function drawChart(data: ScoresData[]): void {
 
   const xScale = d3
     .scalePoint()
-    .domain(data[0].questions.map((q) => q.title!))
+    .domain(questions.map((q) => q.title!))
     .range([0, chartWidth.value - X_MARGIN * 2])
 
   // this should be the number of questions?
@@ -245,7 +188,7 @@ function drawChart(data: ScoresData[]): void {
 
   d3.selectAll('.playerAvatar').raise()
 
-  const xAxis = d3.axisBottom(xScale)
+  const xAxis = d3.axisBottom(xScale).tickSize(0).tickValues([])
 
   container
     .append('g')
@@ -274,7 +217,7 @@ function drawChart(data: ScoresData[]): void {
 <style lang="scss" scoped>
 .scoresChartContainer {
   width: 100%;
-  height: calc(100vh - var(--create-header-height));
+  height: calc(100vh - var(--create-header-height) - 2rem);
 }
 .scoresChart {
   width: 100%;

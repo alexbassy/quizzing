@@ -3,7 +3,7 @@ import { computed, ref } from 'vue'
 import { TabGroup, TabList, Tab, TabPanels, TabPanel } from '@headlessui/vue'
 import dayjs from 'dayjs'
 import download from 'downloadjs'
-import PrimeButton from 'primevue/button'
+import PButton from 'primevue/button'
 import { exportDatabase, importDatabase } from '@/lib/store/db'
 import ModalDialog from './ModalDialog.vue'
 import Fieldset from './Fieldset.vue'
@@ -57,7 +57,7 @@ const tabs = [
                 <Fieldset title="Import">
                   <FileInput @change="onImportFieldChange" />
 
-                  <PrimeButton
+                  <PButton
                     label="Import database"
                     :disabled="!isImportButtonEnabled"
                     icon="pi pi-upload"
@@ -66,7 +66,7 @@ const tabs = [
                 </Fieldset>
 
                 <Fieldset title="Export">
-                  <PrimeButton
+                  <PButton
                     label="Export database"
                     class="p-button-secondary"
                     icon="pi pi-arrow-circle-down"
