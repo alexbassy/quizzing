@@ -77,6 +77,10 @@ export async function updateQuestionOption(questionId: string, index: number, va
   })
 }
 
+export async function updateQuestionExplanation(questionId: string, value: string) {
+  return db.question.update(questionId, { explanation: value })
+}
+
 export async function updateQuestionCorrectOption(questionId: string, optionIndex: number) {
   return db.question.update(questionId, { correctOption: optionIndex })
 }

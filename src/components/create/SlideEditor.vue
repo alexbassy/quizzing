@@ -6,6 +6,7 @@ import { watch$ } from '@/lib/observables'
 import {
   getQuestion$,
   updateQuestionCorrectOption,
+  updateQuestionExplanation,
   updateQuestionImage,
   updateQuestionOption,
   updateQuestionTitle,
@@ -38,12 +39,18 @@ const letterIndex = ['A', 'B', 'C', 'D']
 
 const options = computed(() => Array.from({ length: 4 }).map((_, i) => question.value?.options?.[i] || ''))
 
+const explanation = computed(() => question.value?.explanation || '')
+
 async function handleTitleInput(ev: Event) {
   await updateQuestionTitle(questionId.value, (ev.target as HTMLTextAreaElement).value)
 }
 
 async function handleOptionInput(ev: Event, index: number) {
   await updateQuestionOption(questionId.value, index, (ev.target as HTMLTextAreaElement).value)
+}
+
+async function handleExplanationInput(ev: Event) {
+  await updateQuestionExplanation(questionId.value, (ev.target as HTMLTextAreaElement).value)
 }
 
 async function setCorrectOption(index: number) {
@@ -127,26 +134,37 @@ const backgroundColor = computed(() => question.value?.backgroundColor || '')
               :key="`${questionId}-option-${index}`"
               class="options-item"
             >
-              <div class="answer-key">
+              <div class="flex align-items-center">
+                <div class="answer-key">
+                  <input
+                    :id="`${questionId}-radio-${index}`"
+                    type="radio"
+                    name="answer"
+                    :value="index"
+                    :checked="correctOption === index"
+                    @change="setCorrectOption(index)"
+                  />
+                  <label :for="`${questionId}-radio-${index}`" class="answer-key-label">{{
+                    letterIndex[index]
+                  }}</label>
+                </div>
                 <input
-                  :id="`${questionId}-radio-${index}`"
-                  type="radio"
-                  name="answer"
-                  :value="index"
-                  :checked="correctOption === index"
-                  @change="setCorrectOption(index)"
+                  v-stretchy="option"
+                  type="text"
+                  :value="option"
+                  :placeholder="`Option ${index}`"
+                  class="option-input"
+                  @input="handleOptionInput($event, index)"
                 />
-                <label :for="`${questionId}-radio-${index}`" class="answer-key-label">{{
-                  letterIndex[index]
-                }}</label>
               </div>
-              <input
-                v-stretchy="option"
+              <textarea
+                v-if="correctOption === index"
+                v-stretchy="explanation"
                 type="text"
-                :value="option"
-                :placeholder="`Option ${index}`"
-                class="option-input"
-                @input="handleOptionInput($event, index)"
+                placeholder="Explanation"
+                class="explanation-input"
+                :value="explanation"
+                @input="handleExplanationInput"
               />
             </li>
           </ol>
@@ -244,6 +262,8 @@ const backgroundColor = computed(() => question.value?.backgroundColor || '')
 }
 
 .options {
+  display: flex;
+  flex-direction: column;
   padding: 0 0 0 2rem;
   margin-bottom: auto;
   list-style: none;
@@ -251,8 +271,8 @@ const backgroundColor = computed(() => question.value?.backgroundColor || '')
 
 .options-item {
   display: flex;
-  align-items: center;
-  margin: 1.4rem 0;
+  flex-direction: column;
+  margin: 0.5rem 0;
   font-size: var(--slide-option-font-size);
   transform-origin: left;
   transition: 0.25s ease;
@@ -290,6 +310,19 @@ const backgroundColor = computed(() => question.value?.backgroundColor || '')
   padding: 0.18rem 0.5rem;
   margin-left: -0.5rem;
   font-size: var(--slide-option-font-size);
+
+  &::placeholder {
+    color: var(--placeholder-color);
+  }
+}
+
+.explanation-input {
+  @include textarea-outline;
+  max-width: 100%;
+  padding: 0.18rem 0.5rem;
+  margin-top: 0.5rem;
+  margin-left: 3rem;
+  font-size: var(--slide-explanation-font-size);
 
   &::placeholder {
     color: var(--placeholder-color);

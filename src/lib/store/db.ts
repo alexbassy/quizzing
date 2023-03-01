@@ -19,6 +19,7 @@ export interface QuestionEntry {
   title?: string
   options?: string[]
   correctOption?: number // 0-3
+  explanation?: string
   backgroundColor?: string
   image?: Blob
   thumbnailImage?: Blob
