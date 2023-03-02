@@ -70,6 +70,7 @@ const slideHidden = SLIDE.hidden
           :option="option"
           :is-answer-shown="isAnswerShown"
           :is-correct="question.correctOption === i"
+          :explanation="isAnswerShown && question.correctOption === i ? question.explanation : undefined"
           :index="i"
         />
       </Presence>

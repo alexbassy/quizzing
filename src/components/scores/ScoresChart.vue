@@ -218,6 +218,7 @@ function drawChart(data: ScoresData[], questions: QuestionEntry[]): void {
 .scoresChartContainer {
   width: 100%;
   height: calc(100vh - var(--create-header-height) - 2rem);
+  margin: 2rem;
 }
 .scoresChart {
   width: 100%;

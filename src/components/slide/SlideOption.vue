@@ -8,6 +8,7 @@ defineProps<{
   index: number
   isAnswerShown: boolean
   isCorrect: boolean
+  explanation?: string
 }>()
 
 const isAnimated = inject<boolean>('isAnimated')
@@ -21,6 +22,7 @@ const slideHidden = OPTION.hidden
   <Motion
     tag="li"
     class="slideOptionContainer"
+    :class="{ '-answerShown': isAnswerShown }"
     :initial="slideInitial"
     :animate="slideShown"
     :exit="slideHidden"
@@ -29,6 +31,9 @@ const slideHidden = OPTION.hidden
     <span class="option" :class="{ '-answerShown': isAnswerShown, '-correct': isCorrect }">
       {{ option }}
     </span>
+    <div class="explanation">
+      {{ explanation }}
+    </div>
   </Motion>
 </template>
 
@@ -79,6 +84,20 @@ const slideHidden = OPTION.hidden
         color: #ffffff;
       }
     }
+  }
+}
+
+.explanation {
+  overflow: hidden;
+  max-height: 0;
+  margin-left: calc(1rem + 2.75vw);
+  font-size: var(--slide-option-explanation-font-size);
+  opacity: 0;
+  transition: all 0.25s ease;
+
+  .-answerShown & {
+    max-height: 150px;
+    opacity: 0.75;
   }
 }
 </style>
