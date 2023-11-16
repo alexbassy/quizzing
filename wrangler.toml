@@ -1,7 +1,7 @@
 name = "quizzing"
 compatibility_date = "2022-05-22"
 main = "dist-worker/handler.mjs"
-routes = ["api.quizzing.ninja/*"]
+routes = ["quizzing.pages.dev/*"]
 workers_dev = true
 
 [miniflare]

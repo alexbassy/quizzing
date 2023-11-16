@@ -22,9 +22,9 @@ async function searchPictures() {
     results.value = []
     return
   }
-  const response = await fetch(`https://api.quizzing.ninja/backgrounds/search?query=${query.value}`).then(
-    (res) => res.json() as Promise<IUnsplashSearchResult[]>
-  )
+  const response = await fetch(
+    `https://quizzing.abass.workers.dev/backgrounds/search?query=${query.value}`
+  ).then((res) => res.json() as Promise<IUnsplashSearchResult[]>)
   results.value = response
 }
 

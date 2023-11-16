@@ -72,7 +72,7 @@ async function onOptimise() {
     console.warn('No image to optimised; skipping')
     return
   }
-  const compressResponse = await fetch('https://api.quizzing.ninja/compress', {
+  const compressResponse = await fetch('https://quizzing.abass.workers.dev/compress', {
     method: 'POST',
     body: questionImage,
   })
