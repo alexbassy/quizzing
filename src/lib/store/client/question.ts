@@ -1,7 +1,7 @@
 import { liveQuery } from 'dexie'
 import { from, Observable } from 'rxjs'
 import randomColor from 'randomcolor'
-import { db, QuestionEntry } from '@/lib/store/db'
+import { db, QuestionEntry, QuestionType } from '@/lib/store/db'
 
 export function getQuestion$(questionId: string): Observable<QuestionEntry | undefined> {
   return from(liveQuery(() => db.question.get(questionId)))
@@ -16,6 +16,19 @@ export function getQuestions$(quizId: string): Observable<QuestionEntry[]> {
       ])
       const questionsById = Object.fromEntries(questions.map((question) => [question.id, question]))
       return (quiz?.questions || []).map((id) => questionsById[id!])
+    })
+  )
+}
+
+// Get the question ids of the quiz that are not categories
+export function getPlayableQuestionIds$(quizId: string): Observable<string[]> {
+  return from(
+    liveQuery(async () => {
+      const playableQuestions = await db.question
+        .where({ quizId })
+        .filter((question) => question.type !== QuestionType.Category)
+        .toArray()
+      return playableQuestions.map((question) => question.id!)
     })
   )
 }

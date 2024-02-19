@@ -11,15 +11,38 @@ export interface QuizEntry {
   questions?: QuestionEntry['id'][]
 }
 
+export enum QuestionType {
+  Category = 'category',
+  Text = 'text',
+  Image = 'image',
+  Time = 'time',
+  Sound = 'sound',
+}
+
 export interface QuestionEntry {
   id?: string
   createdAt?: number
   updatedAt?: number
-  quizId?: string
+  quizId?: QuizEntry['id']
+  type?: QuestionType
+
   title?: string
-  options?: string[]
   correctOption?: number // 0-3
   explanation?: string
+
+  // Type = Text
+  options?: string[]
+
+  // Type = Category
+  timerLengthMs?: number
+
+  // Type = Image, TODO
+  // images?: ImageEntry['id'][]
+
+  // Type = Sound
+  soundBlob?: Blob
+  soundLink?: string
+
   backgroundColor?: string
   image?: Blob
   thumbnailImage?: Blob
@@ -70,6 +93,15 @@ class QuizStore extends Dexie {
       player: '$$id, name',
       round: '$$id, quizId',
       points: '++id, [roundId+questionId]',
+    })
+
+    // Add the type column to the question table
+    this.version(2).upgrade((tx) => {
+      tx.table('question')
+        .toCollection()
+        .modify((question) => {
+          question.type = QuestionType.Text
+        })
     })
   }
 }

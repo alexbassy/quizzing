@@ -7,7 +7,7 @@ import SlideList from '@/components/create/SlideList.vue'
 import CaretLeftIcon from '@/components/icons/CaretLeftIcon.vue'
 import CreateLayout from '@/layouts/CreateLayout.vue'
 import { getQuestions$, getQuiz$, updateQuizTitle } from '@/lib/store/client'
-import { QuestionEntry, QuizEntry } from '@/lib/store/db'
+import { QuestionEntry, QuestionType, QuizEntry } from '@/lib/store/db'
 import PlayDialog from '@/components/create/PlayDialog.vue'
 import PrimaryButton from '@/components/PrimaryButton.vue'
 import SecondaryButton from '@/components/SecondaryButton.vue'
@@ -32,11 +32,12 @@ const quiz$ = getQuiz$(quizId)
 const quiz = useObservable<QuizEntry | undefined>(quiz$)
 const questions = useObservable(getQuestions$(quizId), { initialValue: [] as QuestionEntry[] })
 const activeQuestion = ref<QuestionEntry | undefined>()
+const countableQuestions = computed(() => questions.value.filter((q) => q.type !== QuestionType.Category))
 const activeQuestionIndex = computed(() =>
-  questions.value.findIndex((q) => q.id === activeQuestion.value?.id)
+  countableQuestions.value.findIndex((q) => q.id === activeQuestion.value?.id)
 )
 
-// Run effect when questions load
+// Set active question based on route on load
 watch(questions, (value, oldValue) => {
   if (oldValue.length === 0 && value.length > 0) {
     activeQuestion.value = value[0]
