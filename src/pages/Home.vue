@@ -4,7 +4,7 @@ import { useObservable } from '@vueuse/rxjs'
 import randomColor from 'randomcolor'
 import { useRouter } from 'vue-router'
 import ContextMenu from 'primevue/contextmenu'
-import { MenuItem } from 'primevue/menuitem'
+import type { MenuItem } from 'primevue/menuitem'
 import PButton from 'primevue/button'
 import CreateLayout from '@/layouts/CreateLayout.vue'
 import {
