@@ -2,12 +2,12 @@
 import { onMounted, ref } from 'vue'
 import * as d3 from 'd3'
 import { useSubscription } from '@vueuse/rxjs'
-import { combineLatest, concat, fromEvent, map, mergeMap, of, switchMap, take, tap, throttleTime } from 'rxjs'
-import { group, isEmpty, last } from 'radash'
-import useRound, { useRoundId$ } from '@/composable/useRound'
-import { getPlayer$, getPointsForRound$, getQuestions$ } from '@/lib/store/client'
-import { PlayerEntry, QuestionEntry } from '@/lib/store/db'
-import { onMounted$, useObservable } from '@/composable/useObservable'
+import { combineLatest, concat, distinctUntilChanged, fromEvent, map, of, switchMap, throttleTime } from 'rxjs'
+import { group } from 'radash'
+import useRound from '@/composable/useRound'
+import { getPlayableQuestions$ } from '@/lib/store/client'
+import { QuestionEntry, QuestionType } from '@/lib/store/db'
+import { onMounted$ } from '@/composable/useObservable'
 import { getTransformation } from '@/lib/d3-helpers'
 import getChartData, { ScoreDataPoint, ScoresData } from './getChartData'
 
@@ -18,10 +18,10 @@ const round$ = useRound()
 
 const noPoints = ref<boolean | null>(null)
 
-const chartData$ = round$.pipe(switchMap((round) => (round?.id ? getChartData(round.id) : of([]))))
+const chartData$ = round$.pipe(map(round => round?.id), distinctUntilChanged(), switchMap((id) => (id ? getChartData(id) : of([]))))
 
 const questionsInRound$ = round$.pipe(
-  switchMap((round) => (round?.quizId ? getQuestions$(round.quizId) : of([])))
+  switchMap((round) => (round?.quizId ? getPlayableQuestions$(round.quizId) : of([])))
 )
 
 useSubscription(
@@ -31,8 +31,8 @@ useSubscription(
       return
     }
     noPoints.value = null
-    console.log(chartData)
-    drawChart(chartData, questions)
+    const playableQuestions = questions.filter((q) => q.type !== QuestionType.Category)
+    drawChart(chartData, playableQuestions)
   })
 )
 
@@ -77,7 +77,7 @@ function drawChart(data: ScoresData[], questions: QuestionEntry[]): void {
 
   const xScale = d3
     .scalePoint()
-    .domain(questions.map((q) => q.title!))
+    .domain(questions.map((q) => q.id!))
     .range([0, chartWidth.value - X_MARGIN * 2])
 
   // this should be the number of questions?
@@ -104,7 +104,7 @@ function drawChart(data: ScoresData[], questions: QuestionEntry[]): void {
     // @ts-ignore
     const lineGenerator = d3
       .line<ScoreDataPoint>()
-      .x((d) => xScale(d.title))
+      .x((d) => xScale(d.questionId))
       .y((d) => yScale(d.score))
 
     lineGenerator.curve(d3.curveBumpX)
@@ -220,6 +220,7 @@ function drawChart(data: ScoresData[], questions: QuestionEntry[]): void {
   height: calc(100vh - var(--create-header-height) - 2rem);
   margin: 2rem;
 }
+
 .scoresChart {
   width: 100%;
   height: 100%;

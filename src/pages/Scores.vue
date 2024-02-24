@@ -79,6 +79,7 @@ const quizName = useObservable(
   font-size: 1.5rem;
   text-align: center;
 }
+
 .playerAvatar {
   flex-shrink: 0;
 }
