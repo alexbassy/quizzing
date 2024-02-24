@@ -8,7 +8,7 @@ import { Routes } from '@/routes'
 import TickIcon from '../icons/TickIcon.vue'
 import PrimaryButton from '../PrimaryButton.vue'
 import SecondaryButton from '../SecondaryButton.vue'
-import ModalDialog from '../ModalDialog.vue'
+import Dialog from 'primevue/dialog'
 
 const quizId = inject<string>('quizId')
 
@@ -30,12 +30,8 @@ const onPlayerClick = (id: string) => {
 </script>
 
 <template>
-  <ModalDialog
-    v-slot="{ close }"
-    class="playDialog"
-    title="Who’s playing?"
-    aria-describedby="play-dialog-description"
-  >
+  <Dialog class="playDialog" header="Who’s playing?" aria-describedby="play-dialog-description" block-scroll modal
+    dismissable-mask :draggable="false">
     <form method="dialog">
       <p id="play-dialog-description" class="message">
         Add some participants to the quiz for easy scoring as you go along. You can also start the quiz
@@ -43,39 +39,33 @@ const onPlayerClick = (id: string) => {
       </p>
       <ul class="playerList">
         <li v-for="player in players" :key="player.id" class="playerListItem">
-          <label
-            class="playerCheckbox"
-            :class="{'-checked': selectedPlayers[player.id!] }"
-            role="button"
-            tabindex="0"
-            @click.prevent="onPlayerClick(player.id!)"
-            @keydown.enter="onPlayerClick(player.id!)"
-            @keydown.space="onPlayerClick(player.id!)"
-          >
-            <input
-              id="player-{{ player.id }}"
-              type="checkbox"
-              name="players"
-              class="hiddenCheckbox"
-              :value="selectedPlayers[player.id!] || false"
-            />
+          <label class="playerCheckbox" :class="{ '-checked': selectedPlayers[player.id!] }" role="button" tabindex="0"
+            @click.prevent="onPlayerClick(player.id!)" @keydown.enter="onPlayerClick(player.id!)"
+            @keydown.space="onPlayerClick(player.id!)">
+            <input id="player-{{ player.id }}" type="checkbox" name="players" class="hiddenCheckbox"
+              :value="selectedPlayers[player.id!] || false" />
             <PlayerAvatar :player="player" class="playerAvatar" />
             <TickIcon class="playerSelectedIndicator" />
           </label>
         </li>
       </ul>
       <div class="playDialogActions">
-        <SecondaryButton class="cancelButton" type="button" @click="close"> Close </SecondaryButton>
+        <SecondaryButton class="cancelButton" type="button" @click="$emit('update:visible', false)"> Close
+        </SecondaryButton>
         <PrimaryButton bg="rgb(0, 36, 196)" type="button" @click="startRound">
           <template v-if="selectedPlayersCount > 0"> Start with {{ selectedPlayersCount }} players </template>
           <template v-else>Start without scoring</template>
         </PrimaryButton>
       </div>
     </form>
-  </ModalDialog>
+  </Dialog>
 </template>
 
 <style lang="scss" scoped>
+:global(.playDialog) {
+  max-width: 30rem;
+}
+
 .title {
   font-size: 2rem;
   font-weight: bold;

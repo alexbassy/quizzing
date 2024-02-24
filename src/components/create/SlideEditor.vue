@@ -14,6 +14,7 @@ import {
 import { IUnsplashSearchResult } from '@/worker/types'
 import PictureIcon from '../icons/PictureIcon.vue'
 import SecondaryButton from '../SecondaryButton.vue'
+import { QuestionType } from '../../lib/store/db'
 import ImagePicker from './ImagePicker.vue'
 import Dropzone from './Dropzone.vue'
 
@@ -30,6 +31,8 @@ const imageSrc = computed(() =>
 )
 
 const title = computed(() => question.value?.title || '')
+
+const isCategory = computed(() => question.value?.type === QuestionType.Category)
 
 const questionId = computed(() => question.value?.id || '')
 
@@ -57,7 +60,7 @@ async function setCorrectOption(index: number) {
   await updateQuestionCorrectOption(questionId.value, index)
 }
 
-// Handle image selection
+// When the user selects an image from the image picker, fetch the full image and thumbnail and save it to the database
 async function onImageSelect(image: IUnsplashSearchResult) {
   const [fullImage, thumbnail] = await Promise.all([
     fetch(image.urls.regular).then((res) => res.blob()),
@@ -110,7 +113,7 @@ const backgroundColor = computed(() => question.value?.backgroundColor || '')
           @optimise="onOptimise"
         />
         <div class="content">
-          <span class="count">{{ index + 1 }}</span>
+          <span v-if="!isCategory" class="count">{{ index + 1 }}</span>
           <div
             class="title"
             :class="{
@@ -123,12 +126,12 @@ const backgroundColor = computed(() => question.value?.backgroundColor || '')
               v-stretchy="title"
               type="text"
               :value="title"
-              placeholder="Question title"
+              :placeholder="isCategory ? 'Category name' : 'Question title'"
               class="title-textarea"
               @input="handleTitleInput"
             />
           </div>
-          <ol ref="slideOptions" class="options">
+          <ol v-if="!isCategory" ref="slideOptions" class="options">
             <li
               v-for="(option, index) in options"
               :key="`${questionId}-option-${index}`"

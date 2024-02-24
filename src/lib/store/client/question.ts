@@ -1,12 +1,13 @@
 import { liveQuery } from 'dexie'
-import { from, Observable } from 'rxjs'
+import { from, map, Observable } from 'rxjs'
 import randomColor from 'randomcolor'
-import { db, QuestionEntry } from '@/lib/store/db'
+import { db, QuestionEntry, QuestionType } from '@/lib/store/db'
 
 export function getQuestion$(questionId: string): Observable<QuestionEntry | undefined> {
   return from(liveQuery(() => db.question.get(questionId)))
 }
 
+// Get ordered list of questions
 export function getQuestions$(quizId: string): Observable<QuestionEntry[]> {
   return from(
     liveQuery(async () => {
@@ -16,6 +17,31 @@ export function getQuestions$(quizId: string): Observable<QuestionEntry[]> {
       ])
       const questionsById = Object.fromEntries(questions.map((question) => [question.id, question]))
       return (quiz?.questions || []).map((id) => questionsById[id!])
+    })
+  )
+}
+
+export function getPlayableQuestions$(quizId: string): Observable<QuestionEntry[]> {
+  return getQuestions$(quizId).pipe(
+    map((questions) => questions.filter((q) => q.type !== QuestionType.Category))
+  )
+}
+
+// Get the question ids of the quiz that are not categories
+export function getPlayableQuestionIds$(quizId: string): Observable<string[]> {
+  return from(
+    liveQuery(async () => {
+      // Get ordered list of question IDs
+      const quizQuestions = (await db.quiz
+        .get(quizId)
+        .then((quiz) => quiz?.questions?.filter(Boolean) || [])) as string[]
+      // Get playable questions
+      const playableQuestions = await db.question
+        .where({ quizId })
+        .filter((question) => question.type !== QuestionType.Category)
+        .toArray()
+      // Return ordered list of question IDs that are playable
+      return quizQuestions.filter((id) => playableQuestions.some((q) => q.id === id))
     })
   )
 }

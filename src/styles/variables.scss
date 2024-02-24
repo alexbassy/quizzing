@@ -31,4 +31,8 @@ $backdrop-background: rgb(0 0 0 / 60%);
   --background1: rgb(255 255 255 / 10%);
 
   --backdrop-background: $backdrop-background;
+
+  --app-background: #000; // App background color
+  --app-foreground: #fff; // Primary text color
+  --app-foreground-secondary: #999; // Secondary text color
 }

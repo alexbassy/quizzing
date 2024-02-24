@@ -8,8 +8,8 @@ html {
 }
 
 body {
-  background-color: #000;
-  color: #fff;
+  background-color: var(--app-background);
+  color: var(--app-foreground);
   font-family: Inter, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

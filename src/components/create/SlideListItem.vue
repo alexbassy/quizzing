@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { QuestionEntry } from '@/lib/store/db'
+import { QuestionEntry, QuestionType } from '@/lib/store/db'
 import RubbishIcon from '../icons/RubbishIcon.vue'
 
 const props = defineProps<{
@@ -28,7 +28,11 @@ function getImageObjectURL(question: QuestionEntry) {
 <template>
   <li
     class="slideListItem"
-    :class="{ '-active': isActive, '-draggedOver': draggedOver }"
+    :class="{
+      '-active': isActive,
+      '-draggedOver': draggedOver,
+      '-category': question.type === QuestionType.Category,
+    }"
     :style="`--background-color: ${question.backgroundColor || 'gray'};`"
     tabindex="0"
     role="button"
@@ -91,6 +95,11 @@ function getImageObjectURL(question: QuestionEntry) {
 
   &.-active {
     box-shadow: 0 0 0 0.5rem #ffffff20;
+  }
+
+  &.-category {
+    aspect-ratio: 3 / 1;
+    opacity: 0.75;
   }
 
   &__deleteButton {

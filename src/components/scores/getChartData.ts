@@ -1,7 +1,7 @@
 import { combineLatest, map, mergeMap, Observable, switchMap, take } from 'rxjs'
 import { isEmpty, last } from 'radash'
 import { getPlayer$, getPointsForRound$, getQuestions$, getRound$ } from '@/lib/store/client'
-import { PlayerEntry, QuestionEntry } from '@/lib/store/db'
+import { PlayerEntry, QuestionEntry, QuestionType } from '@/lib/store/db'
 
 export interface ScoreDataPoint {
   questionId: string
@@ -44,15 +44,16 @@ export default function getChartData(roundId: string): Observable<ScoresData[]> 
     )
   )
 
-  const questionsInRound$ = round$.pipe(switchMap((round) => getQuestions$(round!.quizId!)))
+  const playableQuestionsInRound$ = round$.pipe(
+    switchMap((round) => getQuestions$(round!.quizId!)),
+    map((questions) => questions.filter((q) => q.type !== QuestionType.Category))
+  )
 
-  return combineLatest([playersInRound$, questionsInRound$, pointsByQuestion$]).pipe(
+  return combineLatest([playersInRound$, playableQuestionsInRound$, pointsByQuestion$]).pipe(
     map(([players, questions, points]) => {
       if (isEmpty(points)) {
         return []
       }
-
-      console.log(points)
 
       return (
         // make { [playerId]: [ {questionId, accumulatedPoints} ] }

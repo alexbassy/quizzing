@@ -1,7 +1,9 @@
 <script lang="ts" setup>
 import { inject, nextTick, ref, watch } from 'vue'
+import ContextMenu from 'primevue/contextmenu'
+import type { MenuItem } from 'primevue/menuitem'
 import * as client from '@/lib/store/client'
-import { QuestionEntry } from '@/lib/store/db'
+import { QuestionEntry, QuestionType } from '@/lib/store/db'
 import SlideListItem from './SlideListItem.vue'
 
 const props = defineProps<{ questions: QuestionEntry[]; activeQuestionId?: string }>()
@@ -14,8 +16,8 @@ function setActiveSlide(questionId: string) {
   emit('active-change', questionId)
 }
 
-async function addQuestion() {
-  const id = await client.addQuestion({ quizId: quizId! })
+async function addQuestion(extraArgs: Partial<QuestionEntry> = {}) {
+  const id = await client.addQuestion({ quizId: quizId!, ...extraArgs })
   setTimeout(() => {
     if (listElem.value) {
       listElem.value.scrollTo({ top: listElem.value.scrollHeight * 2, behavior: 'smooth' })
@@ -88,6 +90,21 @@ function drop(event: DragEvent, targetId: string) {
   if (!draggedId || draggedId === targetId) return
   client.moveQuestion(quizId!, draggedId, targetId)
 }
+
+const contextMenuRef = ref<ContextMenu>()
+const openContextMenu = (event: Event) => {
+  contextMenuRef.value?.show(event)
+}
+const questionActionModel: MenuItem[] = [
+  {
+    id: 'category',
+    icon: 'pi pi-play',
+    label: 'Add Category',
+    command: () => {
+      addQuestion({ type: QuestionType.Category })
+    },
+  },
+]
 </script>
 
 <template>
@@ -109,14 +126,12 @@ function drop(event: DragEvent, targetId: string) {
         @dragleave="dragLeave"
         @drop="drop($event, question.id!)"
       />
-      <li
-        class="slideList__addQuestion"
-        tabindex="0"
-        role="button"
-        aria-label="Add question"
-        @click="addQuestion"
-      >
-        +
+      <li class="slideList__actions">
+        <button aria-label="Add question" class="slideList__addQuestion" @click="addQuestion()">+</button>
+        <button aria-label="Add something else" class="slideList__addOption" @click="openContextMenu">
+          ...
+        </button>
+        <ContextMenu ref="contextMenuRef" :model="questionActionModel" />
       </li>
     </ol>
   </div>
@@ -155,16 +170,35 @@ function drop(event: DragEvent, targetId: string) {
     overflow-y: auto;
   }
 
-  &__addQuestion {
-    position: relative;
+  &__actions {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding-bottom: 0.35rem;
+    margin-top: 1.5rem;
     margin-bottom: 1.5rem;
     aspect-ratio: 4 / 3;
+  }
+
+  &__addQuestion {
+    flex: 3;
+    border-right: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 8px 0 0 8px;
+  }
+
+  &__addOption {
+    flex: 1;
+    border-radius: 0 8px 8px 0;
+  }
+
+  &__addQuestion,
+  &__addOption {
+    display: flex;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    padding-bottom: 0.35rem;
+    appearance: none;
     background-color: rgb(30 30 30);
-    border-radius: 8px;
     cursor: pointer;
     font-size: 3vw;
     transition: 0.25s ease;

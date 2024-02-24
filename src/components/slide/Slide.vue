@@ -2,7 +2,7 @@
 import { computed, provide } from 'vue'
 import { Motion, Presence } from 'motion/vue'
 import { FADE, SLIDE } from '@/lib/motion-variants'
-import { QuestionEntry } from '@/lib/store/db'
+import { QuestionEntry, QuestionType } from '@/lib/store/db'
 import SlideImage from './SlideImage.vue'
 import SlideOption from './SlideOption.vue'
 
@@ -16,6 +16,8 @@ const props = defineProps<{
 }>()
 
 provide('isAnimated', props.isAnimated)
+
+const isPlayableQuestion = computed(() => props.question.type !== QuestionType.Category)
 
 const fadeInitial = computed(() => (props.isAnimated ? FADE.initial : false))
 const fadeShown = computed(() => (props.isPhotoShown ? FADE.initial : FADE.shown))
@@ -40,6 +42,7 @@ const slideHidden = SLIDE.hidden
   <Motion class="text-content" :initial="fadeInitial" :animate="fadeShown" :exit="fadeHidden">
     <!-- Count -->
     <Motion
+      v-if="isPlayableQuestion"
       :key="'count ' + questionIndex"
       tag="span"
       class="count"
@@ -63,7 +66,7 @@ const slideHidden = SLIDE.hidden
     >
 
     <!-- Options list -->
-    <Motion :key="'options ' + question.id" tag="ol" class="options">
+    <Motion v-if="isPlayableQuestion" :key="'options ' + question.id" tag="ol" class="options">
       <Presence v-for="(option, i) in question.options" :key="i">
         <SlideOption
           :key="option"
