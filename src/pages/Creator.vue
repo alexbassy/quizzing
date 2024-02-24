@@ -73,15 +73,8 @@ function showPlayDialog() {
       <SecondaryButton to="/create" inline is-icon>
         <CaretLeftIcon />
       </SecondaryButton>
-      <input
-        v-stretchy="quiz?.name"
-        type="text"
-        class="title-input"
-        :value="quiz?.name"
-        placeholder="Untitled"
-        maxlength="40"
-        @input="handleTitleChange"
-      />
+      <input v-stretchy="quiz?.name" type="text" class="title-input" :value="quiz?.name" placeholder="Untitled"
+        maxlength="40" @input="handleTitleChange" />
     </template>
 
     <template #action>
@@ -89,16 +82,12 @@ function showPlayDialog() {
     </template>
 
     <template #sidebar>
-      <SlideList
-        :questions="questions"
-        :active-question-id="activeQuestion?.id"
-        @active-change="onSlideChange"
-      />
+      <SlideList :questions="questions" :active-question-id="activeQuestion?.id" @active-change="onSlideChange" />
     </template>
 
     <SlideEditor v-if="activeQuestion" :question-id="activeQuestion.id!" :index="activeQuestionIndex" />
 
-    <PlayDialog :visible="isPlayDialogShown" @close="isPlayDialogShown = false" />
+    <PlayDialog v-model:visible="isPlayDialogShown" />
   </CreateLayout>
 </template>
 

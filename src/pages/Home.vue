@@ -110,17 +110,8 @@ const roundMenuModel: MenuItem[] = [
     </template>
     <template #action>
       <PButton label="Create quiz" class="p-button-secondary" icon="pi pi-plus-circle" @click="createQuiz" />
-      <PButton
-        aria-label="Settings"
-        icon="pi pi-cog"
-        class="p-button-text"
-        @click="isSettingsDialogShown = true"
-      />
-      <SettingsDialog
-        :visible="isSettingsDialogShown"
-        @cancel="isSettingsDialogShown = false"
-        @close="isSettingsDialogShown = false"
-      />
+      <PButton aria-label="Settings" icon="pi pi-cog" class="p-button-text" @click="isSettingsDialogShown = true" />
+      <SettingsDialog v-model:visible="isSettingsDialogShown" />
     </template>
 
     <div class="page">
@@ -141,12 +132,8 @@ const roundMenuModel: MenuItem[] = [
             <RelativeTime :time="updatedAt!" />
           </LinkTableColumn>
           <LinkTableColumn v-slot="{ id, name }: QuizEntry" title="">
-            <PButton
-              :aria-label="`Delete ${name}`"
-              class="p-button-rounded p-button-text"
-              icon="pi pi-trash"
-              @click.prevent="remove(id!)"
-            />
+            <PButton :aria-label="`Delete ${name}`" class="p-button-rounded p-button-text" icon="pi pi-trash"
+              @click.prevent="remove(id!)" />
           </LinkTableColumn>
           <template #empty>
             <p class="mb-3">You haven’t created any quizzes yet</p>
@@ -158,12 +145,8 @@ const roundMenuModel: MenuItem[] = [
       <section>
         <div class="flex align-items-center justify-content-between">
           <h3 class="section-title">Players</h3>
-          <PButton
-            label="Add Player"
-            icon="pi pi-plus"
-            class="p-button-rounded p-button-text p-button-sm"
-            @click="createPlayer"
-          />
+          <PButton label="Add Player" icon="pi pi-plus" class="p-button-rounded p-button-text p-button-sm"
+            @click="createPlayer" />
         </div>
         <p class="help">
           Add players to keep score while running the quiz. You can choose who is taking part when starting
@@ -178,13 +161,9 @@ const roundMenuModel: MenuItem[] = [
             </li>
             <li v-if="!players?.length">No players yet. Add one?</li>
           </ul>
-          <PlayerAttributesPopover
-            :visible="Boolean(activePlayerAttributesPopover && activePlayerPosition)"
-            :player-id="activePlayerAttributesPopover"
-            :x="activePlayerPosition?.x"
-            :y="activePlayerPosition?.y"
-            @close="closePlayerAttributes"
-          />
+          <PlayerAttributesPopover :visible="Boolean(activePlayerAttributesPopover && activePlayerPosition)"
+            :player-id="activePlayerAttributesPopover" :x="activePlayerPosition?.x" :y="activePlayerPosition?.y"
+            @close="closePlayerAttributes" />
         </div>
       </section>
 
@@ -197,7 +176,10 @@ const roundMenuModel: MenuItem[] = [
         <div class="rounds">
           <LinkTable :data="rounds" class="rounds-table" @row-click="openContextMenu">
             <LinkTableColumn v-slot="round: RoundEntry" title="Quiz">
-              {{ quizzesById?.get(round.quizId)?.name ?? round.id }}
+              <template v-if="quizzesById?.get(round.quizId)">
+                {{ quizzesById?.get(round.quizId)?.name }}
+              </template>
+              <span v-else class="text-muted">(Deleted quiz)</span>
             </LinkTableColumn>
             <LinkTableColumn v-slot="round: RoundEntry" title="Date">
               <RelativeTime :time="round.createdAt!" />
@@ -300,5 +282,9 @@ const roundMenuModel: MenuItem[] = [
 .player-list-button {
   all: unset;
   cursor: pointer;
+}
+
+.text-muted {
+  color: var(--app-foreground-secondary);
 }
 </style>

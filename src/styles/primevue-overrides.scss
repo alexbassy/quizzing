@@ -1,14 +1,25 @@
 .p-component {
-  font-family: inherit;
+  font-family: inherit !important;
 }
 
 .p-component {
-  cursor: pointer;
+  &.p-button {
+    cursor: pointer;
 
-  transition: 0.25s ease;
-  transition-property: color, background-color, transform;
+    transition: 0.25s ease;
+    transition-property: color, background-color, transform;
 
-  &:active {
-    transform: scale(0.975);
+    &:active {
+      transform: scale(0.975);
+    }
+  }
+}
+
+$dialogBackgroundColor: #262626;
+.p-dialog {
+  .p-dialog-header,
+  .p-dialog-content {
+    background-color: rgba($dialogBackgroundColor, 90%);
+    backdrop-filter: blur(10px);
   }
 }
