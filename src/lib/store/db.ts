@@ -60,7 +60,7 @@ export interface PlayerEntry {
 export interface RoundEntry {
   id?: string
   quizId?: string
-  players?: PlayerEntry['id'][]
+  players?: string[] // player ids
   createdAt?: number
   questionReached?: number
   /**
