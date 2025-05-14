@@ -8,7 +8,7 @@ An small offline-first app for creating zoom quizzes.
 
 ## How to use
 
-1. Visit https://quizzing.ninja
+1. Visit https://quizzing.pages.dev
 2. Click "Create quiz" at the top right
 3. Select the newly created quiz and start adding some questions
 4. Add background images via Unsplash or by dragging an image onto the page
@@ -38,7 +38,5 @@ Lots of things
 - Remove UX friction of adding players
 - Mobile/tablet support (it’s completely unusable)
 - Register service worker to make it an actually offline-first PWA (right now, your data is simply stored offline)
-- Download quiz to a file and allow uploading on another computer
 - Add player to quiz mid-game
 - Reorganise quiz questions
-- Add category slides

@@ -10,7 +10,7 @@
     "worker:build": "node build-worker.js",
     "worker:dev": "miniflare --modules --watch dist-worker/handler.mjs",
     "worker:publish": "wrangler publish dist-worker/handler.mjs",
-    "worker:all": "yarn worker:build && yarn worker:publish"
+    "worker:all": "pnpm worker:build && pnpm worker:publish"
   },
   "dependencies": {
     "@clerk/clerk-js": "^3.12.0",

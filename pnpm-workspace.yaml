@@ -1,0 +1,8 @@
+onlyBuiltDependencies:
+  - browser-tabs-lock
+  - bufferutil
+  - core-js
+  - es5-ext
+  - esbuild
+  - utf-8-validate
+  - vue-demi

@@ -8,4 +8,4 @@ workers_dev = true
 env_path = ".env.local"
 
 [build]
-command = "yarn worker:build"
+command = "pnpm worker:build"

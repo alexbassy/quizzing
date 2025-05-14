@@ -17,6 +17,7 @@ import SecondaryButton from '../SecondaryButton.vue'
 import { QuestionType } from '../../lib/store/db'
 import ImagePicker from './ImagePicker.vue'
 import Dropzone from './Dropzone.vue'
+import { getApiUrl } from '@/lib/env'
 
 const props = defineProps<{ questionId: string; index: number }>()
 
@@ -75,7 +76,7 @@ async function onOptimise() {
     console.warn('No image to optimised; skipping')
     return
   }
-  const compressResponse = await fetch('https://quizzing.abass.workers.dev/compress', {
+  const compressResponse = await fetch(`${getApiUrl()}/compress`, {
     method: 'POST',
     body: questionImage,
   })

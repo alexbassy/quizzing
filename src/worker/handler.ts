@@ -20,7 +20,7 @@ interface Bindings extends Context {
 const API = new Router<Bindings>()
 
 API.prepare = CORS.preflight({
-  origin: /quizzing\.ninja|quizzing\.pages\.dev|localhost:3000/,
+  origin: /quizzing\.ninja|quizzing\.pages\.dev|quizzing\.bass\.dev|localhost:3000/,
   headers: ['Cache-Control', 'Content-Type', 'X-Count'],
   methods: ['GET', 'HEAD', 'PUT', 'POST', 'DELETE'],
 })

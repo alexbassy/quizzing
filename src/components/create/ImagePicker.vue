@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import { TabGroup, TabList, Tab, TabPanels, TabPanel } from '@headlessui/vue'
 import type { IUnsplashSearchResult } from '@/worker/types'
 import FileInput from '../FileInput.vue'
+import { getApiUrl } from '@/lib/env'
 
 defineProps<{ isOpen: boolean }>()
 
@@ -22,9 +23,9 @@ async function searchPictures() {
     results.value = []
     return
   }
-  const response = await fetch(
-    `https://quizzing.abass.workers.dev/backgrounds/search?query=${query.value}`
-  ).then((res) => res.json() as Promise<IUnsplashSearchResult[]>)
+  const response = await fetch(`${getApiUrl()}/backgrounds/search?query=${query.value}`).then(
+    (res) => res.json() as Promise<IUnsplashSearchResult[]>
+  )
   results.value = response
 }
 
