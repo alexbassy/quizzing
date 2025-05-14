@@ -29,7 +29,7 @@
     "dexie-observable": "^3.0.0-beta.11",
     "dotenv": "^16.0.1",
     "downloadjs": "^1.4.7",
-    "motion": "^10.8.1",
+    "motion-v": "1.1.0-alpha.1",
     "nanoid": "^4.0.0",
     "primeflex": "^3.3.0",
     "primeicons": "^6.0.1",

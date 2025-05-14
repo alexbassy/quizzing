@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { computed, inject } from 'vue'
-import { Motion, Presence } from 'motion/vue'
+import { motion } from 'motion-v'
 import { QuestionEntry } from '@/lib/store/db'
 
 const props = defineProps<{
@@ -17,36 +17,34 @@ const imageSrc = computed(() => (props.image ? URL.createObjectURL(props.image) 
 </script>
 
 <template>
-  <Presence exit-before-enter>
-    <Motion
-      :key="id"
-      class="imageContainer"
-      :initial="
-        isAnimated
-          ? {
-              opacity: 0,
-              scale: 1.1,
-              rotateY: flipped ? 180 : 0,
-            }
-          : false
-      "
-      :animate="{ opacity: 1, scale: 1 }"
-      :exit="{
-        opacity: 0,
-        transition: { delay: 0, duration: isAnimated ? 0.5 : 0 },
-      }"
-      :transition="{ delay: 0.25, duration: 1 }"
-    >
-      <img
-        v-if="imageSrc"
-        :src="imageSrc"
-        alt=""
-        class="slideImage"
-        :class="{ '-obscured': !isAnswerShown && obscurred, '-flipped': flipped }"
-      />
-      <div v-else class="slideBlockColor" />
-    </Motion>
-  </Presence>
+  <motion.div
+    :key="id"
+    class="imageContainer"
+    :initial="
+      isAnimated
+        ? {
+            opacity: 0,
+            scale: 1.1,
+            rotateY: flipped ? 180 : 0,
+          }
+        : false
+    "
+    :animate="{ opacity: 1, scale: 1 }"
+    :exit="{
+      opacity: 0,
+      transition: { delay: 0, duration: isAnimated ? 0.5 : 0 },
+    }"
+    :transition="{ delay: 0.25, duration: 1 }"
+  >
+    <img
+      v-if="imageSrc"
+      :src="imageSrc"
+      alt=""
+      class="slideImage"
+      :class="{ '-obscured': !isAnswerShown && obscurred, '-flipped': flipped }"
+    />
+    <div v-else class="slideBlockColor" />
+  </motion.div>
 </template>
 
 <style lang="scss" scoped>

@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { computed, provide } from 'vue'
-import { Motion, Presence } from 'motion/vue'
+import { motion } from 'motion-v'
 import { FADE, SLIDE } from '@/lib/motion-variants'
 import { QuestionEntry, QuestionType } from '@/lib/store/db'
 import SlideImage from './SlideImage.vue'
@@ -39,46 +39,43 @@ const slideHidden = SLIDE.hidden
   />
 
   <!-- Gradient background -->
-  <Motion class="text-content" :initial="fadeInitial" :animate="fadeShown" :exit="fadeHidden">
+  <motion.div class="text-content" :initial="fadeInitial" :animate="fadeShown" :exit="fadeHidden">
     <!-- Count -->
-    <Motion
+    <motion.span
       v-if="isPlayableQuestion"
       :key="'count ' + questionIndex"
-      tag="span"
       class="count"
       :initial="slideInitial"
       :animate="slideShown"
       :exit="slideHidden"
       :transition="{ duration: isAnimated ? 1 : 0 }"
-      >{{ questionIndex }}</Motion
+      >{{ questionIndex }}</motion.span
     >
 
     <!-- Title -->
-    <Motion
+    <motion.h2
       :key="'title ' + question.id"
-      tag="h2"
       class="title"
       :initial="slideInitial"
       :animate="slideShown"
       :exit="slideHidden"
       :transition="{ duration: isAnimated ? 1 : 0, delay: 0.2 }"
-      >{{ question.title }}</Motion
+      >{{ question.title }}</motion.h2
     >
 
     <!-- Options list -->
-    <Motion v-if="isPlayableQuestion" :key="'options ' + question.id" tag="ol" class="options">
-      <Presence v-for="(option, i) in question.options" :key="i">
-        <SlideOption
-          :key="option"
-          :option="option"
-          :is-answer-shown="isAnswerShown"
-          :is-correct="question.correctOption === i"
-          :explanation="isAnswerShown && question.correctOption === i ? question.explanation : undefined"
-          :index="i"
-        />
-      </Presence>
-    </Motion>
-  </Motion>
+    <motion.ol v-if="isPlayableQuestion" :key="'options ' + question.id" class="options">
+      <SlideOption
+        v-for="(option, i) in question.options"
+        :key="i"
+        :option="option"
+        :is-answer-shown="isAnswerShown"
+        :is-correct="question.correctOption === i"
+        :explanation="isAnswerShown && question.correctOption === i ? question.explanation : undefined"
+        :index="i"
+      />
+    </motion.ol>
+  </motion.div>
 </template>
 
 <style lang="scss" scoped>

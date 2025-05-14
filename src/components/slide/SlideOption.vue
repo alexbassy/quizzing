@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { computed, inject } from 'vue'
-import { Motion } from 'motion/vue'
+import { motion } from 'motion-v'
 import { OPTION } from '@/lib/motion-variants'
 
 defineProps<{
@@ -19,8 +19,7 @@ const slideHidden = OPTION.hidden
 </script>
 
 <template>
-  <Motion
-    tag="li"
+  <motion.li
     class="slideOptionContainer"
     :class="{ '-answerShown': isAnswerShown }"
     :initial="slideInitial"
@@ -34,7 +33,7 @@ const slideHidden = OPTION.hidden
     <div class="explanation">
       {{ explanation }}
     </div>
-  </Motion>
+  </motion.li>
 </template>
 
 <style lang="scss" scoped>
