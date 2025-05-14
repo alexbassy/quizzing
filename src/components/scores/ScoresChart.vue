@@ -2,7 +2,16 @@
 import { onMounted, ref } from 'vue'
 import * as d3 from 'd3'
 import { useSubscription } from '@vueuse/rxjs'
-import { combineLatest, concat, distinctUntilChanged, fromEvent, map, of, switchMap, throttleTime } from 'rxjs'
+import {
+  combineLatest,
+  concat,
+  distinctUntilChanged,
+  fromEvent,
+  map,
+  of,
+  switchMap,
+  throttleTime,
+} from 'rxjs'
 import { group } from 'radash'
 import useRound from '@/composable/useRound'
 import { getPlayableQuestions$ } from '@/lib/store/client'
@@ -18,7 +27,11 @@ const round$ = useRound()
 
 const noPoints = ref<boolean | null>(null)
 
-const chartData$ = round$.pipe(map(round => round?.id), distinctUntilChanged(), switchMap((id) => (id ? getChartData(id) : of([]))))
+const chartData$ = round$.pipe(
+  map((round) => round?.id),
+  distinctUntilChanged(),
+  switchMap((id) => (id ? getChartData(id) : of([])))
+)
 
 const questionsInRound$ = round$.pipe(
   switchMap((round) => (round?.quizId ? getPlayableQuestions$(round.quizId) : of([])))
@@ -104,7 +117,7 @@ function drawChart(data: ScoresData[], questions: QuestionEntry[]): void {
     // @ts-ignore
     const lineGenerator = d3
       .line<ScoreDataPoint>()
-      .x((d) => xScale(d.questionId))
+      .x((d) => xScale(d.questionId)!)
       .y((d) => yScale(d.score))
 
     lineGenerator.curve(d3.curveBumpX)
