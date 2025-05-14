@@ -5,6 +5,8 @@ import { build } from 'esbuild'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
+const isWatch = process.argv.includes('--watch')
+
 try {
   await build({
     bundle: true,
@@ -19,7 +21,19 @@ try {
     define: {
       'process.env.NODE_ENV': process.env.NODE_ENV,
     },
+    watch: isWatch && {
+      onRebuild(error, result) {
+        if (error) {
+          console.error('Rebuild failed:', error)
+        } else {
+          console.log('Rebuild succeeded')
+        }
+      },
+    },
   })
+  if (isWatch) {
+    console.log('Watching for changes...')
+  }
 } catch (e) {
   console.log(e)
   process.exitCode = 1

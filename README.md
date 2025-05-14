@@ -40,3 +40,12 @@ Lots of things
 - Register service worker to make it an actually offline-first PWA (right now, your data is simply stored offline)
 - Add player to quiz mid-game
 - Reorganise quiz questions
+
+
+## Local development
+
+Wrangler is used for local development. `build-worker.js` is used to build the worker, which supports watch mode.
+
+Wrangler expects the `.dev.vars` file to exist. This is a symlink to `.env.local`, which needs to be populated with the correct variables (see `.env.example`).
+
+To run the worker locally, use `pnpm worker:dev`. This will start the worker in watch mode and run wrangler dev in parallel.

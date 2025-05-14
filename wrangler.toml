@@ -4,8 +4,5 @@ main = "dist-worker/handler.mjs"
 routes = ["quizzing.pages.dev/*"]
 workers_dev = true
 
-[miniflare]
-env_path = ".env.local"
-
 [build]
 command = "pnpm worker:build"

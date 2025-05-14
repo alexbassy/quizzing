@@ -4,5 +4,7 @@ onlyBuiltDependencies:
   - core-js
   - es5-ext
   - esbuild
+  - sharp
   - utf-8-validate
   - vue-demi
+  - workerd
