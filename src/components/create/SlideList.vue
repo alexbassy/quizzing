@@ -5,6 +5,7 @@ import type { MenuItem } from 'primevue/menuitem'
 import * as client from '@/lib/store/client'
 import { QuestionEntry, QuestionType } from '@/lib/store/db'
 import SlideListItem from './SlideListItem.vue'
+import { parseQuizMarkdown, createQuestionEntries } from '@/lib/quiz-parser'
 
 const props = defineProps<{ questions: QuestionEntry[]; activeQuestionId?: string }>()
 const quizId = inject<string>('quizId')
@@ -95,6 +96,43 @@ const contextMenuRef = ref<ContextMenu>()
 const openContextMenu = (event: Event) => {
   contextMenuRef.value?.show(event)
 }
+
+async function pasteQuiz() {
+  try {
+    const text = await navigator.clipboard.readText()
+    const parsedQuestions = parseQuizMarkdown(text)
+    
+    if (parsedQuestions.length === 0) {
+      alert('No valid questions found in the pasted text. Please check the format.')
+      return
+    }
+    
+    const questionEntries = createQuestionEntries(parsedQuestions, quizId!)
+    
+    // Add all questions to the database
+    const addedQuestions = []
+    for (const questionData of questionEntries) {
+      const id = await client.addQuestion(questionData)
+      addedQuestions.push(id)
+    }
+    
+    // Scroll to the first added question and make it active
+    if (addedQuestions.length > 0) {
+      setTimeout(() => {
+        if (listElem.value) {
+          listElem.value.scrollTo({ top: listElem.value.scrollHeight * 2, behavior: 'smooth' })
+          emit('active-change', addedQuestions[0])
+        }
+      }, 300)
+    }
+    
+    alert(`Successfully added ${parsedQuestions.length} question(s) to the quiz!`)
+  } catch (error) {
+    console.error('Failed to paste quiz:', error)
+    alert('Failed to paste quiz. Please make sure you have copied text to your clipboard.')
+  }
+}
+
 const questionActionModel: MenuItem[] = [
   {
     id: 'category',
@@ -103,6 +141,12 @@ const questionActionModel: MenuItem[] = [
     command: () => {
       addQuestion({ type: QuestionType.Category })
     },
+  },
+  {
+    id: 'paste',
+    icon: 'pi pi-clipboard',
+    label: 'Paste Quiz',
+    command: pasteQuiz,
   },
 ]
 </script>
