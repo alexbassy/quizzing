@@ -109,11 +109,18 @@ function drawChart(data: ScoresData[], questions: QuestionEntry[]): void {
     .domain(questions.map((q) => q.id!))
     .range([0, chartWidth.value - X_MARGIN * 2])
 
-  // this should be the number of questions?
+  // Dynamic Y-axis based on the number of questions
+  const maxPossibleScore = questions.length
   const yScale = d3
     .scaleLinear()
-    .domain([0, 20])
+    .domain([0, maxPossibleScore])
     .range([chartHeight.value - 50, 0])
+
+  console.log('📏 Y-axis scale:', {
+    maxPossibleScore,
+    questionsCount: questions.length,
+    domain: [0, maxPossibleScore],
+  })
 
   const colorScale = d3.scaleOrdinal(d3.schemeCategory10)
 
