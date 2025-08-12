@@ -39,12 +39,21 @@ const questionsInRound$ = round$.pipe(
 
 useSubscription(
   combineLatest([chartData$, questionsInRound$]).subscribe(([chartData, questions]) => {
+    console.log('📊 Scores Chart Data:', {
+      chartData,
+      questions,
+      chartDataLength: chartData.length,
+      questionsLength: questions.length,
+    })
+
     if (!chartData.length) {
+      console.log('⚠️ No chart data available')
       noPoints.value = true
       return
     }
     noPoints.value = null
     const playableQuestions = questions.filter((q) => q.type !== QuestionType.Category)
+    console.log('🎯 Playable questions:', playableQuestions)
     drawChart(chartData, playableQuestions)
   })
 )
@@ -83,6 +92,13 @@ onMounted(() => {
 })
 
 function drawChart(data: ScoresData[], questions: QuestionEntry[]): void {
+  console.log('🎨 Drawing chart with data:', {
+    data,
+    questions,
+    dataCount: data.length,
+    questionsCount: questions.length,
+  })
+
   getContainerSize()
   updateSvgElement()
 
@@ -114,6 +130,13 @@ function drawChart(data: ScoresData[], questions: QuestionEntry[]): void {
   const playersWithSameScore = group(data, (d) => d.score)
 
   data.forEach((seriesData) => {
+    console.log('👤 Processing player data:', {
+      player: seriesData.player,
+      score: seriesData.score,
+      dataPoints: seriesData.data,
+      series: seriesData.series,
+    })
+
     // @ts-ignore
     const lineGenerator = d3
       .line<ScoreDataPoint>()
@@ -181,6 +204,13 @@ function drawChart(data: ScoresData[], questions: QuestionEntry[]): void {
           const index =
             playersWithSameScore[seriesData.score]!.findIndex((d) => d.player.id === seriesData.player.id) ??
             0
+          console.log('🔄 Adjusting position for same score:', {
+            playerId: seriesData.player.id,
+            score: seriesData.score,
+            index,
+            playersWithSameScore: playersWithSameScore[seriesData.score],
+          })
+
           d3.timeout(() => {
             const transform = getTransformation(avatarGroup.attr('transform'))
             const offsetX = index * ((avatarSize + 8) * -1)
