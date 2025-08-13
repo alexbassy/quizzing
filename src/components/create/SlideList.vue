@@ -101,21 +101,21 @@ async function pasteQuiz() {
   try {
     const text = await navigator.clipboard.readText()
     const parsedQuestions = parseQuizMarkdown(text)
-    
+
     if (parsedQuestions.length === 0) {
       alert('No valid questions found in the pasted text. Please check the format.')
       return
     }
-    
+
     const questionEntries = createQuestionEntries(parsedQuestions, quizId!)
-    
+
     // Add all questions to the database
-    const addedQuestions = []
+    const addedQuestions: string[] = []
     for (const questionData of questionEntries) {
       const id = await client.addQuestion(questionData)
       addedQuestions.push(id)
     }
-    
+
     // Scroll to the first added question and make it active
     if (addedQuestions.length > 0) {
       setTimeout(() => {
@@ -125,7 +125,7 @@ async function pasteQuiz() {
         }
       }, 300)
     }
-    
+
     alert(`Successfully added ${parsedQuestions.length} question(s) to the quiz!`)
   } catch (error) {
     console.error('Failed to paste quiz:', error)
